@@ -9,41 +9,42 @@ content and stats, research Threads, and more.
 > **What is MCP, and where is it used?**
 > MCP is an open standard that lets AI assistants call external tools. Your AI
 > client connects to this server and gains a set of "tools" (one per Repliz
-> action). You can then say things like *"reply to the latest pending comment"*
-> or *"schedule this image to Instagram tomorrow at 9am"*, and the assistant
+> action). You can then say things like _"reply to the latest pending comment"_
+> or _"schedule this image to Instagram tomorrow at 9am"_, and the assistant
 > calls the right Repliz API for you.
 
 ### Two ways to run
 
-| Mode | Transport | For | Clients |
-| --- | --- | --- | --- |
-| **Local** | stdio (a subprocess on your machine) | yourself / per-user setups | Claude Desktop, Claude Code, Cursor, VS Code, Gemini CLI, … |
+| Mode       | Transport                                 | For                               | Clients                                                        |
+| ---------- | ----------------------------------------- | --------------------------------- | -------------------------------------------------------------- |
+| **Local**  | stdio (a subprocess on your machine)      | yourself / per-user setups        | Claude Desktop, Claude Code, Cursor, VS Code, Gemini CLI, …    |
 | **Remote** | Streamable HTTP (a hosted HTTPS endpoint) | many users via web/hosted clients | Claude.ai connectors, ChatGPT developer mode, API integrations |
 
 > **Important:** web chat apps (Claude.ai, ChatGPT, the Gemini app) only accept
 > **remote** servers — they cannot launch a local process. ChatGPT in particular
-> supports *only* remote MCP servers. Use **Local** mode for desktop/dev tools;
+> supports _only_ remote MCP servers. Use **Local** mode for desktop/dev tools;
 > use **Remote** mode to serve many users through the web apps.
 
 ---
 
 ## Features
 
-`33` tools across the Repliz Public API, grouped by domain:
+`90` tools across the Repliz Public API, grouped by domain:
 
-| Group | Tools |
-| --- | --- |
-| **Accounts** | list, count, get, delete |
-| **Comments** (inbox) | list, get, reply, update status |
-| **Schedule** (posts) | list, get, create, update, retry, delete, bulk delete |
-| **Chat** (DMs) | list, get, list messages, send message, mark read |
-| **Content** | list, get, list comments, comment, statistics, DM commenter, delete comment |
-| **Research** (Threads) | search content, user content, user profile |
-| **Add-ons** | TikTok trending music, Shopee products, link metadata |
-
-> Account OAuth connection flows (authorize/exchange/connect) are intentionally
-> **not** included — they are interactive, multi-step browser flows better done
-> from the Repliz web app. Everything else for day-to-day operation is here.
+| Group                       | Tools                                                                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Accounts**                | list, count, get, statistics, update automation, delete                                                                                               |
+| **Account Connect (OAuth)** | authorize, exchange code, list pages/channels, connect & reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, and Twitter/X |
+| **Comments** (inbox)        | list, get, reply, update status, delete                                                                                                               |
+| **Schedule** (posts)        | list, get, create, update, retry, delete, bulk delete                                                                                                 |
+| **Chat** (DMs)              | list, get, list messages, send message, mark read                                                                                                     |
+| **Content**                 | list, get, list comments, comment, statistics, DM commenter, delete comment, delete content, like comment                                             |
+| **Research** (Threads)      | search content, user content, user profile                                                                                                            |
+| **Add-ons & Limits**        | TikTok trending music, Shopee products, link metadata, account addon allocation                                                                       |
+| **Storage**                 | statistics, list files, get file, init upload, upload file to presigned URL, complete upload, delete file, bulk delete files                          |
+| **Reports**                 | list, get, retry                                                                                                                                      |
+| **Automation**              | list, get, create, update, delete                                                                                                                     |
+| **Templates**               | list, get, create, update, delete                                                                                                                     |
 
 ---
 
@@ -84,11 +85,11 @@ npx repliz-mcp
 Run the server as a subprocess from a desktop or developer client. Credentials
 come from environment variables:
 
-| Variable | Required | Default | Description |
-| --- | --- | --- | --- |
-| `REPLIZ_ACCESS_KEY` | ✅ | — | Your API Access Key (Basic Auth username) |
-| `REPLIZ_SECRET_KEY` | ✅ | — | Your API Secret Key (Basic Auth password) |
-| `REPLIZ_BASE_URL` | ❌ | `https://api.repliz.com` | API base URL; override only if needed |
+| Variable            | Required | Default                  | Description                               |
+| ------------------- | -------- | ------------------------ | ----------------------------------------- |
+| `REPLIZ_ACCESS_KEY` | ✅       | —                        | Your API Access Key (Basic Auth username) |
+| `REPLIZ_SECRET_KEY` | ✅       | —                        | Your API Secret Key (Basic Auth password) |
+| `REPLIZ_BASE_URL`   | ❌       | `https://api.repliz.com` | API base URL; override only if needed     |
 
 Copy `.env.example` to `.env` for local testing (it is auto-loaded on startup
 for `npm start` / `npm run dev`), but **never commit `.env`**. When launched by
@@ -163,11 +164,11 @@ npm run build
 npm run start:http          # or: REPLIZ_TRANSPORT=http node dist/index.js
 ```
 
-| Variable | Required | Default | Description |
-| --- | --- | --- | --- |
-| `REPLIZ_BASE_URL` | ❌ | `https://api.repliz.com` | API base URL (shared by all users) |
-| `PORT` | ❌ | `3000` | Port to listen on |
-| `REPLIZ_ACCESS_KEY` / `REPLIZ_SECRET_KEY` | ❌ | — | Optional fallback creds for **single-tenant** hosting. Leave unset for multi-user. |
+| Variable                                  | Required | Default                  | Description                                                                        |
+| ----------------------------------------- | -------- | ------------------------ | ---------------------------------------------------------------------------------- |
+| `REPLIZ_BASE_URL`                         | ❌       | `https://api.repliz.com` | API base URL (shared by all users)                                                 |
+| `PORT`                                    | ❌       | `3000`                   | Port to listen on                                                                  |
+| `REPLIZ_ACCESS_KEY` / `REPLIZ_SECRET_KEY` | ❌       | —                        | Optional fallback creds for **single-tenant** hosting. Leave unset for multi-user. |
 
 The MCP endpoint is `POST/GET/DELETE  https://<your-host>/mcp`, plus a
 `GET /health` check. The server **must be served over HTTPS** in production
@@ -181,6 +182,7 @@ Each user passes their Repliz credentials on the request, in either form:
 ```http
 Authorization: Basic base64(accessKey:secretKey)
 ```
+
 ```http
 X-Repliz-Access-Key: <accessKey>
 X-Repliz-Secret-Key: <secretKey>
@@ -191,6 +193,7 @@ session only — users are isolated from one another. Requests with no valid
 credentials are rejected with `401`.
 
 > **Which clients can send these headers?**
+>
 > - ✅ **API integrations** — the Anthropic Messages API and OpenAI Responses
 >   API let you attach an auth token / headers to a remote MCP server. This is
 >   the smoothest path for header auth.
@@ -199,16 +202,16 @@ credentials are rejected with `401`.
 > - ⚠️ **Consumer web UIs (Claude.ai, ChatGPT)** — their "add custom connector"
 >   screens are built around **OAuth**, and may not let users paste arbitrary
 >   headers. For a frictionless "click Connect" experience there, add an OAuth
->   layer (see *Roadmap* below). Header auth still works for everything else.
+>   layer (see _Roadmap_ below). Header auth still works for everything else.
 
 ### Connect from the web apps
 
-**Claude.ai** (Pro/Max/Team/Enterprise): *Settings → Connectors → Add custom
-connector* → enter `https://<your-host>/mcp`. (Team/Enterprise: an owner adds it
-under *Organization settings → Connectors* first.)
+**Claude.ai** (Pro/Max/Team/Enterprise): _Settings → Connectors → Add custom
+connector_ → enter `https://<your-host>/mcp`. (Team/Enterprise: an owner adds it
+under _Organization settings → Connectors_ first.)
 
-**ChatGPT** (Plus/Pro/Business/Enterprise): *Settings → Connectors → Advanced →
-enable Developer mode*, then add a connector pointing at `https://<your-host>/mcp`.
+**ChatGPT** (Plus/Pro/Business/Enterprise): _Settings → Connectors → Advanced →
+enable Developer mode_, then add a connector pointing at `https://<your-host>/mcp`.
 (Connectors are now labelled "Apps".)
 
 **Anthropic API** (programmatic): pass the server under `mcp_servers` with
@@ -262,7 +265,8 @@ src/
     http.ts         # remote Streamable HTTP transport (per-user header auth)
   tools/
     helpers.ts      # registerTool() wrapper + error formatting
-    account.ts comment.ts schedule.ts chat.ts content.ts research.ts addon.ts
+    account.ts account_connect.ts addon.ts automation.ts chat.ts comment.ts
+    content.ts report.ts research.ts schedule.ts storage.ts template.ts
     index.ts        # registers all tool groups
 api.json            # the source OpenAPI spec (reference)
 ```
@@ -272,7 +276,6 @@ api.json            # the source OpenAPI spec (reference)
 - **OAuth for web connectors** — add an OAuth authorization layer so users can
   click "Connect" in Claude.ai / ChatGPT without pasting credentials. Today
   those consumer UIs favor OAuth; header auth covers API and custom-header clients.
-- Optional account OAuth connect flows (currently done via the Repliz web app).
 
 ---
 
