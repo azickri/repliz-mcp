@@ -1686,7 +1686,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-09-10T04:20:30.671Z",
+              "example": "2026-09-10T04:20:31.042Z",
               "type": "string"
             }
           },
@@ -1696,7 +1696,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-09-10T04:20:30.671Z",
+              "example": "2026-09-10T04:20:31.042Z",
               "type": "string"
             }
           }
@@ -1895,7 +1895,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "image": {
@@ -1935,7 +1935,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "video": {
@@ -1975,7 +1975,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "reel": {
@@ -2015,7 +2015,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "album": {
@@ -2061,7 +2061,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "link": {
@@ -2105,7 +2105,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "story": {
@@ -2145,7 +2145,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "nested": {
@@ -2208,7 +2208,7 @@
                       }
                     ],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "template": {
@@ -2240,7 +2240,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z",
+                    "scheduleAt": "2026-09-10T04:20:31.045Z",
                     "templateId": "680affa5ce12f2f72a16f67c"
                   }
                 },
@@ -2281,7 +2281,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.045Z"
                   }
                 },
                 "additionaoInfoMusic": {
@@ -2321,7 +2321,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.046Z"
                   }
                 },
                 "additionalInfoProduct": {
@@ -2369,7 +2369,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.046Z"
                   }
                 },
                 "additionalInfoTag": {
@@ -2409,7 +2409,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.046Z"
                   }
                 },
                 "additionalInfoMention": {
@@ -2449,7 +2449,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.046Z"
                   }
                 },
                 "additionaoInfoLink": {
@@ -2489,7 +2489,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.046Z"
                   }
                 },
                 "additionalInfoTargetCountries": {
@@ -2529,7 +2529,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:30.683Z"
+                    "scheduleAt": "2026-09-10T04:20:31.046Z"
                   }
                 }
               }
@@ -4050,7 +4050,7 @@
     },
     "/public/research/threads/content/search": {
       "get": {
-        "description": "\nSearch public content on Threads.\n\nThis endpoint is used to search Threads posts based on a keyword or phrase.\nIt allows retrieving content from the platform for discovery, analysis, or engagement purposes.\n\nParameters:\n- accountId (string) — The connected Threads account identifier\n- search (string) — Keyword or phrase used to search content\n- nextToken (string, optional) — Token for retrieving the next page of results\n\nResponse:\n- Returns an array of Threads content objects\n- Includes content details such as id, text, media, author, and publish timestamp\n- May include nextToken for pagination\n",
+        "description": "\nSearch public content on Threads.\n\nThis endpoint is used to search Threads posts based on a keyword or phrase.\nIt allows retrieving content from the platform for discovery, analysis, or engagement purposes.\n\nParameters:\n- accountId (string) — The connected Threads account identifier\n- search (string) — Keyword or phrase used to search content\n- sort (string, optional) — Sort order for search results (TOP, RECENT)\n- mode (string, optional) — Search mode (KEYWORD, TAG)\n- type (string, optional) — Filter content by media type (TEXT, IMAGE, VIDEO)\n- since (number, optional) — Start timestamp (Unix epoch in seconds)\n- until (number, optional) — End timestamp (Unix epoch in seconds)\n- username (string, optional) — Filter posts by author username\n- nextToken (string, optional) — Token for retrieving the next page of results\n\nResponse:\n- Returns an array of Threads content objects\n- Includes content details such as id, text, media, author, and publish timestamp\n- May include nextToken for pagination\n",
         "operationId": "ResearchController_searchContentThreads",
         "parameters": [
           {
@@ -4067,6 +4067,63 @@
             "required": true,
             "in": "query",
             "schema": { "example": "Video", "type": "string" }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "TOP",
+              "type": "string",
+              "enum": ["TOP", "RECENT"]
+            }
+          },
+          {
+            "name": "mode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "KEYWORD",
+              "type": "string",
+              "enum": ["KEYWORD", "TAG"]
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "TEXT",
+              "type": "string",
+              "enum": ["TEXT", "IMAGE", "VIDEO"]
+            }
+          },
+          {
+            "name": "since",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1773296531,
+              "type": "number"
+            }
+          },
+          {
+            "name": "until",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1773296531,
+              "type": "number"
+            }
+          },
+          {
+            "name": "username",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "replizofficial",
+              "type": "string"
+            }
           },
           {
             "name": "nextToken",
@@ -7467,7 +7524,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-09-10T04:20:30.671Z"
+            "example": "2026-09-10T04:20:31.043Z"
           },
           "templateId": {
             "type": "string",
@@ -7516,7 +7573,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-09-10T04:20:30.675Z"
+            "example": "2026-09-10T04:20:31.043Z"
           },
           "templateId": {
             "type": "string",
