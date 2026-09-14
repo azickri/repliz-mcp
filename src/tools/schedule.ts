@@ -76,16 +76,21 @@ const additionalInfoSchema = z
     isAiGenerated: z.boolean().default(false),
     isDraft: z.boolean().default(false),
     isAutoAddMusic: z.boolean().default(false),
+    isShareToFeed: z
+      .boolean()
+      .default(false)
+      .describe(
+        "Whether to share to Instagram main feed. Only applicable for Instagram scheduled posts with type 'video'.",
+      ),
     collaborators: z.array(z.string()).default([]),
     music: musicSchema.optional(),
     products: z.array(productSchema).default([]),
     tags: z.array(z.string()).default([]),
     mentions: z.array(z.string()).default([]),
-    link: z.string().default(''),
     targetCountries: z.array(z.string()).default([]),
   })
   .describe(
-    'Optional extras: collaborators, music, tagged products, hashtags, mentions, link, target countries.',
+    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), target countries.',
   );
 
 const replySchema = z.object({
@@ -102,6 +107,7 @@ const DEFAULT_ADDITIONAL_INFO = {
   isAiGenerated: false,
   isDraft: false,
   isAutoAddMusic: false,
+  isShareToFeed: false,
   collaborators: [] as string[],
   music: {
     id: '',
@@ -113,7 +119,6 @@ const DEFAULT_ADDITIONAL_INFO = {
   products: [] as unknown[],
   tags: [] as string[],
   mentions: [] as string[],
-  link: '',
   targetCountries: [] as string[],
 };
 
@@ -267,7 +272,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: collaborators, music, products, tags, mentions, link.',
+            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), targetCountries.',
           ),
         replies: z
           .array(replySchema)

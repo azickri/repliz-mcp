@@ -1686,7 +1686,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-09-10T04:20:31.042Z",
+              "example": "2026-09-14T10:36:41.416Z",
               "type": "string"
             }
           },
@@ -1696,7 +1696,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-09-10T04:20:31.042Z",
+              "example": "2026-09-14T10:36:41.416Z",
               "type": "string"
             }
           }
@@ -1879,6 +1879,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -1890,12 +1891,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "image": {
@@ -1919,6 +1919,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -1930,12 +1931,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "video": {
@@ -1959,6 +1959,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -1970,12 +1971,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "reel": {
@@ -1999,6 +1999,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2010,12 +2011,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "album": {
@@ -2045,6 +2045,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2056,12 +2057,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "link": {
@@ -2089,6 +2089,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2100,12 +2101,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "story": {
@@ -2129,6 +2129,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2140,12 +2141,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "nested": {
@@ -2161,6 +2161,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2172,7 +2173,6 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [
@@ -2208,7 +2208,7 @@
                       }
                     ],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "template": {
@@ -2224,6 +2224,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2235,12 +2236,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z",
+                    "scheduleAt": "2026-09-14T10:36:41.417Z",
                     "templateId": "680affa5ce12f2f72a16f67c"
                   }
                 },
@@ -2265,6 +2265,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": ["replizofficial"],
                       "music": {
                         "id": "",
@@ -2276,12 +2277,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.045Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "additionaoInfoMusic": {
@@ -2302,6 +2302,7 @@
                     ],
                     "meta": { "title": "", "description": "", "url": "" },
                     "additionalInfo": {
+                      "isShareToFeed": false,
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
@@ -2310,18 +2311,16 @@
                         "id": "7602104441417107457",
                         "artist": "CHAYRA",
                         "name": "Mudik Raya",
-                        "thumbnail": "https://p16-sg.tiktokcdn.com/aweme/100x100/tos-alisg-v-2774/oYAl1dJBDECv7BjbCUFAQVZyeBfEpABEEVgntg.jpeg",
-                        "volume": { "video": 50, "music": 100 }
+                        "thumbnail": "https://p16-sg.tiktokcdn.com/aweme/100x100/tos-alisg-v-2774/oYAl1dJBDECv7BjbCUFAQVZyeBfEpABEEVgntg.jpeg"
                       },
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.046Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "additionalInfoProduct": {
@@ -2351,7 +2350,11 @@
                         "artist": "",
                         "name": "",
                         "thumbnail": "",
-                        "volume": { "video": 50, "music": 100 }
+                        "volume": {
+                          "video": 50,
+                          "music": 100,
+                          "isShareToFeed": false
+                        }
                       },
                       "products": [
                         {
@@ -2364,12 +2367,11 @@
                       ],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.046Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "additionalInfoTag": {
@@ -2393,6 +2395,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2404,12 +2407,11 @@
                       "products": [],
                       "tags": ["AI YouTube", "AI Trend 2026"],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.046Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "additionalInfoMention": {
@@ -2433,6 +2435,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2444,12 +2447,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": ["replizofficial"],
-                      "link": "",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.046Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "additionaoInfoLink": {
@@ -2473,6 +2475,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2484,12 +2487,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "https://repliz.com",
                       "targetCountries": []
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.046Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 },
                 "additionalInfoTargetCountries": {
@@ -2513,6 +2515,7 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2524,12 +2527,11 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "link": "",
                       "targetCountries": ["ID"]
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-10T04:20:31.046Z"
+                    "scheduleAt": "2026-09-14T10:36:41.417Z"
                   }
                 }
               }
@@ -4050,7 +4052,7 @@
     },
     "/public/research/threads/content/search": {
       "get": {
-        "description": "\nSearch public content on Threads.\n\nThis endpoint is used to search Threads posts based on a keyword or phrase.\nIt allows retrieving content from the platform for discovery, analysis, or engagement purposes.\n\nParameters:\n- accountId (string) — The connected Threads account identifier\n- search (string) — Keyword or phrase used to search content\n- sort (string, optional) — Sort order for search results (TOP, RECENT)\n- mode (string, optional) — Search mode (KEYWORD, TAG)\n- type (string, optional) — Filter content by media type (TEXT, IMAGE, VIDEO)\n- since (number, optional) — Start timestamp (Unix epoch in seconds)\n- until (number, optional) — End timestamp (Unix epoch in seconds)\n- username (string, optional) — Filter posts by author username\n- nextToken (string, optional) — Token for retrieving the next page of results\n\nResponse:\n- Returns an array of Threads content objects\n- Includes content details such as id, text, media, author, and publish timestamp\n- May include nextToken for pagination\n",
+        "description": "\nSearch public content on Threads.\n\nThis endpoint is used to search Threads posts based on a keyword or phrase.\nIt allows retrieving content from the platform for discovery, analysis, or engagement purposes.\n\nParameters:\n- accountId (string) — The connected Threads account identifier\n- search (string) — Keyword or phrase used to search content\n- nextToken (string, optional) — Token for retrieving the next page of results\n\nResponse:\n- Returns an array of Threads content objects\n- Includes content details such as id, text, media, author, and publish timestamp\n- May include nextToken for pagination\n",
         "operationId": "ResearchController_searchContentThreads",
         "parameters": [
           {
@@ -4102,28 +4104,19 @@
             "name": "since",
             "required": false,
             "in": "query",
-            "schema": {
-              "example": 1773296531,
-              "type": "number"
-            }
+            "schema": { "example": 1789382201, "type": "number" }
           },
           {
             "name": "until",
             "required": false,
             "in": "query",
-            "schema": {
-              "example": 1773296531,
-              "type": "number"
-            }
+            "schema": { "example": 1789382201, "type": "number" }
           },
           {
             "name": "username",
             "required": false,
             "in": "query",
-            "schema": {
-              "example": "replizofficial",
-              "type": "string"
-            }
+            "schema": { "example": "replizofficial", "type": "string" }
           },
           {
             "name": "nextToken",
@@ -7419,6 +7412,7 @@
           "isAiGenerated": { "type": "boolean", "example": false },
           "isDraft": { "type": "boolean", "example": false },
           "isAutoAddMusic": { "type": "boolean", "example": false },
+          "isShareToFeed": { "type": "boolean", "example": false },
           "collaborators": {
             "example": ["replizofficial", "azickri.ai"],
             "type": "array",
@@ -7450,7 +7444,6 @@
             "type": "array",
             "items": { "type": "string" }
           },
-          "link": { "type": "string", "example": "https://repliz.com" },
           "targetCountries": {
             "example": ["ID", "EN"],
             "type": "array",
@@ -7461,12 +7454,12 @@
           "isAiGenerated",
           "isDraft",
           "isAutoAddMusic",
+          "isShareToFeed",
           "collaborators",
           "music",
           "products",
           "tags",
           "mentions",
-          "link",
           "targetCountries"
         ]
       },
@@ -7524,7 +7517,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-09-10T04:20:31.043Z"
+            "example": "2026-09-14T10:36:41.416Z"
           },
           "templateId": {
             "type": "string",
@@ -7573,7 +7566,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-09-10T04:20:31.043Z"
+            "example": "2026-09-14T10:36:41.416Z"
           },
           "templateId": {
             "type": "string",
