@@ -279,6 +279,23 @@ export async function runHttp(): Promise<void> {
     );
   });
 
+  // Without this, failing to bind surfaces as an unhandled 'error' event and a
+  // raw stack trace, which under a process manager becomes a restart loop that
+  // says nothing useful about the cause.
+  httpServer.on("error", (err: NodeJS.ErrnoException) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(
+        `Port ${listenPort} is already in use. Another instance may be running — ` +
+          `stop it, or set PORT to a free port.`
+      );
+    } else if (err.code === "EACCES") {
+      console.error(`Not allowed to bind port ${listenPort}. Ports below 1024 need extra privileges.`);
+    } else {
+      console.error(`Could not listen on port ${listenPort}: ${err.message}`);
+    }
+    process.exit(1);
+  });
+
   // Let a container or PM2 stop cleanly instead of being killed mid-request.
   const shutdown = (signal: string) => {
     console.error(`Received ${signal}, shutting down...`);
