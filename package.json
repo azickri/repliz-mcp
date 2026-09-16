@@ -1,11 +1,8 @@
 {
   "name": "repliz-mcp",
-  "version": "1.0.0",
-  "description": "Model Context Protocol (MCP) server for the Repliz Public API — manage accounts, comments, scheduled posts, chats, content, research, and add-ons from any MCP-compatible AI client.",
+  "version": "2.0.0",
+  "description": "Hosted Model Context Protocol (MCP) server for the Repliz Public API. Users connect by URL and send their own Repliz Access Key and Secret Key \u2014 nothing to install or deploy.",
   "type": "module",
-  "bin": {
-    "repliz-mcp": "dist/index.js"
-  },
   "files": [
     "dist",
     "README.md",
@@ -15,9 +12,9 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "start": "node dist/index.js",
-    "start:http": "node dist/index.js --http",
     "dev": "node --import tsx src/index.ts",
-    "dev:http": "node --import tsx src/index.ts --http",
+    "test": "node --import tsx --test test/*.test.ts",
+    "smoke": "node scripts/smoke-test.mjs",
     "prepare": "npm run build"
   },
   "keywords": [
@@ -26,8 +23,7 @@
     "repliz",
     "social-media",
     "automation",
-    "ai",
-    "claude"
+    "ai"
   ],
   "author": "Repliz",
   "license": "MIT",
@@ -44,5 +40,6 @@
     "@types/node": "^22.19.21",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0"
-  }
+  },
+  "private": true
 }

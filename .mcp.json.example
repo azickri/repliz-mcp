@@ -1,9 +1,0 @@
-{
-  "_comment": "Copy this to .mcp.json and set the absolute path to dist/index.js. Credentials are read from your .env file, so none are needed here.",
-  "mcpServers": {
-    "repliz": {
-      "command": "node",
-      "args": ["/absolute/path/to/repliz-mcp/dist/index.js"]
-    }
-  }
-}

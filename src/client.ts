@@ -5,7 +5,7 @@
  * arrays), JSON bodies, and turning non-2xx responses into descriptive errors.
  */
 
-import type { ReplizConfig } from "./config.js";
+import { requestTimeoutMs, type ReplizConfig } from "./config.js";
 
 export type QueryValue = string | number | boolean | Array<string | number> | undefined | null;
 export type QueryParams = Record<string, QueryValue>;
@@ -73,7 +73,24 @@ export class ReplizClient {
       bodyInit = JSON.stringify(opts.body);
     }
 
-    const response = await fetch(url, { method, headers, body: bodyInit });
+    // Bound every outbound call: without a timeout a stalled Repliz request
+    // pins the caller's session (and its memory) open indefinitely.
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method,
+        headers,
+        body: bodyInit,
+        signal: AbortSignal.timeout(requestTimeoutMs()),
+      });
+    } catch (err) {
+      if (err instanceof Error && (err.name === "TimeoutError" || err.name === "AbortError")) {
+        throw new Error(
+          `Repliz API ${method} ${path} timed out after ${requestTimeoutMs() / 1000}s.`
+        );
+      }
+      throw err;
+    }
 
     const text = await response.text();
     let parsed: unknown = text;
@@ -106,5 +123,23 @@ export class ReplizClient {
 
   delete<T = unknown>(path: string, query?: QueryParams, body?: unknown): Promise<T> {
     return this.request<T>("DELETE", path, { query, body });
+  }
+
+  /**
+   * Check that these credentials are actually valid, using the cheapest
+   * authenticated endpoint in the API (no parameters, small response).
+   * Returns false only for an auth rejection; other failures throw, so a
+   * Repliz outage surfaces as 503 rather than being reported as bad keys.
+   */
+  async verifyCredentials(): Promise<boolean> {
+    try {
+      await this.get("/public/account/count");
+      return true;
+    } catch (err) {
+      if (err instanceof ReplizApiError && (err.status === 401 || err.status === 403)) {
+        return false;
+      }
+      throw err;
+    }
   }
 }

@@ -1,52 +1,38 @@
 #!/usr/bin/env node
 /**
- * Repliz MCP server entry point.
+ * Repliz MCP server — entry point.
  *
- * Exposes the Repliz Public API as Model Context Protocol tools, in one of two
- * transport modes:
- *
- *   - stdio (default): a local subprocess for desktop/dev clients
- *       (Claude Desktop, Claude Code, Cursor, Gemini CLI, ...).
- *       Credentials come from REPLIZ_ACCESS_KEY / REPLIZ_SECRET_KEY env vars.
- *
- *   - http: a remote, multi-user Streamable HTTP server for web/hosted clients
- *       (Claude.ai connectors, ChatGPT developer mode, API integrations).
- *       Each user supplies their own credentials via request headers.
- *       Enable with `--http` or REPLIZ_TRANSPORT=http. Port via PORT (default 3000).
+ * Exposes the Repliz Public API as Model Context Protocol tools over a remote
+ * Streamable HTTP endpoint. Users connect by URL and send their own Repliz
+ * Access Key and Secret Key; the server keeps no credentials of its own.
  */
 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { runStdio } from "./transports/stdio.js";
-import { runHttp } from "./transports/http.js";
+import { runHttp } from "./http.js";
 
-// Convenience: auto-load a local .env if present, so credentials don't have to
-// be passed inline. Uses Node's built-in env-file loader (Node >= 20.12), so no
-// dependency. Variables already set in the real environment always win, and
-// loadEnvFile does not overwrite already-loaded values — so cwd takes priority.
+// Load a local .env if present, so settings need not be exported by hand. Uses
+// Node's built-in loader, so no dependency. Real environment variables always
+// win, and loadEnvFile does not overwrite already-loaded values, so the current
+// working directory takes priority over the package directory.
 function tryLoadEnv(path?: string): void {
   try {
     path ? process.loadEnvFile(path) : process.loadEnvFile();
   } catch {
-    // No file there (or unsupported Node) — ignore and try the next source.
+    // Nothing there (or unsupported Node) — try the next source.
   }
 }
 
 tryLoadEnv(); // 1) .env in the current working directory
 try {
-  // 2) .env next to the package, so it works no matter where the client
-  //    launches the server from (dist/index.js -> ../.env).
-  const packageDir = join(dirname(fileURLToPath(import.meta.url)), "..");
-  tryLoadEnv(join(packageDir, ".env"));
+  // 2) .env next to the package, so `pm2 start dist/index.js` works from anywhere.
+  tryLoadEnv(join(dirname(fileURLToPath(import.meta.url)), "..", ".env"));
 } catch {
   /* ignore */
 }
 
-const useHttp =
-  process.argv.includes("--http") || process.env.REPLIZ_TRANSPORT?.toLowerCase() === "http";
-
-(useHttp ? runHttp() : runStdio()).catch((err) => {
-  console.error("Fatal error starting Repliz MCP server:");
+runHttp().catch((err) => {
+  console.error("Fatal error starting the Repliz MCP server:");
   console.error(err instanceof Error ? err.message : err);
   process.exit(1);
 });

@@ -7,9 +7,10 @@
  *   3. repliz_complete_file   — tells Repliz the upload is done and finalizes the record
  */
 
-import * as fs from "fs";
 import { z } from "zod";
 import { registerTool, type ToolContext } from "./helpers.js";
+import { maxUploadBytes, requestTimeoutMs } from "../config.js";
+import { assertAllowedUploadUrl, assertPublicUrl } from "../net.js";
 
 const FILE_STATUS = ["pending", "success"] as const;
 
@@ -107,64 +108,95 @@ export function registerStorageTools(ctx: ToolContext): void {
 
   // ─── Step 2: Upload to presigned URL ────────────────────────────────────
 
+  // Step 2 never touches the local filesystem. This server is shared, so its
+  // disk belongs to the operator, not the caller: a path parameter here would
+  // let any user read the server's own files and ship them to a URL of their
+  // choosing. The file therefore comes from a public URL, the PUT target is
+  // pinned to Repliz storage, and the source must resolve to a public address.
   registerTool(
     ctx,
     "repliz_upload_file",
     {
       title: "Upload File to Presigned URL",
       description:
-        "Step 2 of 3 — Upload a local file to the presigned URL returned by `repliz_init_file`.\n\n" +
-        "This is a direct HTTP PUT to Cloudflare R2 storage — no Repliz auth is required for this step.\n\n" +
+        "Step 2 of 3 — Copy a file from a public URL to the presigned URL returned by `repliz_init_file`.\n\n" +
+        "This server runs remotely and has no access to your local disk. Host the file at a publicly " +
+        "reachable https URL first, or upload it to the presigned URL yourself with a direct PUT from " +
+        "your own machine and skip straight to `repliz_complete_file`.\n\n" +
         "Provide:\n" +
-        "- `uploadUrl`  — the `upload` field from `repliz_init_file` response\n" +
-        "- `localPath`  — absolute local path to the file to upload\n" +
+        "- `uploadUrl`  — the `upload` field from `repliz_init_file`, passed through unchanged\n" +
+        "- `sourceUrl`  — public http(s) URL of the file to copy\n" +
         "- `mimetype`   — must match exactly what was used in `repliz_init_file`\n\n" +
         "After this succeeds, call `repliz_complete_file` with the fileId to finalize.",
       inputSchema: {
         uploadUrl: z
           .string()
           .url()
-          .describe("The presigned PUT URL from the `upload` field of `repliz_init_file`."),
-        localPath: z
+          .describe(
+            "The presigned PUT URL from the `upload` field of `repliz_init_file`, passed through unchanged."
+          ),
+        sourceUrl: z
           .string()
-          .describe("Absolute path to the local file to upload, e.g. '/home/user/video.mp4'."),
+          .url()
+          .describe("Public http(s) URL of the file to copy, e.g. 'https://example.com/video.mp4'."),
         mimetype: z
           .string()
           .describe("MIME type, must match what was declared in `repliz_init_file`."),
       },
     },
     async (args) => {
-      // Read file from local filesystem
-      if (!fs.existsSync(args.localPath)) {
-        throw new Error(`File not found: ${args.localPath}`);
+      // Validate the destination before fetching anything, so a bad request
+      // costs no bandwidth.
+      const target = assertAllowedUploadUrl(args.uploadUrl);
+      const source = await assertPublicUrl(args.sourceUrl, "sourceUrl");
+
+      const limit = maxUploadBytes();
+      const sourceResponse = await fetch(source, {
+        redirect: "error", // a redirect could land on a private address
+        signal: AbortSignal.timeout(requestTimeoutMs()),
+      });
+      if (!sourceResponse.ok) {
+        throw new Error(
+          `Could not fetch sourceUrl: HTTP ${sourceResponse.status} ${sourceResponse.statusText}.`
+        );
       }
 
-      const fileBuffer = fs.readFileSync(args.localPath);
-      const fileSize = fileBuffer.byteLength;
+      const declared = Number(sourceResponse.headers.get("content-length"));
+      if (Number.isFinite(declared) && declared > limit) {
+        throw new Error(`sourceUrl is ${declared} bytes, over the ${limit}-byte upload limit.`);
+      }
 
-      const response = await fetch(args.uploadUrl, {
+      const body = new Uint8Array(await sourceResponse.arrayBuffer());
+      if (body.byteLength > limit) {
+        throw new Error(
+          `sourceUrl returned ${body.byteLength} bytes, over the ${limit}-byte upload limit.`
+        );
+      }
+
+      const response = await fetch(target, {
         method: "PUT",
         headers: {
           "Content-Type": args.mimetype,
-          "Content-Length": String(fileSize),
-          // Required by Cloudflare R2 presigned URL (matches x-amz-checksum-crc32 in URL)
+          "Content-Length": String(body.byteLength),
+          // Required by the Cloudflare R2 presigned URL (matches x-amz-checksum-crc32 in it).
           "x-amz-checksum-crc32": "AAAAAA==",
           "x-amz-sdk-checksum-algorithm": "CRC32",
         },
-        body: fileBuffer,
+        body,
       });
 
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(
-          `Upload failed with HTTP ${response.status}: ${text}`
-        );
+        throw new Error(`Upload failed with HTTP ${response.status}: ${text}`);
       }
 
       return {
         success: true,
         status: response.status,
-        message: "File uploaded successfully to presigned URL. Call `repliz_complete_file` to finalize.",
+        bytesUploaded: body.byteLength,
+        source: args.sourceUrl,
+        message:
+          "File uploaded successfully to presigned URL. Call `repliz_complete_file` to finalize.",
       };
     }
   );

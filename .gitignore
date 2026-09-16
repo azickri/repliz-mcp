@@ -21,3 +21,8 @@ npm-debug.log*
 .idea/
 .vscode/
 *.swp
+
+# PM2 logs
+logs/
+deployment.md
+.env.production
