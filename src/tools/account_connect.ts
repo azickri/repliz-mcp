@@ -1,7 +1,24 @@
-/** Account OAuth and Connection tools for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, and Twitter. */
+/** Account OAuth and Connection tools for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter, and WhatsApp. */
 
 import { z } from "zod";
-import { registerTool, type ToolContext } from "./helpers.js";
+import { ContentResult, registerTool, type ToolContext } from "./helpers.js";
+
+type WhatsAppSession = { qrcode?: string } & Record<string, unknown>;
+
+/**
+ * Attach a session's QR code as an image block, so the client can show it to
+ * the user to scan rather than handing the model a wall of base64.
+ */
+function whatsAppSessionResult(session: WhatsAppSession): unknown {
+  if (!session?.qrcode) return session;
+  return new ContentResult([
+    {
+      type: "text",
+      text: JSON.stringify({ ...session, qrcode: "(attached as a PNG image)" }, null, 2),
+    },
+    { type: "image", data: session.qrcode, mimeType: "image/png" },
+  ]);
+}
 
 export function registerAccountConnectTools(ctx: ToolContext): void {
   // ─── Facebook ─────────────────────────────────────────────────────────────
@@ -460,6 +477,94 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     async (args) =>
       ctx.client.post(`/public/account/twitter/connect/${encodeURIComponent(args.accountId)}`, {
         code: args.code,
+      })
+  );
+
+  // ─── WhatsApp ─────────────────────────────────────────────────────────────
+  //
+  // Linked by scanning a QR code rather than an OAuth redirect:
+  //   1. repliz_create_whatsapp_session — starts a session and returns its token
+  //   2. repliz_get_whatsapp_session    — polled for the latest QR code until isConnected
+  //   3. repliz_get_whatsapp_channels   — lists the account, channels, and groups
+  //   4. repliz_connect_whatsapp / repliz_reconnect_whatsapp — connects the chosen one
+
+  registerTool(
+    ctx,
+    "repliz_create_whatsapp_session",
+    {
+      title: "Create WhatsApp Session",
+      description:
+        "Start a new WhatsApp session (step 1 of connecting WhatsApp). Returns a session token; pass it to repliz_get_whatsapp_session to get the QR code.",
+      inputSchema: {},
+    },
+    async () => ctx.client.post("/public/account/whatsapp/session")
+  );
+
+  registerTool(
+    ctx,
+    "repliz_get_whatsapp_session",
+    {
+      title: "Get WhatsApp Session",
+      description:
+        "Get a WhatsApp session's status and latest QR code (step 2). The QR code expires quickly, so call this every few seconds and show the user the newest one to scan in WhatsApp > Linked devices, until isConnected is true.",
+      inputSchema: {
+        token: z.string().describe("WhatsApp session token from repliz_create_whatsapp_session."),
+      },
+    },
+    async (args) =>
+      whatsAppSessionResult(
+        await ctx.client.get<WhatsAppSession>("/public/account/whatsapp/session", { token: args.token })
+      )
+  );
+
+  registerTool(
+    ctx,
+    "repliz_get_whatsapp_channels",
+    {
+      title: "Get WhatsApp Channels",
+      description:
+        "List the WhatsApp account, channels, and groups available to a linked session (step 3). Call once repliz_get_whatsapp_session reports isConnected true.",
+      inputSchema: {
+        token: z.string().describe("WhatsApp session token."),
+      },
+    },
+    async (args) => ctx.client.get("/public/account/whatsapp/channel", { token: args.token })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_connect_whatsapp",
+    {
+      title: "Connect WhatsApp",
+      description: "Connect a WhatsApp account, channel, or group to Repliz (step 4).",
+      inputSchema: {
+        channelId: z.string().describe("Item ID from repliz_get_whatsapp_channels."),
+        token: z.string().describe("That item's token from repliz_get_whatsapp_channels."),
+      },
+    },
+    async (args) =>
+      ctx.client.post("/public/account/whatsapp/connect", {
+        channelId: args.channelId,
+        token: args.token,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_reconnect_whatsapp",
+    {
+      title: "Reconnect WhatsApp",
+      description: "Reconnect an existing WhatsApp account, channel, or group using a new session.",
+      inputSchema: {
+        accountId: z.string().describe("Repliz account ID."),
+        channelId: z.string().describe("Item ID from repliz_get_whatsapp_channels."),
+        token: z.string().describe("That item's token from repliz_get_whatsapp_channels."),
+      },
+    },
+    async (args) =>
+      ctx.client.post(`/public/account/whatsapp/connect/${encodeURIComponent(args.accountId)}`, {
+        channelId: args.channelId,
+        token: args.token,
       })
   );
 }

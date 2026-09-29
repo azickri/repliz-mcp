@@ -1,7 +1,7 @@
 # Repliz MCP Server
 
 A hosted [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Repliz Public API**. It gives an AI assistant 90 tools for managing a Repliz
+**Repliz Public API**. It gives an AI assistant 95 tools for managing a Repliz
 workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads, managing
 automations and templates, and more.
@@ -157,7 +157,7 @@ thing to plan for. Measured:
 | 100           | ~270 MB     |
 
 That is roughly **1.8 MB per live session** on top of a ~93 MB baseline, most of
-it the 90 tool schemas, which are instantiated per session so that credentials
+it the 95 tool schemas, which are instantiated per session so that credentials
 stay isolated. A 1 GB VPS comfortably holds the default cap of 300; use ~1000 on
 2 GB. Sessions are only live while a client is connected and idle ones are
 reclaimed after 30 minutes, so the steady-state number is far below the total
@@ -223,12 +223,12 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 
 ## Tools
 
-90 tools across the Repliz Public API:
+95 tools across the Repliz Public API:
 
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
 | **Accounts**        | 6     | list, count, get, statistics, update automation, delete                                     |
-| **Account Connect** | 30    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X |
+| **Account Connect** | 35    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X; QR session / list / connect / reconnect for WhatsApp |
 | **Comments**        | 5     | list, get, reply, update status, delete                                                     |
 | **Schedule**        | 7     | list, get, create, update, retry, delete, bulk delete                                       |
 | **Chat**            | 5     | list, get, list messages, send message, mark read                                           |

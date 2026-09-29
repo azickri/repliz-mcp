@@ -162,7 +162,7 @@ check(res.status === 404, "an unknown session id returns 404 so clients re-initi
 
 console.log("\nTool surface");
 const { tools } = await a.client.listTools();
-check(tools.length === 90, `all 90 tools are registered`, `got ${tools.length}`);
+check(tools.length === 95, `all 95 tools are registered`, `got ${tools.length}`);
 const upload = tools.find((t) => t.name === "repliz_upload_file");
 const params = Object.keys(upload?.inputSchema?.properties ?? {});
 check(!params.includes("localPath"), "the upload tool exposes no local filesystem path");

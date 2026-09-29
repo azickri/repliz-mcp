@@ -11,12 +11,24 @@ export interface ToolContext {
   client: ReplizClient;
 }
 
-type McpTextResult = {
-  content: Array<{ type: "text"; text: string }>;
+type McpContent =
+  | { type: "text"; text: string }
+  | { type: "image"; data: string; mimeType: string };
+
+type McpResult = {
+  content: McpContent[];
   isError?: boolean;
 };
 
-function textResult(text: string, isError = false): McpTextResult {
+/**
+ * Handler output that is sent as-is instead of being serialized to JSON
+ * text — for results the client should render, such as an image.
+ */
+export class ContentResult {
+  constructor(readonly content: McpContent[]) {}
+}
+
+function textResult(text: string, isError = false): McpResult {
   return { content: [{ type: "text", text }], isError };
 }
 
@@ -32,7 +44,7 @@ function formatData(data: unknown): string {
 
 /**
  * Register a tool that calls the Repliz API. The handler returns raw data,
- * which is serialized to text. Errors (including API errors) are caught and
+ * which is serialized to text, or a ContentResult sent unchanged. Errors (including API errors) are caught and
  * returned as an error result so the model can react instead of crashing.
  */
 export function registerTool<TShape extends ZodRawShape>(
@@ -52,6 +64,7 @@ export function registerTool<TShape extends ZodRawShape>(
     (async (args: any) => {
       try {
         const data = await handler(args);
+        if (data instanceof ContentResult) return { content: data.content };
         return textResult(formatData(data));
       } catch (err) {
         if (err instanceof ReplizApiError) {

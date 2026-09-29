@@ -1686,7 +1686,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-09-14T10:36:41.416Z",
+              "example": "2026-09-29T02:11:37.525Z",
               "type": "string"
             }
           },
@@ -1696,7 +1696,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-09-14T10:36:41.416Z",
+              "example": "2026-09-29T02:11:37.526Z",
               "type": "string"
             }
           }
@@ -1895,7 +1895,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "image": {
@@ -1935,7 +1935,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "video": {
@@ -1975,7 +1975,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "reel": {
@@ -2015,7 +2015,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "album": {
@@ -2061,7 +2061,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "link": {
@@ -2105,7 +2105,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "story": {
@@ -2145,7 +2145,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "nested": {
@@ -2208,7 +2208,7 @@
                       }
                     ],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "template": {
@@ -2240,7 +2240,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z",
+                    "scheduleAt": "2026-09-29T02:11:37.533Z",
                     "templateId": "680affa5ce12f2f72a16f67c"
                   }
                 },
@@ -2281,7 +2281,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "additionaoInfoMusic": {
@@ -2320,7 +2320,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "additionalInfoProduct": {
@@ -2371,7 +2371,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "additionalInfoTag": {
@@ -2411,7 +2411,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "additionalInfoMention": {
@@ -2451,7 +2451,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "additionaoInfoLink": {
@@ -2491,7 +2491,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 },
                 "additionalInfoTargetCountries": {
@@ -2531,7 +2531,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-09-14T10:36:41.417Z"
+                    "scheduleAt": "2026-09-29T02:11:37.533Z"
                   }
                 }
               }
@@ -4104,13 +4104,13 @@
             "name": "since",
             "required": false,
             "in": "query",
-            "schema": { "example": 1789382201, "type": "number" }
+            "schema": { "example": 1790647898, "type": "number" }
           },
           {
             "name": "until",
             "required": false,
             "in": "query",
-            "schema": { "example": 1789382201, "type": "number" }
+            "schema": { "example": 1790647898, "type": "number" }
           },
           {
             "name": "username",
@@ -6741,6 +6741,203 @@
         "tags": ["API Account Twitter (Gold+)"]
       }
     },
+    "/public/account/whatsapp/channel": {
+      "get": {
+        "description": "\nRetrieve WhatsApp channels associated with a WhatsApp session.\n\nThis endpoint is used to fetch available WhatsApp channels (newsletter channels) using a valid session token.\nIt can be used to identify the channels that are available before performing channel-related operations.\n\nParameters:\n- token (string) — The WhatsApp session token\n\nResponse:\n- Returns an array of WhatsApp channel objects\n- Each channel includes information such as id, name, picture, ownership status, and creation timestamp\n",
+        "operationId": "AccountWhatsAppController_getChannel",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": { "example": "", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "id": "6281292713426:67@s.whatsapp.net",
+                      "name": "Repliz",
+                      "username": "Repliz",
+                      "picture": "https://pps.whatsapp.net/v/t61.24694-24/627254337_1344133021097063_677218802101077715_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5Aa4wF6HmdHQf0lMUti-EksCE-rGuhNlWiD3P0n6Ut95IALwA&oe=6A470F7A&_nc_sid=5e03e0&_nc_cat=105",
+                      "token": "a2ee814b0a49d6a55d07a73db97578387e1cb226e16f88715459c4935d0a0edfb5ead48bf964931758db4f476738766fc98bf0181672039791e2b92e1e77347c86fc5cab9f8051a3a8ebbdde7db3dee9"
+                    },
+                    {
+                      "id": "120363407940952792@newsletter",
+                      "name": "Boom",
+                      "username": "Boom",
+                      "picture": "https://pps.whatsapp.net/m1/v/t24/An-6sQyuS8Q9UAjgMTbC8PQ5J3fWqldErtluDIBugLBhJk7llbTd2XIQT_vcx6sp_tCBJqvxfK0SiMSYV0EvWUFefXPmJlZURauPmc0Eur7-Yk1poOMMgYhhpEpvrff4VLOqdpd81gMTMIRWzbk?stp=dst-jpg_s192x192_tt6&ccb=10-5&oh=01_Q5Aa4wHn42tqljUzG3glIwrlL0uBcHd43akTeNpKyHbrd4JMQg&oe=6A3DF006&_nc_sid=5e03e0&_nc_cat=106",
+                      "token": "a2ee814b0a49d6a55d07a73db97578387e1cb226e16f88715459c4935d0a0edfb5ead48bf964931758db4f476738766fc98bf0181672039791e2b92e1e77347c86fc5cab9f8051a3a8ebbdde7db3dee9"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 403, "message": "invalid status session" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Channel WhatsApp",
+        "tags": ["API Account WhatsApp (Gold+)"]
+      }
+    },
+    "/public/account/whatsapp/session": {
+      "get": {
+        "description": "\nRetrieve the status and information of a WhatsApp session.\n\nThis endpoint is used to check an existing WhatsApp session using its session token.\nIt can be used to determine whether the session is ready to be connected or requires further authentication.\n\nParameters:\n- token (string) — The WhatsApp session token\n\nResponse:\n- Returns the current WhatsApp session information and status\n",
+        "operationId": "AccountWhatsAppController_getSession",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6a38d93d824af0f1182e7486",
+                  "isConnected": false,
+                  "name": "",
+                  "picture": "",
+                  "qrcode": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEX///8AAABVwtN+AAAE/UlEQVR42uyZMY61OhKFy3LgDG8A4W0QIHlLhGR2RsiWLBGwDSM2YDIHls+o4L9vWpNemmDeb6l1peaTmq6yT53jS3/Xv2sJoFKvO6Km7XWUngySKHRGC4RngEANqaWzWUSFOkyIKpngqO352TvAiqZViymkjw1VzgLwlaam7d3+HGCyFvBnpJEsKlm/F9LxXaDtKUoks3nA80uaQKl9DgjUcINXANsSJXRUaV99Qz968dsAUNt+3Ne5+Z+PH3vyO4CXAXbMiP0YZT6jXeqgavvj8PwyIFZu8LIXqjKMwJwkFhEokUV8BiDpRSFNEg1Z3s7EjS8KUfm3ALHOOIBocSK4aHNtVRLrfMZ+pGcAIjqPbamkdOx1pUlEuxjMIhIL1zuA9NXAm6JOFpD78AI+yS3dW+4BYD4PcLt1UQuRSiaPHTk+P+ItwM5NqzyQdSHdWa+5KhZn6fW9H74HBsXitK9eILtIU2p7MkGJY0P3EiCKYymO0icZXMddVx6FksHdi+8Bsl5Ei26gxmzLHtzJUlyoklrEa0BuJBYTJp7qe3E8B6LN4tiWu1BfA6IoASxR8qld4jCxBpsVAlyVl4BAVWbNP4WoGxSOjUe9iDZ9PMy3ACCQNc9QmXU3OHFkJ1gGyZmXALIzT71OZv5VJz2OPEY7NyZookcA3jUm6Dowu+zFodjUyTmZDW8BZDOOyz8IhDGS43KIQv8d7g8AIMkNdmD7RUqUfqTBIarXABFcJaI6uIY/7FxNGMUKXT5j8QGA9V3TMLEUs41oVYoSVW7LH6v2+8A6s05izWQ2X+1lIwR8lXms9BCQeUyLNSfqnQiO3+iPRaG3gOLY7Rp4tjKcLeS28IfhfPUIQIMikynKKz5EyUdZm3UWhf7YpN8HBHBrxcSjdF/ndL/kWXpXnwGIHBlWpdwQ6SghAPYmtSXXvQVIzi5+L0oDCfCNDK5ar4GP8f4emFntWarKlbtZkcVdBxPeAQQHC6Qq52vGr6gSHqtPrfL7MwBJz2ovMLP566Rnw2nKpJFH8RIggkJRyWDWR3amOB1JVwlqP4f3a4AGdcbbFFI/YuUakykTjuDeAviJ3Fh8WSf3olhAruxvvQnPAKz24apxS9SROov13T3UIr0EXGkxiTKdnM0GV+UGw9mfxqeA4pIJei+qMRsqTfr64xOOj4d5AcAMbCkSNUSXR5OZ5yufrD+O9FuA5Ewy6G5Qjdw81nwiX943Wpi3AJt1UakOjvfxHhR7mI4cteQ+bvBLgH116R13PSpvgPMARHDiAF4DrnwxdtYT9eN+GzcEqiaQCQ8B08lVZf+w+W6gE4C5TzTeAoqrJrhOohos3cDG2yFM5z/+4WuAJJd6rINLZJeOXXZ23XVfg+4twM6VSItAZ+zdvl5OH6uvJmiEZwA5n+yP4DWXmtR5ZE3kqgyjeA3IOLYEZPaj/IS33JqpVR8P8y0gwsSzO0o0BqkOkyhqqUSXTLwEkJ2viVoU6wgwJ7LewP+4yfkaIOJ/GcjpfhVxILEMlk+0/31AgENZQlE44PeVQ4U2d1qM9Axw3/zToCr1nCLY+0ZSzT9S/AJwfcky7qtP1LPbbkgtZr2+1kJ4DGh5fqmGeJRet1Pmcku+0otATwASEUWZq+HEOF/3Og8BgRqJhDWn1i57mCpnJnIiKrwGAPXq7BW4q53vOxXiXBqfAf6u/5/1nwAAAP//7TypWoJURtUAAAAASUVORK5CYII=",
+                  "sessionId": "533e6fca-8c88-48c0-86c2-438d43fbc986"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "session not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Session WhatsApp",
+        "tags": ["API Account WhatsApp (Gold+)"]
+      },
+      "post": {
+        "description": "\nCreate a new WhatsApp session.\n\nThis endpoint is used to initialize a new WhatsApp session that can be used to authenticate and connect a WhatsApp account.\n\nResponse:\n- Returns the newly created WhatsApp session\n- Includes the session information required to continue the connection process\n",
+        "operationId": "AccountWhatsAppController_createSession",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "a2ee814b0a49d6a55d07a73db97578387e1cb226e16f88715459c4935d0a0edfb5ead48bf964931758db4f476738766fc98bf0181672039791e2b92e1e77347c86fc5cab9f8051a3a8ebbdde7db3dee9"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Create Session WhatsApp",
+        "tags": ["API Account WhatsApp (Gold+)"]
+      }
+    },
+    "/public/account/whatsapp/connect": {
+      "post": {
+        "description": "\nConnect a WhatsApp account using an existing session.\n\nThis endpoint is used to complete the connection of a new WhatsApp account using a valid WhatsApp session.\n\nBody:\n- id (string) — The session identifier\n- sessionId (string) — The unique WhatsApp session identifier\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AccountWhatsAppController_connect",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectWhatsAppDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 403, "message": "invalid status session" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Connect WhatsApp",
+        "tags": ["API Account WhatsApp (Gold+)"]
+      }
+    },
+    "/public/account/whatsapp/connect/{accountId}": {
+      "post": {
+        "description": "\nReconnect an existing WhatsApp account using a new session.\n\nThis endpoint is used to reconnect a previously connected WhatsApp account when its existing session needs to be replaced or reauthenticated.\n\nParameters:\n- accountId (string) — The unique identifier of the existing WhatsApp account\n\nBody:\n- id (string) — The session identifier\n- sessionId (string) — The unique WhatsApp session identifier\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AccountWhatsAppController_reconnect",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectWhatsAppDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 403, "message": "invalid status session" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Reconnect WhatsApp",
+        "tags": ["API Account WhatsApp (Gold+)"]
+      }
+    },
     "/public/storage/statistic": {
       "get": {
         "description": "\nRetrieve storage usage statistics.\n\nThis endpoint is used to get information about the current storage usage, including the total number of files, used storage space, and remaining available capacity.\n\nResponse:\n- Returns storage usage statistics\n- Includes information such as total files, used storage, and storage limit\n",
@@ -7517,7 +7714,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-09-14T10:36:41.416Z"
+            "example": "2026-09-29T02:11:37.526Z"
           },
           "templateId": {
             "type": "string",
@@ -7566,7 +7763,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-09-14T10:36:41.416Z"
+            "example": "2026-09-29T02:11:37.526Z"
           },
           "templateId": {
             "type": "string",
@@ -7885,6 +8082,20 @@
           }
         },
         "required": ["code"]
+      },
+      "BodyConnectWhatsAppDTO": {
+        "type": "object",
+        "properties": {
+          "channelId": {
+            "type": "string",
+            "example": "120363215489146584@newsletter"
+          },
+          "token": {
+            "type": "string",
+            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
+          }
+        },
+        "required": ["channelId", "token"]
       },
       "BodyInitFileDTO": {
         "type": "object",
