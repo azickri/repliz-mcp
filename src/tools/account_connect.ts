@@ -485,8 +485,10 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
   // Linked by scanning a QR code rather than an OAuth redirect:
   //   1. repliz_create_whatsapp_session — starts a session and returns its token
   //   2. repliz_get_whatsapp_session    — polled for the latest QR code until isConnected
-  //   3. repliz_get_whatsapp_channels   — lists the account, channels, and groups
-  //   4. repliz_connect_whatsapp / repliz_reconnect_whatsapp — connects the chosen one
+  //   3. repliz_connect_whatsapp / repliz_reconnect_whatsapp — connects the session's number
+  //
+  // The channels and groups an account posts to come later, from the
+  // repliz_whatsapp_channels add-on, when scheduling.
 
   registerTool(
     ctx,
@@ -506,7 +508,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     {
       title: "Get WhatsApp Session",
       description:
-        "Get a WhatsApp session's status and latest QR code (step 2). The QR code expires quickly, so call this every few seconds and show the user the newest one to scan in WhatsApp > Linked devices, until isConnected is true.",
+        "Get a WhatsApp session's status and latest QR code (step 2). The QR code expires quickly, so call this every few seconds and show the user the newest one to scan in WhatsApp > Linked devices, until isConnected is true. Then call repliz_connect_whatsapp, or repliz_reconnect_whatsapp, with the same token.",
       inputSchema: {
         token: z.string().describe("WhatsApp session token from repliz_create_whatsapp_session."),
       },
@@ -519,34 +521,16 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
 
   registerTool(
     ctx,
-    "repliz_get_whatsapp_channels",
-    {
-      title: "Get WhatsApp Channels",
-      description:
-        "List the WhatsApp account, channels, and groups available to a linked session (step 3). Call once repliz_get_whatsapp_session reports isConnected true.",
-      inputSchema: {
-        token: z.string().describe("WhatsApp session token."),
-      },
-    },
-    async (args) => ctx.client.get("/public/account/whatsapp/channel", { token: args.token })
-  );
-
-  registerTool(
-    ctx,
     "repliz_connect_whatsapp",
     {
       title: "Connect WhatsApp",
-      description: "Connect a WhatsApp account, channel, or group to Repliz (step 4).",
+      description:
+        "Connect the WhatsApp number linked to a session to Repliz (step 3). Call once repliz_get_whatsapp_session reports isConnected true. Returns the new accountId.",
       inputSchema: {
-        channelId: z.string().describe("Item ID from repliz_get_whatsapp_channels."),
-        token: z.string().describe("That item's token from repliz_get_whatsapp_channels."),
+        token: z.string().describe("WhatsApp session token from repliz_create_whatsapp_session."),
       },
     },
-    async (args) =>
-      ctx.client.post("/public/account/whatsapp/connect", {
-        channelId: args.channelId,
-        token: args.token,
-      })
+    async (args) => ctx.client.post("/public/account/whatsapp/connect", { token: args.token })
   );
 
   registerTool(
@@ -554,16 +538,15 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_whatsapp",
     {
       title: "Reconnect WhatsApp",
-      description: "Reconnect an existing WhatsApp account, channel, or group using a new session.",
+      description:
+        "Reconnect an existing WhatsApp account using a new session (step 3, instead of connecting). Call once repliz_get_whatsapp_session reports isConnected true; the QR code must be scanned with the same WhatsApp number as the account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
-        channelId: z.string().describe("Item ID from repliz_get_whatsapp_channels."),
-        token: z.string().describe("That item's token from repliz_get_whatsapp_channels."),
+        token: z.string().describe("WhatsApp session token from repliz_create_whatsapp_session."),
       },
     },
     async (args) =>
       ctx.client.post(`/public/account/whatsapp/connect/${encodeURIComponent(args.accountId)}`, {
-        channelId: args.channelId,
         token: args.token,
       })
   );

@@ -1,4 +1,4 @@
-/** Add-on tools: TikTok trending music, Shopee products, and link metadata. */
+/** Add-on tools: TikTok trending music, Shopee products, WhatsApp channels, and link metadata. */
 
 import { z } from "zod";
 import { registerTool, type ToolContext } from "./helpers.js";
@@ -28,7 +28,7 @@ export function registerAddonTools(ctx: ToolContext): void {
       },
     },
     async (args) =>
-      ctx.client.get("/public/tiktok/music", {
+      ctx.client.get("/public/addon/tiktok/music", {
         genre: args.genre,
         countryCode: args.countryCode,
         dateRange: args.dateRange,
@@ -48,10 +48,24 @@ export function registerAddonTools(ctx: ToolContext): void {
       },
     },
     async (args) =>
-      ctx.client.get("/public/shopee/product", {
+      ctx.client.get("/public/addon/shopee/product", {
         accountId: args.accountId,
         nextToken: args.nextToken,
       })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_whatsapp_channels",
+    {
+      title: "List WhatsApp Channels",
+      description:
+        "List the WhatsApp channels a connected WhatsApp account owns and the groups it belongs to. Pass the chosen item as `additionalInfo.channel` when scheduling a WhatsApp post to it.",
+      inputSchema: {
+        accountId: z.string().describe("The connected WhatsApp account id."),
+      },
+    },
+    async (args) => ctx.client.get("/public/addon/whatsapp/channel", { accountId: args.accountId })
   );
 
   registerTool(
@@ -65,7 +79,7 @@ export function registerAddonTools(ctx: ToolContext): void {
         url: z.string().describe("The URL to fetch metadata for."),
       },
     },
-    async (args) => ctx.client.get("/public/link/metadata", { url: args.url })
+    async (args) => ctx.client.get("/public/addon/link/metadata", { url: args.url })
   );
 
   registerTool(

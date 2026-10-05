@@ -228,7 +228,7 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
 | **Accounts**        | 6     | list, count, get, statistics, update automation, delete                                     |
-| **Account Connect** | 35    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X; QR session / list / connect / reconnect for WhatsApp |
+| **Account Connect** | 34    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X; QR session / connect / reconnect for WhatsApp |
 | **Comments**        | 5     | list, get, reply, update status, delete                                                     |
 | **Schedule**        | 7     | list, get, create, update, retry, delete, bulk delete                                       |
 | **Chat**            | 5     | list, get, list messages, send message, mark read                                           |
@@ -238,7 +238,7 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 | **Storage**         | 8     | statistics, list, get, init upload, upload, complete, delete, bulk delete                   |
 | **Reports**         | 3     | list, get, retry                                                                            |
 | **Research**        | 3     | Threads content, user content, user profile                                                 |
-| **Add-ons**         | 4     | TikTok trending music, Shopee products, link metadata, addon allocation                     |
+| **Add-ons**         | 5     | TikTok trending music, Shopee products, WhatsApp channels & groups, link metadata, addon allocation |
 
 Tool availability follows the caller's Repliz plan; calling one above your tier
 returns a clear error.
