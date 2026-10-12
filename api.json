@@ -1651,7 +1651,53 @@
             }
           }
         },
+        "security": [{ "basic": [] }],
         "summary": "API Get WhatsApp Channel",
+        "tags": ["API Addon (Premium+)"]
+      }
+    },
+    "/public/addon/telegram/channel": {
+      "get": {
+        "description": "\nRetrieve Telegram channels and groups associated with a connected account.\n\nThis endpoint is used to fetch available Telegram channels and groups that can be accessed by the specified account.\n\nParameters:\n- accountId (string) — The unique identifier of the connected Telegram account\n\nResponse:\n- Returns an array of Telegram channels and groups\n- Each item includes its identifier, name, and other available information\n",
+        "operationId": "AddonController_getTelegramChannel",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "id": "-1001234567890",
+                      "name": "Repliz",
+                      "picture": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...",
+                      "type": "channel"
+                    },
+                    {
+                      "id": "-1009876543210",
+                      "name": "Repliz Community",
+                      "picture": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ...",
+                      "type": "group"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Telegram Channel",
         "tags": ["API Addon (Premium+)"]
       }
     },
@@ -1730,7 +1776,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-10-05T07:41:58.461Z",
+              "example": "2026-10-12T07:39:10.033Z",
               "type": "string"
             }
           },
@@ -1740,7 +1786,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-10-05T07:41:58.461Z",
+              "example": "2026-10-12T07:39:10.033Z",
               "type": "string"
             }
           }
@@ -1939,7 +1985,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "image": {
@@ -1979,7 +2025,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "video": {
@@ -2019,7 +2065,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "reel": {
@@ -2059,7 +2105,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "album": {
@@ -2105,7 +2151,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "link": {
@@ -2149,7 +2195,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "story": {
@@ -2189,7 +2235,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.493Z"
+                    "scheduleAt": "2026-10-12T07:39:10.039Z"
                   }
                 },
                 "nested": {
@@ -2252,7 +2298,7 @@
                       }
                     ],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "template": {
@@ -2284,7 +2330,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z",
+                    "scheduleAt": "2026-10-12T07:39:10.040Z",
                     "templateId": "680affa5ce12f2f72a16f67c"
                   }
                 },
@@ -2325,7 +2371,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "additionaoInfoMusic": {
@@ -2364,7 +2410,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "additionalInfoProduct": {
@@ -2415,7 +2461,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "additionalInfoTag": {
@@ -2455,7 +2501,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "additionalInfoMention": {
@@ -2495,7 +2541,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "additionaoInfoLink": {
@@ -2535,7 +2581,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 },
                 "additionalInfoTargetCountries": {
@@ -2575,7 +2621,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-05T07:41:58.494Z"
+                    "scheduleAt": "2026-10-12T07:39:10.040Z"
                   }
                 }
               }
@@ -3300,6 +3346,15 @@
             "in": "query",
             "schema": {
               "example": "QVFIU0R6TnJ2V2w1Q3N6a3FXUUc3Tkd2aEZAMUjdmQXg4ZAzU0QlFaemVGWUFVOXVPTkVWUEdPN1JMalNtemJhaTdPOTNFN2VSUW5kUEpmSEVUNnlNWGZAsSmJsaHNTN3lKTkczXzJkQmk3NEpNNDRHa0VIc0lfQ25OeFp3RzgxcWVJZATZARUURNVFhlOG8waG5zSzJCanVGYkQtU0pKcDdlTVZAHYkdSaVdCSlJlS0xmS05aSFZA3ZADRZAMzl4SHk4WVpjZAHBXX0xacC1PTVVsZA3lhcjRoMngxckVqWEZAkSlpLTy1oWUo0RDBOSEhhUG1Gek9jeHFtMWhsT3lIVHhoYmU1LUxyRTktYVowZAE1XV19ERDA3dmFhN09TZAXljMmdmRW1tWms5N2tJNUkzdTBKelVJN3V4ekhRRC1KNzJzSmZAuUUVfd2hoQjA1RV9yNDJCZAG9jRFozTXRkOVc2UGFmSExrUUR6YmkxTnp2eHktd1FZAWVlMY205TkdyTVFvYXowVFhEbS1wZA3lkSVNYR3BtMDZA1YXI4TlpNZAWxqVmVyTk9OMC0talpld3BSSFBVWjYzSlpFUjd3dzZAWLWJlZAkIwaTBNejVVdFcwX2h0U1V1V2doMXZAuRWRvdW90T19XVVhJcmtSSFpYQjdjM0dQTkhzZAlZAjdHdqTDYzVzRDYjNyUkVqa1Y4ZA0wwV3kxblVkdlJBVmdnWURfdmNNYndDZAwZDZD",
+              "type": "string"
+            }
+          },
+          {
+            "name": "channelId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "120363413774168194@newsletter",
               "type": "string"
             }
           },
@@ -4148,13 +4203,13 @@
             "name": "since",
             "required": false,
             "in": "query",
-            "schema": { "example": 1791186119, "type": "number" }
+            "schema": { "example": 1791790750, "type": "number" }
           },
           {
             "name": "until",
             "required": false,
             "in": "query",
-            "schema": { "example": 1791186119, "type": "number" }
+            "schema": { "example": 1791790750, "type": "number" }
           },
           {
             "name": "username",
@@ -6937,6 +6992,202 @@
         "tags": ["API Account WhatsApp (Gold+)"]
       }
     },
+    "/public/account/telegram/session": {
+      "get": {
+        "description": "\nRetrieve the status and information of a Telegram session.\n\nThis endpoint is used to check an existing Telegram session using its session token.\nPoll it after creating a session: the qrcode is scanned from the Telegram app (Settings > Devices > Link Desktop Device) and changes every 30 seconds.\n\nParameters:\n- token (string) — The Telegram session token\n\nResponse:\n- Returns the current Telegram session information and status\n- When isPasswordRequired is true, the account has two step verification and the password must be sent to the password endpoint (passwordHint is the hint set by the user)\n",
+        "operationId": "AccountTelegramController_getSession",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6a38d93d824af0f1182e7486",
+                  "generatedId": "",
+                  "isConnected": false,
+                  "name": "",
+                  "username": "",
+                  "phone": "",
+                  "picture": "",
+                  "qrcode": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAABlBMVEX///8AAABVwtN+AAAE/UlEQVR42uyZMY61OhKFy3LgDG8A4W0QIHlLhGR2RsiWLBGwDSM2YDIHls+o4L9vWpNemmDeb6l1peaTmq6yT53jS3/Xv2sJoFKvO6Km7XWUngySKHRGC4RngEANqaWzWUSFOkyIKpngqO352TvAiqZViymkjw1VzgLwlaam7d3+HGCyFvBnpJEsKlm/F9LxXaDtKUoks3nA80uaQKl9DgjUcINXANsSJXRUaV99Qz968dsAUNt+3Ne5+Z+PH3vyO4CXAXbMiP0YZT6jXeqgavvj8PwyIFZu8LIXqjKMwJwkFhEokUV8BiDpRSFNEg1Z3s7EjS8KUfm3ALHOOIBocSK4aHNtVRLrfMZ+pGcAIjqPbamkdOx1pUlEuxjMIhIL1zuA9NXAm6JOFpD78AI+yS3dW+4BYD4PcLt1UQuRSiaPHTk+P+ItwM5NqzyQdSHdWa+5KhZn6fW9H74HBsXitK9eILtIU2p7MkGJY0P3EiCKYymO0icZXMddVx6FksHdi+8Bsl5Ei26gxmzLHtzJUlyoklrEa0BuJBYTJp7qe3E8B6LN4tiWu1BfA6IoASxR8qld4jCxBpsVAlyVl4BAVWbNP4WoGxSOjUe9iDZ9PMy3ACCQNc9QmXU3OHFkJ1gGyZmXALIzT71OZv5VJz2OPEY7NyZookcA3jUm6Dowu+zFodjUyTmZDW8BZDOOyz8IhDGS43KIQv8d7g8AIMkNdmD7RUqUfqTBIarXABFcJaI6uIY/7FxNGMUKXT5j8QGA9V3TMLEUs41oVYoSVW7LH6v2+8A6s05izWQ2X+1lIwR8lXms9BCQeUyLNSfqnQiO3+iPRaG3gOLY7Rp4tjKcLeS28IfhfPUIQIMikynKKz5EyUdZm3UWhf7YpN8HBHBrxcSjdF/ndL/kWXpXnwGIHBlWpdwQ6SghAPYmtSXXvQVIzi5+L0oDCfCNDK5ar4GP8f4emFntWarKlbtZkcVdBxPeAQQHC6Qq52vGr6gSHqtPrfL7MwBJz2ovMLP566Rnw2nKpJFH8RIggkJRyWDWR3amOB1JVwlqP4f3a4AGdcbbFFI/YuUakykTjuDeAviJ3Fh8WSf3olhAruxvvQnPAKz24apxS9SROov13T3UIr0EXGkxiTKdnM0GV+UGw9mfxqeA4pIJei+qMRsqTfr64xOOj4d5AcAMbCkSNUSXR5OZ5yufrD+O9FuA5Ewy6G5Qjdw81nwiX943Wpi3AJt1UakOjvfxHhR7mI4cteQ+bvBLgH116R13PSpvgPMARHDiAF4DrnwxdtYT9eN+GzcEqiaQCQ8B08lVZf+w+W6gE4C5TzTeAoqrJrhOohos3cDG2yFM5z/+4WuAJJd6rINLZJeOXXZ23XVfg+4twM6VSItAZ+zdvl5OH6uvJmiEZwA5n+yP4DWXmtR5ZE3kqgyjeA3IOLYEZPaj/IS33JqpVR8P8y0gwsSzO0o0BqkOkyhqqUSXTLwEkJ2viVoU6wgwJ7LewP+4yfkaIOJ/GcjpfhVxILEMlk+0/31AgENZQlE44PeVQ4U2d1qM9Axw3/zToCr1nCLY+0ZSzT9S/AJwfcky7qtP1LPbbkgtZr2+1kJ4DGh5fqmGeJRet1Pmcku+0otATwASEUWZq+HEOF/3Og8BgRqJhDWn1i57mCpnJnIiKrwGAPXq7BW4q53vOxXiXBqfAf6u/5/1nwAAAP//7TypWoJURtUAAAAASUVORK5CYII=",
+                  "isPasswordRequired": false,
+                  "passwordHint": "",
+                  "sessionId": "533e6fca-8c88-48c0-86c2-438d43fbc986"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "session not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Session Telegram",
+        "tags": ["API Account Telegram (Gold+)"]
+      },
+      "post": {
+        "description": "\nCreate a new Telegram session.\n\nThis endpoint is used to initialize a new Telegram session that can be used to authenticate and connect a Telegram account.\n\nResponse:\n- Returns the newly created Telegram session\n- Includes the session information required to continue the connection process\n",
+        "operationId": "AccountTelegramController_createSession",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "token": "a2ee814b0a49d6a55d07a73db97578387e1cb226e16f88715459c4935d0a0edfb5ead48bf964931758db4f476738766fc98bf0181672039791e2b92e1e77347c86fc5cab9f8051a3a8ebbdde7db3dee9"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Create Session Telegram",
+        "tags": ["API Account Telegram (Gold+)"]
+      }
+    },
+    "/public/account/telegram/session/password": {
+      "post": {
+        "description": "\nFinish the login of a Telegram account with two step verification.\n\nThis endpoint is only valid while the session returns isPasswordRequired true.\n\nBody:\n- token (string) — The Telegram session token\n- password (string) — The two step verification password of the account\n\nResponse:\n- No content is returned on success (204 No Content)\n- Returns 400 when the password is wrong\n",
+        "operationId": "AccountTelegramController_passwordSession",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyPasswordTelegramDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 400, "message": "invalid password" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "session not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Password Session Telegram",
+        "tags": ["API Account Telegram (Gold+)"]
+      }
+    },
+    "/public/account/telegram/connect": {
+      "post": {
+        "description": "\nConnect a Telegram account using an existing session.\n\nThis endpoint is used to complete the connection of a new Telegram account using a valid Telegram session.\n\nBody:\n- token (string) — The unique Telegram session identifier\n\nResponse:\n- Returns the connected account id information\n",
+        "operationId": "AccountTelegramController_connect",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectTelegramDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "accountId": "69e97477a795504e0786cec6" }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 403, "message": "invalid status session" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Connect Telegram",
+        "tags": ["API Account Telegram (Gold+)"]
+      }
+    },
+    "/public/account/telegram/connect/{accountId}": {
+      "post": {
+        "description": "\nReconnect an existing Telegram account using a new session.\n\nThis endpoint is used to reconnect a previously connected Telegram account when its existing session needs to be replaced or reauthenticated.\n\nParameters:\n- accountId (string) — The unique identifier of the existing Telegram account\n\nBody:\n- token (string) — The unique Telegram session identifier\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AccountTelegramController_reconnect",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectTelegramDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 403, "message": "invalid status session" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Reconnect Telegram",
+        "tags": ["API Account Telegram (Gold+)"]
+      }
+    },
     "/public/storage/statistic": {
       "get": {
         "description": "\nRetrieve storage usage statistics.\n\nThis endpoint is used to get information about the current storage usage, including the total number of files, used storage space, and remaining available capacity.\n\nResponse:\n- Returns storage usage statistics\n- Includes information such as total files, used storage, and storage limit\n",
@@ -7399,9 +7650,51 @@
           "button"
         ]
       },
+      "ConfigOpeningElementButton": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "web_url",
+            "enum": ["web_url"]
+          },
+          "title": { "type": "string", "example": "Rp49.000 click here!" },
+          "url": { "type": "string", "example": "https://repliz.com" }
+        },
+        "required": ["type", "title", "url"]
+      },
+      "ConfigOpeningElement": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "example": "Ebook Content Creator" },
+          "subtitle": { "type": "string", "example": "Bangun aset digital!" },
+          "image": {
+            "type": "string",
+            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "Opened when the card itself is tapped"
+          },
+          "buttons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConfigOpeningElementButton"
+            }
+          }
+        },
+        "required": ["title", "buttons"]
+      },
       "ConfigOpeningWebUrl": {
         "type": "object",
         "properties": {
+          "type": {
+            "type": "string",
+            "example": "button",
+            "enum": ["button", "element"],
+            "description": "button: text + image + buttons, element: carousel from elements"
+          },
           "text": { "type": "string", "example": "Want to know?" },
           "image": {
             "type": "string",
@@ -7410,6 +7703,10 @@
           "buttons": {
             "type": "array",
             "items": { "$ref": "#/components/schemas/ConfigOpeningButton" }
+          },
+          "elements": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ConfigOpeningElement" }
           }
         },
         "required": ["text", "image", "buttons"]
@@ -7609,7 +7906,7 @@
             "type": "string",
             "example": "120363413774168194@newsletter"
           },
-          "Boom": { "type": "string" },
+          "name": { "type": "string", "example": "Boom" },
           "picture": {
             "type": "string",
             "example": "https://pps.whatsapp.net/v/t61.24694-24/534425366_1602052011300539_4061624974523006608_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5Aa5wFxyS0_C_Ttnd6Va3g2jG7iY2sbvaPfX5k4YFqmIUOyVg&oe=6AD03E1F&_nc_sid=5e03e0&_nc_cat=111"
@@ -7620,7 +7917,7 @@
             "example": "channel"
           }
         },
-        "required": ["id", "Boom", "picture", "type"]
+        "required": ["id", "name", "picture", "type"]
       },
       "ScheduleAdditionalInfo": {
         "type": "object",
@@ -7739,7 +8036,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-10-05T07:41:58.486Z"
+            "example": "2026-10-12T07:39:10.034Z"
           },
           "templateId": {
             "type": "string",
@@ -7788,7 +8085,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-10-05T07:41:58.487Z"
+            "example": "2026-10-12T07:39:10.035Z"
           },
           "templateId": {
             "type": "string",
@@ -8109,6 +8406,31 @@
         "required": ["code"]
       },
       "BodyConnectWhatsAppDTO": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
+          }
+        },
+        "required": ["token"]
+      },
+      "BodyPasswordTelegramDTO": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
+          },
+          "password": {
+            "type": "string",
+            "example": "my-cloud-password",
+            "description": "two step verification password of the telegram account"
+          }
+        },
+        "required": ["token", "password"]
+      },
+      "BodyConnectTelegramDTO": {
         "type": "object",
         "properties": {
           "token": {

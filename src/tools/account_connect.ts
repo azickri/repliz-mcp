@@ -1,15 +1,16 @@
-/** Account OAuth and Connection tools for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter, and WhatsApp. */
+/** Account OAuth and Connection tools for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter, WhatsApp, and Telegram. */
 
 import { z } from "zod";
-import { ContentResult, registerTool, type ToolContext } from "./helpers.js";
+import { ContentResult, registerTool, withoutInlinePicture, type ToolContext } from "./helpers.js";
 
-type WhatsAppSession = { qrcode?: string } & Record<string, unknown>;
+type QrSession = { qrcode?: string; picture?: string } & Record<string, unknown>;
 
 /**
  * Attach a session's QR code as an image block, so the client can show it to
  * the user to scan rather than handing the model a wall of base64.
  */
-function whatsAppSessionResult(session: WhatsAppSession): unknown {
+function qrSessionResult(raw: QrSession): unknown {
+  const session = withoutInlinePicture(raw);
   if (!session?.qrcode) return session;
   return new ContentResult([
     {
@@ -514,8 +515,8 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
       },
     },
     async (args) =>
-      whatsAppSessionResult(
-        await ctx.client.get<WhatsAppSession>("/public/account/whatsapp/session", { token: args.token })
+      qrSessionResult(
+        await ctx.client.get<QrSession>("/public/account/whatsapp/session", { token: args.token })
       )
   );
 
@@ -547,6 +548,100 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     },
     async (args) =>
       ctx.client.post(`/public/account/whatsapp/connect/${encodeURIComponent(args.accountId)}`, {
+        token: args.token,
+      })
+  );
+
+  // ─── Telegram ─────────────────────────────────────────────────────────────
+  //
+  // Linked by QR code like WhatsApp, with one extra step for accounts that
+  // have two-step verification:
+  //   1. repliz_create_telegram_session — starts a session and returns its token
+  //   2. repliz_get_telegram_session    — polled for the latest QR code until isConnected;
+  //      when it reports isPasswordRequired, repliz_send_telegram_password, then keep polling
+  //   3. repliz_connect_telegram / repliz_reconnect_telegram — connects the session's account
+  //
+  // The channels and groups an account posts to come later, from the
+  // repliz_telegram_channels add-on, when scheduling.
+
+  registerTool(
+    ctx,
+    "repliz_create_telegram_session",
+    {
+      title: "Create Telegram Session",
+      description:
+        "Start a new Telegram session (step 1 of connecting Telegram). Returns a session token; pass it to repliz_get_telegram_session to get the QR code.",
+      inputSchema: {},
+    },
+    async () => ctx.client.post("/public/account/telegram/session")
+  );
+
+  registerTool(
+    ctx,
+    "repliz_get_telegram_session",
+    {
+      title: "Get Telegram Session",
+      description:
+        "Get a Telegram session's status and latest QR code (step 2). Show the user the newest QR code to scan in Telegram > Settings > Devices > Link Desktop Device; it changes every 30 seconds and the session stops waiting after about 3 minutes, so call this every few seconds until isConnected is true. " +
+        "If isPasswordRequired is true, the account has two-step verification: ask the user for their password (passwordHint is their hint), send it with repliz_send_telegram_password, and keep polling. " +
+        "Once connected, call repliz_connect_telegram, or repliz_reconnect_telegram, with the same token.",
+      inputSchema: {
+        token: z.string().describe("Telegram session token from repliz_create_telegram_session."),
+      },
+    },
+    async (args) =>
+      qrSessionResult(
+        await ctx.client.get<QrSession>("/public/account/telegram/session", { token: args.token })
+      )
+  );
+
+  registerTool(
+    ctx,
+    "repliz_send_telegram_password",
+    {
+      title: "Send Telegram Password",
+      description:
+        "Finish a Telegram login that needs the account's two-step verification password. Only valid while repliz_get_telegram_session reports isPasswordRequired true. A wrong password returns an error; ask the user again. Never store or repeat the password.",
+      inputSchema: {
+        token: z.string().describe("Telegram session token from repliz_create_telegram_session."),
+        password: z.string().describe("The account's two-step verification password, as the user typed it."),
+      },
+    },
+    async (args) =>
+      ctx.client.post("/public/account/telegram/session/password", {
+        token: args.token,
+        password: args.password,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_connect_telegram",
+    {
+      title: "Connect Telegram",
+      description:
+        "Connect the Telegram account linked to a session to Repliz (step 3). Call once repliz_get_telegram_session reports isConnected true. Returns the new accountId.",
+      inputSchema: {
+        token: z.string().describe("Telegram session token from repliz_create_telegram_session."),
+      },
+    },
+    async (args) => ctx.client.post("/public/account/telegram/connect", { token: args.token })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_reconnect_telegram",
+    {
+      title: "Reconnect Telegram",
+      description:
+        "Reconnect an existing Telegram account using a new session (step 3, instead of connecting). Call once repliz_get_telegram_session reports isConnected true; the QR code must be scanned from the same Telegram account.",
+      inputSchema: {
+        accountId: z.string().describe("Repliz account ID."),
+        token: z.string().describe("Telegram session token from repliz_create_telegram_session."),
+      },
+    },
+    async (args) =>
+      ctx.client.post(`/public/account/telegram/connect/${encodeURIComponent(args.accountId)}`, {
         token: args.token,
       })
   );

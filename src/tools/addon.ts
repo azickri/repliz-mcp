@@ -1,9 +1,11 @@
-/** Add-on tools: TikTok trending music, Shopee products, WhatsApp channels, and link metadata. */
+/** Add-on tools: TikTok trending music, Shopee products, WhatsApp and Telegram channels, and link metadata. */
 
 import { z } from "zod";
-import { registerTool, type ToolContext } from "./helpers.js";
+import { registerTool, withoutInlinePicture, type ToolContext } from "./helpers.js";
 
 const DATE_RANGE = ["1DAY", "7DAY", "30DAY", "90DAY"] as const;
+
+type ChannelList = { docs?: { picture?: string }[] } & Record<string, unknown>;
 
 export function registerAddonTools(ctx: ToolContext): void {
   registerTool(
@@ -66,6 +68,26 @@ export function registerAddonTools(ctx: ToolContext): void {
       },
     },
     async (args) => ctx.client.get("/public/addon/whatsapp/channel", { accountId: args.accountId })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_telegram_channels",
+    {
+      title: "List Telegram Channels",
+      description:
+        "List the Telegram channels a connected Telegram account owns and the groups it belongs to. Pass the chosen item as `additionalInfo.channel` when scheduling a Telegram post to it. Pictures come inline as base64, so they are left empty here.",
+      inputSchema: {
+        accountId: z.string().describe("The connected Telegram account id."),
+      },
+    },
+    async (args) => {
+      const list = await ctx.client.get<ChannelList>("/public/addon/telegram/channel", {
+        accountId: args.accountId,
+      });
+      if (!Array.isArray(list?.docs)) return list;
+      return { ...list, docs: list.docs.map(withoutInlinePicture) };
+    }
   );
 
   registerTool(

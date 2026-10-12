@@ -1,7 +1,7 @@
 # Repliz MCP Server
 
 A hosted [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Repliz Public API**. It gives an AI assistant 95 tools for managing a Repliz
+**Repliz Public API**. It gives an AI assistant 101 tools for managing a Repliz
 workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads, managing
 automations and templates, and more.
@@ -157,7 +157,7 @@ thing to plan for. Measured:
 | 100           | ~270 MB     |
 
 That is roughly **1.8 MB per live session** on top of a ~93 MB baseline, most of
-it the 95 tool schemas, which are instantiated per session so that credentials
+it the 101 tool schemas, which are instantiated per session so that credentials
 stay isolated. A 1 GB VPS comfortably holds the default cap of 300; use ~1000 on
 2 GB. Sessions are only live while a client is connected and idle ones are
 reclaimed after 30 minutes, so the steady-state number is far below the total
@@ -223,12 +223,12 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 
 ## Tools
 
-95 tools across the Repliz Public API:
+101 tools across the Repliz Public API:
 
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
 | **Accounts**        | 6     | list, count, get, statistics, update automation, delete                                     |
-| **Account Connect** | 34    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X; QR session / connect / reconnect for WhatsApp |
+| **Account Connect** | 39    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X; QR session / connect / reconnect for WhatsApp; QR session / two-step password / connect / reconnect for Telegram |
 | **Comments**        | 5     | list, get, reply, update status, delete                                                     |
 | **Schedule**        | 7     | list, get, create, update, retry, delete, bulk delete                                       |
 | **Chat**            | 5     | list, get, list messages, send message, mark read                                           |
@@ -238,7 +238,7 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 | **Storage**         | 8     | statistics, list, get, init upload, upload, complete, delete, bulk delete                   |
 | **Reports**         | 3     | list, get, retry                                                                            |
 | **Research**        | 3     | Threads content, user content, user profile                                                 |
-| **Add-ons**         | 5     | TikTok trending music, Shopee products, WhatsApp channels & groups, link metadata, addon allocation |
+| **Add-ons**         | 6     | TikTok trending music, Shopee products, WhatsApp and Telegram channels & groups, link metadata, addon allocation |
 
 Tool availability follows the caller's Repliz plan; calling one above your tier
 returns a clear error.

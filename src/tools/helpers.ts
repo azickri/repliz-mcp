@@ -28,6 +28,17 @@ export class ContentResult {
   constructor(readonly content: McpContent[]) {}
 }
 
+/**
+ * Blank a picture sent inline as a base64 data URI (Telegram's are). Each one
+ * costs the model thousands of tokens and is no use to it as text.
+ */
+export function withoutInlinePicture<T extends { picture?: unknown }>(item: T): T {
+  if (typeof item?.picture === "string" && item.picture.startsWith("data:")) {
+    return { ...item, picture: "" };
+  }
+  return item;
+}
+
 function textResult(text: string, isError = false): McpResult {
   return { content: [{ type: "text", text }], isError };
 }

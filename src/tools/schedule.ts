@@ -76,16 +76,18 @@ const channelSchema = z
     id: z
       .string()
       .describe(
-        'Channel ID (ends in @newsletter) or group ID (ends in @g.us).',
+        'Channel or group ID as listed: WhatsApp ends in @newsletter or @g.us, Telegram is a number like -1001234567890.',
       ),
     name: z.string().describe('Channel or group name.'),
     picture: z.string().default('').describe('Channel or group picture URL.'),
     type: z
       .enum(['channel', 'group'])
-      .describe('Whether it is a channel or a group.'),
+      .describe(
+        'Whether it is a channel or a group. Telegram ids look alike, so this decides where it posts.',
+      ),
   })
   .describe(
-    "WhatsApp only: the channel or group to post to, an item from repliz_whatsapp_channels. Omit to post to the account's WhatsApp Status.",
+    "WhatsApp and Telegram only: the channel or group to post to, an item from repliz_whatsapp_channels or repliz_telegram_channels. Omit to post to the account's WhatsApp Status or Telegram story.",
   );
 
 const additionalInfoSchema = z
@@ -108,7 +110,7 @@ const additionalInfoSchema = z
     channel: channelSchema.optional(),
   })
   .describe(
-    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), target countries, channel (WhatsApp).',
+    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), target countries, channel (WhatsApp, Telegram).',
   );
 
 const replySchema = z.object({
@@ -256,15 +258,15 @@ export function registerScheduleTools(ctx: ToolContext): void {
       description:
         'Schedule a post to be published to a connected account at a specific time.\n\n' +
         'Post type support by platform:\n' +
-        '- text: Facebook, Threads, WhatsApp\n' +
-        '- image: Facebook, Instagram, Threads, TikTok, LinkedIn, WhatsApp\n' +
-        '- video: Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn, WhatsApp\n' +
+        '- text: Facebook, Threads, WhatsApp, Telegram\n' +
+        '- image: Facebook, Instagram, Threads, TikTok, LinkedIn, WhatsApp, Telegram\n' +
+        '- video: Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn, WhatsApp, Telegram\n' +
         '- reel: Facebook\n' +
         '- album: Facebook, Instagram, Threads, TikTok, LinkedIn\n' +
         '- link: Facebook (provide `meta` for the link preview)\n' +
         '- story: Facebook, Instagram\n\n' +
         'For media posts, attach `medias`. For threaded/multi-part posts, attach `replies`. ' +
-        "A WhatsApp post goes to the account's Status unless `additionalInfo.channel` names a channel or group from repliz_whatsapp_channels; create one schedule per target. " +
+        "A WhatsApp post goes to the account's Status, and a Telegram post to its story, unless `additionalInfo.channel` names a channel or group from repliz_whatsapp_channels or repliz_telegram_channels; create one schedule per target. " +
         '`scheduleAt` must be a future ISO 8601 timestamp (UTC).',
       inputSchema: {
         accountId: z.string().describe('The target account id to publish to.'),
@@ -292,7 +294,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), targetCountries, channel (WhatsApp).',
+            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), targetCountries, channel (WhatsApp, Telegram).',
           ),
         replies: z
           .array(replySchema)
@@ -318,7 +320,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
       title: 'Update Scheduled Post',
       description:
         'Update an existing scheduled post. The account cannot be changed; provide the new content fields. `scheduleAt` must be a future ISO 8601 timestamp. ' +
-        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp channel or group post, or it moves to Status.',
+        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story.',
       inputSchema: {
         scheduleId: z.string().describe('The schedule id to update.'),
         type: z.enum(POST_TYPE).describe('The kind of post.'),

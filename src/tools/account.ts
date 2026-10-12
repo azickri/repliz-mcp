@@ -12,6 +12,8 @@ const PLATFORMS = [
   "youtube",
   "shopee",
   "twitter",
+  "whatsapp",
+  "telegram",
 ] as const;
 
 export function registerAccountTools(ctx: ToolContext): void {
