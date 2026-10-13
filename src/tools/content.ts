@@ -15,6 +15,16 @@ const buttonObjectSchema = z
   })
   .describe("An interactive button payload.");
 
+const imageObjectSchema = z
+  .object({
+    url: z.string().describe("Public URL of the image file."),
+    thumbnail: z.string().optional(),
+    mimetype: z.string().describe("e.g. image/jpeg"),
+  })
+  .describe(
+    "Optional image sent along with the text. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter), ignored on other platforms."
+  );
+
 export function registerContentTools(ctx: ToolContext): void {
   registerTool(
     ctx,
@@ -89,12 +99,14 @@ export function registerContentTools(ctx: ToolContext): void {
     {
       title: "Comment on Content",
       description:
-        "Post a comment on a piece of content, or reply to an existing comment by passing `commentId`.",
+        "Post a comment on a piece of content, or reply to an existing comment by passing `commentId`. " +
+        "Add `image` { url, mimetype, thumbnail? } to send a picture with the text on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
       inputSchema: {
         contentId: z.string().describe("The content id to comment on."),
         accountId: z.string().describe("The account id posting the comment."),
         text: z.string().describe("The comment text."),
         commentId: z.string().optional().describe("Reply to this comment id instead of the post."),
+        image: imageObjectSchema.optional(),
       },
     },
     async (args) =>
@@ -102,6 +114,7 @@ export function registerContentTools(ctx: ToolContext): void {
         accountId: args.accountId,
         text: args.text,
         ...(args.commentId ? { commentId: args.commentId } : {}),
+        ...(args.image ? { image: args.image } : {}),
       })
   );
 

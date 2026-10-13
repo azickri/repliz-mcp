@@ -5,6 +5,16 @@ import { registerTool, type ToolContext } from "./helpers.js";
 
 const COMMENT_STATUS = ["pending", "resolved", "ignored"] as const;
 
+const imageObjectSchema = z
+  .object({
+    url: z.string().describe("Public URL of the image file."),
+    thumbnail: z.string().optional(),
+    mimetype: z.string().describe("e.g. image/jpeg"),
+  })
+  .describe(
+    "Optional image sent along with the reply text. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter), ignored on other platforms."
+  );
+
 export function registerCommentTools(ctx: ToolContext): void {
   registerTool(
     ctx,
@@ -56,15 +66,18 @@ export function registerCommentTools(ctx: ToolContext): void {
     {
       title: "Reply to Comment",
       description:
-        "Post a public reply to a comment. The reply is published to the original platform (Facebook, Instagram, etc.).",
+        "Post a public reply to a comment. The reply is published to the original platform (Facebook, Instagram, etc.). " +
+        "Add `image` { url, mimetype, thumbnail? } to send a picture with the text on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
       inputSchema: {
         commentId: z.string().describe("The comment id to reply to."),
         text: z.string().describe("The reply text to publish."),
+        image: imageObjectSchema.optional(),
       },
     },
     async (args) =>
       ctx.client.post(`/public/comment/${encodeURIComponent(args.commentId)}`, {
         text: args.text,
+        ...(args.image ? { image: args.image } : {}),
       })
   );
 

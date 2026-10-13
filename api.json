@@ -1010,7 +1010,7 @@
         "tags": ["API Comment (Standard+)"]
       },
       "post": {
-        "description": "\nSend a reply to a stored comment.\n\nThis endpoint is used to respond to a comment that exists in the system.\nThe reply will be sent to the original platform where the comment was created.\n\nParameters:\n- commentId (string) — The unique identifier of the comment\n\nResponse:\n- Returns the created reply object\n- Includes id, message, and timestamp\n",
+        "description": "\nSend a reply to a stored comment.\n\nThis endpoint is used to respond to a comment that exists in the system.\nThe reply will be sent to the original platform where the comment was created.\n\nParameters:\n- commentId (string) — The unique identifier of the comment\n- image (object, optional) — Image sent along with the text, same format as image on send chat message. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter), ignored on other platforms\n\nResponse:\n- Returns the created reply object\n- Includes id, message, and timestamp\n",
         "operationId": "CommentController_replyComment",
         "parameters": [
           {
@@ -3741,7 +3741,7 @@
         "tags": ["API Content (Gold+)"]
       },
       "post": {
-        "description": "\nCreate a new comment on a specific content in the platform.\n\nThis endpoint is used to post a comment directly to the platform under a selected content item.\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns the created comment object\n- Includes id, message, author, and timestamp\n",
+        "description": "\nCreate a new comment on a specific content in the platform.\n\nThis endpoint is used to post a comment directly to the platform under a selected content item.\n\nParameters:\n- contentId (string) — The unique identifier of the content\n- commentId (string, optional) — Fill it to reply an existing comment\n- image (object, optional) — Image sent along with the text, same format as image on send chat message. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter), ignored on other platforms\n\nResponse:\n- Returns the created comment object\n- Includes id, message, author, and timestamp\n",
         "operationId": "ContentController_createComment",
         "parameters": [
           {
@@ -3758,7 +3758,41 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/BodyCreateCommentDTO" }
+              "schema": { "$ref": "#/components/schemas/BodyCreateCommentDTO" },
+              "examples": {
+                "text": {
+                  "summary": "Comment Text",
+                  "value": {
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "text": "Hello there, this is comment from Repliz"
+                  }
+                },
+                "image": {
+                  "summary": "Comment Text with Image",
+                  "value": {
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "text": "Hello there, this is comment from Repliz",
+                    "image": {
+                      "url": "https://storage.repliz.com/image.png",
+                      "thumbnail": "https://storage.repliz.com/thumbnail.png",
+                      "mimetype": "image/png"
+                    }
+                  }
+                },
+                "reply": {
+                  "summary": "Reply Comment with Image",
+                  "value": {
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "commentId": "18083576267346315",
+                    "text": "Hello there, this is reply from Repliz",
+                    "image": {
+                      "url": "https://storage.repliz.com/image.png",
+                      "thumbnail": "https://storage.repliz.com/thumbnail.png",
+                      "mimetype": "image/png"
+                    }
+                  }
+                }
+              }
             }
           }
         },
@@ -7579,8 +7613,17 @@
             "enum": ["ai", "text", "keyword"]
           },
           "text": { "type": "string", "example": "Hello" },
+          "image": {
+            "description": "Optional image sent along with the reply text. Supported on Facebook, Threads, TikTok and LinkedIn",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
+          },
           "prompt": { "type": "string", "example": "You are..." },
           "isIncludeContentContext": { "type": "boolean", "example": false },
+          "isIncludeLiveComment": {
+            "type": "boolean",
+            "example": false,
+            "description": "Also reply to comments on an Instagram Live while it is on air. Off when left out"
+          },
           "keyword": { "$ref": "#/components/schemas/ConfigKeyword" },
           "exception": { "$ref": "#/components/schemas/ConfigException" },
           "condition": { "$ref": "#/components/schemas/ConfigCondition" },
@@ -7733,6 +7776,11 @@
           },
           "text": { "type": "string", "example": "Hello" },
           "prompt": { "type": "string", "example": "You are..." },
+          "isIncludeLiveComment": {
+            "type": "boolean",
+            "example": false,
+            "description": "Also send the DM to comments on an Instagram Live, only while it is on air. Off when left out"
+          },
           "opening": { "$ref": "#/components/schemas/ConfigOpening" },
           "keyword": { "$ref": "#/components/schemas/ConfigKeyword" },
           "condition": { "$ref": "#/components/schemas/ConfigCondition" },
@@ -7807,7 +7855,11 @@
       "BodyReplyCommentDTO": {
         "type": "object",
         "properties": {
-          "text": { "type": "string", "example": "Reply from Repliz" }
+          "text": { "type": "string", "example": "Reply from Repliz" },
+          "image": {
+            "description": "Optional image sent along with the reply text. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter)",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
+          }
         },
         "required": ["text"]
       },
@@ -8212,6 +8264,10 @@
           "text": {
             "type": "string",
             "example": "Hello there, this is comment from Repliz"
+          },
+          "image": {
+            "description": "Optional image sent along with the comment text. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter)",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
           },
           "commentId": { "type": "string", "example": "18083576267346315" }
         },
