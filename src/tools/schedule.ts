@@ -76,18 +76,18 @@ const channelSchema = z
     id: z
       .string()
       .describe(
-        'Channel or group ID as listed: WhatsApp ends in @newsletter or @g.us, Telegram is a number like -1001234567890.',
+        'Channel, group or board ID as listed: WhatsApp ends in @newsletter or @g.us, Telegram is a number like -1001234567890, a Pinterest board is a number like 1006921296753698211.',
       ),
-    name: z.string().describe('Channel or group name.'),
-    picture: z.string().default('').describe('Channel or group picture URL.'),
+    name: z.string().describe('Channel, group or board name.'),
+    picture: z.string().default('').describe('Channel, group or board picture URL.'),
     type: z
-      .enum(['channel', 'group'])
+      .enum(['channel', 'group', 'board'])
       .describe(
-        'Whether it is a channel or a group. Telegram ids look alike, so this decides where it posts.',
+        "Whether it is a channel, a group or a Pinterest board ('board'). Telegram ids look alike, so this decides where it posts.",
       ),
   })
   .describe(
-    "WhatsApp and Telegram only: the channel or group to post to, an item from repliz_whatsapp_channels or repliz_telegram_channels. Omit to post to the account's WhatsApp Status or Telegram story.",
+    "WhatsApp and Telegram: the channel or group to post to, an item from repliz_whatsapp_channels or repliz_telegram_channels; omit to post to the account's WhatsApp Status or Telegram story. Pinterest (required): the board to pin to, an item from repliz_pinterest_boards.",
   );
 
 const additionalInfoSchema = z
@@ -108,9 +108,13 @@ const additionalInfoSchema = z
     mentions: z.array(z.string()).default([]),
     targetCountries: z.array(z.string()).default([]),
     channel: channelSchema.optional(),
+    link: z
+      .string()
+      .optional()
+      .describe('Pinterest only: the destination URL the pin opens when tapped.'),
   })
   .describe(
-    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), target countries, channel (WhatsApp, Telegram).',
+    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
   );
 
 const replySchema = z.object({
@@ -141,6 +145,7 @@ const DEFAULT_ADDITIONAL_INFO = {
   mentions: [] as string[],
   targetCountries: [] as string[],
   channel: { id: '', name: '', picture: '', type: 'channel' },
+  link: '',
 };
 
 function buildSchedulePayload(args: {
@@ -259,14 +264,15 @@ export function registerScheduleTools(ctx: ToolContext): void {
         'Schedule a post to be published to a connected account at a specific time.\n\n' +
         'Post type support by platform:\n' +
         '- text: Facebook, Threads, WhatsApp, Telegram\n' +
-        '- image: Facebook, Instagram, Threads, TikTok, LinkedIn, WhatsApp, Telegram\n' +
-        '- video: Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn, WhatsApp, Telegram\n' +
+        '- image: Facebook, Instagram, Threads, TikTok, LinkedIn, WhatsApp, Telegram, Pinterest\n' +
+        '- video: Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn, WhatsApp, Telegram, Pinterest\n' +
         '- reel: Facebook\n' +
-        '- album: Facebook, Instagram, Threads, TikTok, LinkedIn\n' +
+        '- album: Facebook, Instagram, Threads, TikTok, LinkedIn, Pinterest (carousel of 2-5 images)\n' +
         '- link: Facebook (provide `meta` for the link preview)\n' +
         '- story: Facebook, Instagram\n\n' +
         'For media posts, attach `medias`. For threaded/multi-part posts, attach `replies`. ' +
         "A WhatsApp post goes to the account's Status, and a Telegram post to its story, unless `additionalInfo.channel` names a channel or group from repliz_whatsapp_channels or repliz_telegram_channels; create one schedule per target. " +
+        'A Pinterest pin must name a board from repliz_pinterest_boards in `additionalInfo.channel` (one schedule per board); `title` (max 100) is the pin title, `description` max 800, `additionalInfo.link` the destination URL and medias[0].alt the alt text. ' +
         '`scheduleAt` must be a future ISO 8601 timestamp (UTC).',
       inputSchema: {
         accountId: z.string().describe('The target account id to publish to.'),
@@ -282,7 +288,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         title: z
           .string()
           .optional()
-          .describe('Post title (used by some platforms, e.g. YouTube).'),
+          .describe('Post title (used by some platforms, e.g. YouTube and Pinterest).'),
         topic: z.string().optional().describe('Optional internal topic/label.'),
         medias: z
           .array(mediaSchema)
@@ -294,7 +300,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), targetCountries, channel (WhatsApp, Telegram).',
+            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
           ),
         replies: z
           .array(replySchema)
@@ -320,7 +326,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
       title: 'Update Scheduled Post',
       description:
         'Update an existing scheduled post. The account cannot be changed; provide the new content fields. `scheduleAt` must be a future ISO 8601 timestamp. ' +
-        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story.',
+        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`.',
       inputSchema: {
         scheduleId: z.string().describe('The schedule id to update.'),
         type: z.enum(POST_TYPE).describe('The kind of post.'),

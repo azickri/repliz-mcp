@@ -32,7 +32,7 @@ export function registerContentTools(ctx: ToolContext): void {
     {
       title: "List Content",
       description:
-        "List published content (posts/media or stories) for a connected account. Uses cursor pagination via `nextToken`. WhatsApp and Telegram accounts list the posts of one of their channels, so pass `channelId`.",
+        "List published content (posts/media or stories) for a connected account. Uses cursor pagination via `nextToken`. WhatsApp and Telegram accounts list the posts of one of their channels, so pass `channelId`. Pinterest accounts list all their pins, or the pins of one board with `channelId`.",
       inputSchema: {
         accountId: z.string().describe("The account id whose content to list."),
         type: z.enum(["media", "story"]).optional().describe("Content type to list."),
@@ -40,7 +40,7 @@ export function registerContentTools(ctx: ToolContext): void {
           .string()
           .optional()
           .describe(
-            "Required for WhatsApp and Telegram accounts: the id of a channel (type 'channel', not a group) from repliz_whatsapp_channels or repliz_telegram_channels."
+            "Required for WhatsApp and Telegram accounts: the id of a channel (type 'channel', not a group) from repliz_whatsapp_channels or repliz_telegram_channels. Optional for Pinterest: a board id from repliz_pinterest_boards."
           ),
         nextToken: z.string().optional().describe("Pagination cursor from a previous response."),
       },

@@ -130,6 +130,8 @@
                   "tiktok": 3,
                   "linkedin": 1,
                   "shopee": 0,
+                  "twitter": 0,
+                  "pinterest": 0,
                   "limit": 1
                 }
               }
@@ -224,7 +226,7 @@
     },
     "/public/account/{accountId}/statistic": {
       "get": {
-        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n",
+        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok and Pinterest.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\n",
         "operationId": "AccountController_getStatisticAccount",
         "parameters": [
           {
@@ -722,6 +724,37 @@
                         { "gender": "Female", "percentage": 0.45 },
                         { "gender": "Male", "percentage": 0.54 },
                         { "gender": "Other", "percentage": 0.01 }
+                      ]
+                    }
+                  },
+                  "pinterest": {
+                    "summary": "Pinterest",
+                    "value": {
+                      "followersCount": 1200,
+                      "followingCount": 85,
+                      "pinsCount": 340,
+                      "boardsCount": 12,
+                      "monthlyViews": 45000,
+                      "summary": {
+                        "impression": 15230,
+                        "engagement": 812,
+                        "engagementRate": 0.0533,
+                        "save": 214,
+                        "saveRate": 0.0141,
+                        "pinClick": 398,
+                        "pinClickRate": 0.0261,
+                        "outboundClick": 120,
+                        "outboundClickRate": 0.0079
+                      },
+                      "metrics": [
+                        {
+                          "date": "2026-10-14",
+                          "impression": 520,
+                          "engagement": 31,
+                          "save": 8,
+                          "pinClick": 15,
+                          "outboundClick": 4
+                        }
                       ]
                     }
                   }
@@ -1701,6 +1734,53 @@
         "tags": ["API Addon (Premium+)"]
       }
     },
+    "/public/addon/pinterest/board": {
+      "get": {
+        "description": "\nRetrieve the boards of a connected Pinterest account.\n\nThis endpoint is used to fetch the boards a pin can be published to. Use an item as additionalInfo.channel when creating a schedule for a Pinterest account (one schedule per board), or its id as channelId when listing content.\n\nParameters:\n- accountId (string) — The unique identifier of the connected Pinterest account\n\nResponse:\n- Returns an array of Pinterest boards\n- Each item includes its identifier, name, cover picture and type (always board)\n",
+        "operationId": "AddonController_getPinterestBoard",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "id": "1006921296753698211",
+                      "name": "Social Media Tips",
+                      "picture": "https://i.pinimg.com/400x300/fd/cd/d5/fdcdd5a6d8a80824add0d054125cd957.jpg",
+                      "type": "board"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 400, "message": "invalid account type" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Pinterest Board",
+        "tags": ["API Addon (Premium+)"]
+      }
+    },
     "/public/addon/link/metadata": {
       "get": {
         "description": "\nRetrieve metadata information from a given URL.\n\nThis endpoint is used to extract preview data from a link, such as title, description, thumbnail, and other relevant metadata.\nIt is typically used to generate link previews before sharing or posting content.\n\nParameters:\n- url (string) — The target URL to extract metadata from\n\nResponse:\n- Returns metadata object\n- Includes title, description, thumbnail, and additional link information\n",
@@ -1776,7 +1856,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-10-12T07:39:10.033Z",
+              "example": "2026-10-16T15:42:32.954Z",
               "type": "string"
             }
           },
@@ -1786,7 +1866,7 @@
             "in": "query",
             "schema": {
               "format": "date-time",
-              "example": "2026-10-12T07:39:10.033Z",
+              "example": "2026-10-16T15:42:32.954Z",
               "type": "string"
             }
           }
@@ -1945,7 +2025,7 @@
         "tags": ["API Schedule (Premium+)"]
       },
       "post": {
-        "description": "\nCreate a new scheduled post.\n\nThis endpoint is used to schedule content publishing to supported platforms at a specified time.\n\nSupported Post Types:\n- Text → Facebook, Threads\n- Image → Facebook, Instagram, Threads, TikTok, LinkedIn\n- Video → Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn\n- Reels → Facebook\n- Album → Facebook, Instagram, Threads, TikTok, LinkedIn\n- Link → Facebook\n- Story → Facebook, Instagram\n\nResponse:\n- Returns the created scheduleId\n",
+        "description": "\nCreate a new scheduled post.\n\nThis endpoint is used to schedule content publishing to supported platforms at a specified time.\n\nSupported Post Types:\n- Text → Facebook, Threads\n- Image → Facebook, Instagram, Threads, TikTok, LinkedIn, Pinterest\n- Video → Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn, Pinterest\n- Reels → Facebook\n- Album → Facebook, Instagram, Threads, TikTok, LinkedIn, Pinterest (carousel of 2-5 images)\n- Link → Facebook\n- Story → Facebook, Instagram\n\nPinterest:\n- additionalInfo.channel is required: a board from API Get Pinterest Board (type board), one schedule per board\n- additionalInfo.link is the optional destination URL of the pin\n- title max 100 characters, description max 800 characters, medias[0].alt is used as alt text\n\nResponse:\n- Returns the created scheduleId\n",
         "operationId": "ScheduleController_createSchedule",
         "parameters": [],
         "requestBody": {
@@ -1985,7 +2065,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "image": {
@@ -2025,7 +2105,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "video": {
@@ -2065,7 +2145,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "reel": {
@@ -2105,7 +2185,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "album": {
@@ -2151,7 +2231,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "link": {
@@ -2195,7 +2275,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "story": {
@@ -2235,7 +2315,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.039Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "nested": {
@@ -2298,7 +2378,7 @@
                       }
                     ],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "template": {
@@ -2330,7 +2410,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z",
+                    "scheduleAt": "2026-10-16T15:42:33.113Z",
                     "templateId": "680affa5ce12f2f72a16f67c"
                   }
                 },
@@ -2371,7 +2451,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "additionaoInfoMusic": {
@@ -2410,7 +2490,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "additionalInfoProduct": {
@@ -2461,7 +2541,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "additionalInfoTag": {
@@ -2501,7 +2581,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "additionalInfoMention": {
@@ -2541,23 +2621,23 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "additionaoInfoLink": {
-                  "summary": "Post with Additional Info Link",
+                  "summary": "Post with Additional Info Link (Pinterest)",
                   "value": {
-                    "title": "",
-                    "description": "Hola! This is example for post video with mentions",
+                    "title": "Smart Comment Management",
+                    "description": "Hola! This is example for post pin with destination link",
                     "topic": "",
-                    "type": "video",
+                    "type": "image",
                     "medias": [
                       {
-                        "alt": "",
+                        "alt": "Repliz dashboard",
                         "customThumbnail": false,
-                        "type": "video",
-                        "thumbnail": "https://storage.repliz.com/thumbnail.png",
-                        "url": "https://storage.repliz.com/video.mp4"
+                        "type": "image",
+                        "thumbnail": "https://storage.repliz.com/image.png",
+                        "url": "https://storage.repliz.com/image.png"
                       }
                     ],
                     "meta": { "title": "", "description": "", "url": "" },
@@ -2577,11 +2657,18 @@
                       "products": [],
                       "tags": [],
                       "mentions": [],
-                      "targetCountries": []
+                      "targetCountries": [],
+                      "channel": {
+                        "id": "1006921296753698211",
+                        "name": "Social Media Tips",
+                        "picture": "https://i.pinimg.com/400x300/fd/cd/d5/fdcdd5a6d8a80824add0d054125cd957.jpg",
+                        "type": "board"
+                      },
+                      "link": "https://repliz.com"
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 },
                 "additionalInfoTargetCountries": {
@@ -2621,7 +2708,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-12T07:39:10.040Z"
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
                   }
                 }
               }
@@ -2756,7 +2843,7 @@
         "tags": ["API Schedule (Premium+)"]
       },
       "put": {
-        "description": "\nUpdate an existing scheduled post.\n\nThis endpoint is used to modify scheduled content, including its content, schedule time, or target platform.\n\nSupported Post Types:\n- Text → Facebook, Threads\n- Image → Facebook, Instagram, Threads, TikTok, LinkedIn\n- Video → Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn\n- Reels → Facebook\n- Album → Facebook, Instagram, Threads, TikTok, LinkedIn\n- Link → Facebook\n- Story → Facebook, Instagram\n\nParameters:\n- scheduleId (string) — The unique identifier of the schedule\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "description": "\nUpdate an existing scheduled post.\n\nThis endpoint is used to modify scheduled content, including its content, schedule time, or target platform.\n\nSupported Post Types:\n- Text → Facebook, Threads\n- Image → Facebook, Instagram, Threads, TikTok, LinkedIn, Pinterest\n- Video → Facebook, Instagram, Threads, TikTok, YouTube, LinkedIn, Pinterest\n- Reels → Facebook\n- Album → Facebook, Instagram, Threads, TikTok, LinkedIn, Pinterest (carousel of 2-5 images)\n- Link → Facebook\n- Story → Facebook, Instagram\n\nPinterest:\n- additionalInfo.channel is required: a board from API Get Pinterest Board (type board), one schedule per board\n- additionalInfo.link is the optional destination URL of the pin\n- title max 100 characters, description max 800 characters, medias[0].alt is used as alt text\n\nParameters:\n- scheduleId (string) — The unique identifier of the schedule\n\nResponse:\n- No content is returned on success (204 No Content)\n",
         "operationId": "ScheduleController_updateSchedule",
         "parameters": [
           {
@@ -3941,6 +4028,17 @@
                       "bookmark": 0,
                       "impression": 0
                     }
+                  },
+                  "pinterest": {
+                    "summary": "Pinterest",
+                    "value": {
+                      "impression": 0,
+                      "save": 0,
+                      "pinClick": 0,
+                      "outboundClick": 0,
+                      "comment": 0,
+                      "reaction": 0
+                    }
                   }
                 }
               }
@@ -4237,13 +4335,13 @@
             "name": "since",
             "required": false,
             "in": "query",
-            "schema": { "example": 1791790750, "type": "number" }
+            "schema": { "example": 1792165353, "type": "number" }
           },
           {
             "name": "until",
             "required": false,
             "in": "query",
-            "schema": { "example": 1791790750, "type": "number" }
+            "schema": { "example": 1792165353, "type": "number" }
           },
           {
             "name": "username",
@@ -5480,7 +5578,7 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Get Template",
-        "tags": ["API Template Automation"]
+        "tags": ["API Template Automation (Gold+)"]
       },
       "post": {
         "description": "\nCreate a new automation template.\n\nThis endpoint is used to create a reusable template containing the configuration and content rules that can be applied to content automations.\n\nResponse:\n- Returns the created automation template\n",
@@ -5514,7 +5612,7 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Create Template",
-        "tags": ["API Template Automation"]
+        "tags": ["API Template Automation (Gold+)"]
       }
     },
     "/public/template/{templateId}": {
@@ -5705,7 +5803,7 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Get One Template",
-        "tags": ["API Template Automation"]
+        "tags": ["API Template Automation (Gold+)"]
       },
       "put": {
         "description": "\nUpdate an existing automation template.\n\nThis endpoint is used to modify the configuration or content rules of an existing automation template.\n\nParameters:\n- templateId (string) — The unique identifier of the automation template\n\nResponse:\n- No content is returned on success (204 No Content)\n",
@@ -5749,7 +5847,7 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Update Template",
-        "tags": ["API Template Automation"]
+        "tags": ["API Template Automation (Gold+)"]
       },
       "delete": {
         "description": "\nDelete an automation template.\n\nThis endpoint is used to remove an automation template that is no longer needed.\n\nParameters:\n- templateId (string) — The unique identifier of the automation template\n\nResponse:\n- No content is returned on success (204 No Content)\n",
@@ -5783,7 +5881,7 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Remove Template",
-        "tags": ["API Template Automation"]
+        "tags": ["API Template Automation (Gold+)"]
       }
     },
     "/public/account/facebook/authorize": {
@@ -7222,6 +7320,117 @@
         "tags": ["API Account Telegram (Gold+)"]
       }
     },
+    "/public/account/pinterest/authorize": {
+      "get": {
+        "description": "\nInitiate Pinterest authorization process.\n\nThis endpoint is used to redirect users to the Pinterest OAuth authorization page.\nAfter successful authorization, the user will be redirected back to the provided redirect URL with an authorization code.\n\nParameters:\n- redirect (string) — The URL to redirect after authorization is completed\n\nResponse:\n- Redirects user to the Pinterest OAuth page\n",
+        "operationId": "AccountPinterestController_authorize",
+        "parameters": [
+          {
+            "name": "redirect",
+            "required": true,
+            "in": "query",
+            "schema": { "example": "https://repliz.com", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "url": "https://www.pinterest.com/oauth/?client_id=1614737&redirect_uri=https%3A%2F%2Frepliz.com%2Fcallback%2Fpinterest&response_type=code&scope=user_accounts%3Aread%2Cboards%3Aread%2Cboards%3Awrite%2Cpins%3Aread%2Cpins%3Awrite&state=9c77913d77d95fdbacebbab3d0cdf5523fac3697c8ad5ecc21a3d87397185838890a3bbf77833248952f92b0ca83c8f6"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Authorize Pinterest",
+        "tags": ["API Account Pinterest (Gold+)"]
+      }
+    },
+    "/public/account/pinterest/connect": {
+      "post": {
+        "description": "\nConnect a Pinterest account to the system.\n\nThis endpoint is used to complete the connection process using the authorization code obtained from the redirect callback.\nThe system will exchange the code and link the Pinterest account. Boards are not separate accounts: pick the board when scheduling a post, see API Get Pinterest Board.\n\nBody:\n- code (string) — Authorization code received from the Pinterest redirect\n\nResponse:\n- Returns the connected account information\n",
+        "operationId": "AccountPinterestController_connect",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectPinterestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "accountId": "69e97477a795504e0786cec6" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Connect Pinterest",
+        "tags": ["API Account Pinterest (Gold+)"]
+      }
+    },
+    "/public/account/pinterest/connect/{accountId}": {
+      "post": {
+        "description": "\nReconnect an existing Pinterest account.\n\nThis endpoint is used when a previously connected account needs to be reauthorized (e.g. expired session).\nIt requires a new authorization code from the Pinterest callback.\n\nParameters:\n- accountId (string) — The unique identifier of the account\n\nBody:\n- code (string) — Authorization code received from the Pinterest redirect\n\nResponse:\n- Returns the updated account connection status\n",
+        "operationId": "AccountPinterestController_reconnect",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectPinterestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "incorrect generatedId to reconnect"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Reconnect Pinterest",
+        "tags": ["API Account Pinterest (Gold+)"]
+      }
+    },
     "/public/storage/statistic": {
       "get": {
         "description": "\nRetrieve storage usage statistics.\n\nThis endpoint is used to get information about the current storage usage, including the total number of files, used storage space, and remaining available capacity.\n\nResponse:\n- Returns storage usage statistics\n- Includes information such as total files, used storage, and storage limit\n",
@@ -7545,6 +7754,21 @@
         },
         "required": ["isActive", "type", "keywords", "prompt"]
       },
+      "ObjectImage": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://storage.repliz.com/image.png"
+          },
+          "thumbnail": {
+            "type": "string",
+            "example": "https://storage.repliz.com/thumbnail.png"
+          },
+          "mimetype": { "type": "string", "example": "image/jpeg" }
+        },
+        "required": ["url", "mimetype"]
+      },
       "ConfigKeywordValue": {
         "type": "object",
         "properties": {
@@ -7715,11 +7939,7 @@
             "type": "string",
             "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png"
           },
-          "url": {
-            "type": "string",
-            "example": "https://repliz.com",
-            "description": "Opened when the card itself is tapped"
-          },
+          "url": { "type": "string", "example": "https://repliz.com" },
           "buttons": {
             "type": "array",
             "items": {
@@ -7965,7 +8185,7 @@
           },
           "type": {
             "type": "string",
-            "enum": ["channel", "group"],
+            "enum": ["channel", "group", "board"],
             "example": "channel"
           }
         },
@@ -8018,7 +8238,8 @@
             "allOf": [
               { "$ref": "#/components/schemas/ScheduleAdditionalInfoChannel" }
             ]
-          }
+          },
+          "link": { "type": "string", "example": "https://repliz.com" }
         },
         "required": [
           "isAiGenerated",
@@ -8088,7 +8309,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-10-12T07:39:10.034Z"
+            "example": "2026-10-16T15:42:32.954Z"
           },
           "templateId": {
             "type": "string",
@@ -8137,7 +8358,7 @@
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-10-12T07:39:10.035Z"
+            "example": "2026-10-16T15:42:32.954Z"
           },
           "templateId": {
             "type": "string",
@@ -8155,21 +8376,6 @@
           "replies",
           "scheduleAt"
         ]
-      },
-      "ObjectImage": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "example": "https://storage.repliz.com/image.png"
-          },
-          "thumbnail": {
-            "type": "string",
-            "example": "https://storage.repliz.com/thumbnail.png"
-          },
-          "mimetype": { "type": "string", "example": "image/jpeg" }
-        },
-        "required": ["url", "mimetype"]
       },
       "ObjectVideo": {
         "type": "object",
@@ -8478,11 +8684,7 @@
             "type": "string",
             "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
           },
-          "password": {
-            "type": "string",
-            "example": "my-cloud-password",
-            "description": "two step verification password of the telegram account"
-          }
+          "password": { "type": "string", "example": "my-cloud-password" }
         },
         "required": ["token", "password"]
       },
@@ -8495,6 +8697,16 @@
           }
         },
         "required": ["token"]
+      },
+      "BodyConnectPinterestDTO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f34"
+          }
+        },
+        "required": ["code"]
       },
       "BodyInitFileDTO": {
         "type": "object",

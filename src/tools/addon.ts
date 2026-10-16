@@ -1,4 +1,4 @@
-/** Add-on tools: TikTok trending music, Shopee products, WhatsApp and Telegram channels, and link metadata. */
+/** Add-on tools: TikTok trending music, Shopee products, WhatsApp and Telegram channels, Pinterest boards, and link metadata. */
 
 import { z } from "zod";
 import { registerTool, withoutInlinePicture, type ToolContext } from "./helpers.js";
@@ -88,6 +88,20 @@ export function registerAddonTools(ctx: ToolContext): void {
       if (!Array.isArray(list?.docs)) return list;
       return { ...list, docs: list.docs.map(withoutInlinePicture) };
     }
+  );
+
+  registerTool(
+    ctx,
+    "repliz_pinterest_boards",
+    {
+      title: "List Pinterest Boards",
+      description:
+        "List the boards of a connected Pinterest account. A Pinterest post always goes to a board: pass the chosen item as `additionalInfo.channel` when scheduling (one schedule per board), or its id as `channelId` in repliz_list_content.",
+      inputSchema: {
+        accountId: z.string().describe("The connected Pinterest account id."),
+      },
+    },
+    async (args) => ctx.client.get("/public/addon/pinterest/board", { accountId: args.accountId })
   );
 
   registerTool(

@@ -1,4 +1,4 @@
-/** Account OAuth and Connection tools for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter, WhatsApp, and Telegram. */
+/** Account OAuth and Connection tools for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter, Pinterest, WhatsApp, and Telegram. */
 
 import { z } from "zod";
 import { ContentResult, registerTool, withoutInlinePicture, type ToolContext } from "./helpers.js";
@@ -477,6 +477,58 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     },
     async (args) =>
       ctx.client.post(`/public/account/twitter/connect/${encodeURIComponent(args.accountId)}`, {
+        code: args.code,
+      })
+  );
+
+  // ─── Pinterest ────────────────────────────────────────────────────────────
+  //
+  // One Repliz account is one Pinterest user. Its boards are not separate
+  // accounts: they come later, from the repliz_pinterest_boards add-on, when
+  // scheduling a pin.
+
+  registerTool(
+    ctx,
+    "repliz_authorize_pinterest",
+    {
+      title: "Authorize Pinterest",
+      description:
+        "Get the Pinterest OAuth authorization URL. After the user approves, Pinterest redirects to `redirect` with a `code` to pass to repliz_connect_pinterest or repliz_reconnect_pinterest.",
+      inputSchema: {
+        redirect: z.string().describe("Redirect URL after authorization."),
+      },
+    },
+    async (args) => ctx.client.get("/public/account/pinterest/authorize", { redirect: args.redirect })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_connect_pinterest",
+    {
+      title: "Connect Pinterest",
+      description:
+        "Connect a Pinterest account to Repliz using the OAuth code. Returns the new accountId. Boards are picked per schedule with repliz_pinterest_boards, not connected as accounts.",
+      inputSchema: {
+        code: z.string().describe("OAuth authorization code."),
+      },
+    },
+    async (args) => ctx.client.post("/public/account/pinterest/connect", { code: args.code })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_reconnect_pinterest",
+    {
+      title: "Reconnect Pinterest",
+      description:
+        "Reconnect an existing Pinterest account. The OAuth code must come from the same Pinterest account.",
+      inputSchema: {
+        accountId: z.string().describe("Repliz account ID."),
+        code: z.string().describe("OAuth authorization code."),
+      },
+    },
+    async (args) =>
+      ctx.client.post(`/public/account/pinterest/connect/${encodeURIComponent(args.accountId)}`, {
         code: args.code,
       })
   );

@@ -14,6 +14,7 @@ const PLATFORMS = [
   "twitter",
   "whatsapp",
   "telegram",
+  "pinterest",
 ] as const;
 
 export function registerAccountTools(ctx: ToolContext): void {
@@ -73,7 +74,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     {
       title: "Get Account Statistics",
       description:
-        "Retrieve aggregated statistics and activity metrics for a specific connected account, including platform-specific overview metrics.",
+        "Retrieve aggregated statistics and activity metrics for a specific connected account, including platform-specific overview metrics. Available for Instagram, Threads, TikTok and Pinterest.",
       inputSchema: {
         accountId: z.string().describe("The Repliz account id (e.g. 680affa5ce12f2f72916f67e)."),
       },
