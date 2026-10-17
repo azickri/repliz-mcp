@@ -263,3 +263,12 @@ describe("SessionStore", () => {
     assert.deepEqual(seen, [["a", "idle timeout", 1]]);
   });
 });
+
+describe("RateLimiter with its own limit", () => {
+  test("ignores the server-wide setting", () => {
+    process.env.REPLIZ_RATE_LIMIT_PER_MINUTE = "100";
+    const limiter = new RateLimiter(() => 1);
+    assert.equal(limiter.take("ip", 0), true);
+    assert.equal(limiter.take("ip", 0), false);
+  });
+});

@@ -58,6 +58,16 @@ export function credentialsFromHeaders(headers: HeaderBag): ReplizCredentials | 
   return null;
 }
 
+/**
+ * The OAuth access token from `Authorization: Bearer <token>`, or null when the
+ * caller did not authenticate that way.
+ */
+export function bearerTokenFromHeaders(headers: HeaderBag): string | null {
+  const auth = headerValue(headers["authorization"]);
+  const match = auth?.match(/^bearer\s+(\S+)\s*$/i);
+  return match ? match[1] : null;
+}
+
 // ─── Tunables ───────────────────────────────────────────────────────────────
 // Defaults are sized for a ~1 GB VPS. Each live session costs roughly 1.8 MB,
 // so maxSessions() is the main memory lever.
@@ -140,4 +150,64 @@ export function trustProxySetting(): boolean | number | string {
   const hops = Number(raw);
   if (Number.isInteger(hops) && hops >= 0) return hops;
   return raw; // comma-separated IPs / subnets, understood by Express
+}
+
+// ─── OAuth ──────────────────────────────────────────────────────────────────
+
+export interface OAuthSettings {
+  /** The public origin clients reach this server at, e.g. https://mcp.repliz.com. */
+  publicUrl: URL;
+  /** Seals every token this server issues. Changing it signs every user out. */
+  secret: string;
+  accessTokenMs: number;
+  refreshTokenMs: number;
+}
+
+const MIN_OAUTH_SECRET_LENGTH = 32;
+// Matches the MCP SDK, which accepts a plain-http issuer only for these hosts.
+const LOCAL_ISSUER_HOSTS = new Set(["localhost", "127.0.0.1"]);
+
+/**
+ * OAuth settings, or null when OAuth is off because REPLIZ_OAUTH_SECRET is
+ * unset. A half-finished setup throws, so a typo stops the server at startup
+ * instead of surfacing at some user's first "Connect".
+ */
+export function oauthSettings(): OAuthSettings | null {
+  const secret = process.env.REPLIZ_OAUTH_SECRET?.trim();
+  if (!secret) return null;
+  if (secret.length < MIN_OAUTH_SECRET_LENGTH) {
+    throw new Error(
+      `REPLIZ_OAUTH_SECRET must be at least ${MIN_OAUTH_SECRET_LENGTH} characters. ` +
+        "Generate one with: openssl rand -base64 32"
+    );
+  }
+
+  const rawUrl = process.env.REPLIZ_PUBLIC_URL?.trim();
+  if (!rawUrl) {
+    throw new Error(
+      "REPLIZ_OAUTH_SECRET is set but REPLIZ_PUBLIC_URL is not. Set it to the public " +
+        "origin clients reach this server at, e.g. https://mcp.repliz.com"
+    );
+  }
+  let publicUrl: URL;
+  try {
+    publicUrl = new URL(rawUrl);
+  } catch {
+    throw new Error(`REPLIZ_PUBLIC_URL is not a valid URL: ${rawUrl}`);
+  }
+  // The OAuth endpoints are mounted at the root, so a path here would advertise
+  // URLs that do not exist.
+  if (publicUrl.pathname !== "/" || publicUrl.search || publicUrl.hash) {
+    throw new Error(`REPLIZ_PUBLIC_URL must be an origin with no path, e.g. https://mcp.repliz.com (got ${rawUrl})`);
+  }
+  if (publicUrl.protocol !== "https:" && !(publicUrl.protocol === "http:" && LOCAL_ISSUER_HOSTS.has(publicUrl.hostname))) {
+    throw new Error(`REPLIZ_PUBLIC_URL must use https:// — plain http is accepted only for localhost (got ${rawUrl})`);
+  }
+
+  return {
+    publicUrl,
+    secret,
+    accessTokenMs: intFromEnv("REPLIZ_OAUTH_ACCESS_TOKEN_MINUTES", 60, 1) * 60_000,
+    refreshTokenMs: intFromEnv("REPLIZ_OAUTH_REFRESH_TOKEN_DAYS", 30, 1) * 86_400_000,
+  };
 }

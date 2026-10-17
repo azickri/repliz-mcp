@@ -15,14 +15,16 @@
 
 import { createServer } from "node:http";
 import { spawn } from "node:child_process";
+import { createHash, randomBytes } from "node:crypto";
 import { setTimeout as sleep } from "node:timers/promises";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
 const API_PORT = 3791;
 const MCP_PORT = 3792;
-const MCP_URL = `http://127.0.0.1:${MCP_PORT}/mcp`;
-const HEALTH_URL = `http://127.0.0.1:${MCP_PORT}/health`;
+const ORIGIN = `http://127.0.0.1:${MCP_PORT}`;
+const MCP_URL = `${ORIGIN}/mcp`;
+const HEALTH_URL = `${ORIGIN}/health`;
 
 const A = { "X-Repliz-Access-Key": "keyA", "X-Repliz-Secret-Key": "secretA" };
 const B = { "X-Repliz-Access-Key": "keyB", "X-Repliz-Secret-Key": "secretB" };
@@ -63,6 +65,8 @@ const server = spawn(process.execPath, ["dist/index.js"], {
     PORT: String(MCP_PORT),
     REPLIZ_BASE_URL: `http://127.0.0.1:${API_PORT}`,
     REPLIZ_MAX_SESSIONS: "2",
+    REPLIZ_PUBLIC_URL: ORIGIN,
+    REPLIZ_OAUTH_SECRET: "smoke-test-oauth-secret-0123456789abcdef",
     REPLIZ_ACCESS_KEY: "should-be-ignored",
     REPLIZ_SECRET_KEY: "should-be-ignored",
   },
@@ -102,6 +106,12 @@ const raw = (headers, body, method = "POST") =>
     headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", ...headers },
     body: body ? JSON.stringify(body) : undefined,
   });
+const initialize = {
+  jsonrpc: "2.0",
+  id: 1,
+  method: "initialize",
+  params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "smoke", version: "1.0.0" } },
+};
 const toolCall = (name, args = {}) => ({
   jsonrpc: "2.0",
   id: 1,
@@ -129,6 +139,116 @@ check(
   health.baseUrl === `http://127.0.0.1:${API_PORT}`,
   "env credentials are ignored entirely (no single-tenant fallback)"
 );
+
+console.log("\nOAuth");
+{
+  let res;
+  const form = (fields) => ({
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(fields).toString(),
+    redirect: "manual",
+  });
+
+  // Discovery: a bare request is pointed at the resource metadata.
+  res = await raw({}, initialize);
+  const challenge = res.headers.get("www-authenticate") ?? "";
+  const metadataUrl = challenge.match(/resource_metadata="([^"]+)"/)?.[1];
+  check(res.status === 401 && metadataUrl === `${ORIGIN}/.well-known/oauth-protected-resource/mcp`,
+    "401 advertises the resource metadata", challenge);
+  const prm = await (await fetch(metadataUrl)).json();
+  check(prm.resource === MCP_URL && prm.authorization_servers?.length === 1, "resource metadata names this server");
+  const as = await (await fetch(`${ORIGIN}/.well-known/oauth-authorization-server`)).json();
+  check(as.registration_endpoint && as.authorization_endpoint && as.token_endpoint,
+    "authorization server metadata lists register, authorize and token");
+  check(as.revocation_endpoint === undefined, "no revocation endpoint is claimed (tokens are stateless)");
+
+  // Registration.
+  const redirectUri = "http://localhost:9999/callback";
+  res = await fetch(as.registration_endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ redirect_uris: [redirectUri], client_name: "Smoke", token_endpoint_auth_method: "none" }),
+  });
+  const client = await res.json();
+  check(res.status === 201 && client.client_id, "a client registers itself", `got ${res.status}`);
+  res = await fetch(as.registration_endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ redirect_uris: ["http://evil.example.com/cb"], token_endpoint_auth_method: "none" }),
+  });
+  check(res.status === 400, "a plain-http, non-local redirect URI is refused", `got ${res.status}`);
+
+  // Authorization with PKCE.
+  const startSignIn = async (verifier) => {
+    const authorize = new URL(as.authorization_endpoint);
+    authorize.search = new URLSearchParams({
+      response_type: "code",
+      client_id: client.client_id,
+      redirect_uri: redirectUri,
+      code_challenge: createHash("sha256").update(verifier).digest("base64url"),
+      code_challenge_method: "S256",
+      state: "smoke-state",
+      resource: MCP_URL,
+    }).toString();
+    const page = await fetch(authorize);
+    const html = await page.text();
+    return { page, html, request: html.match(/name="request" value="([^"]+)"/)?.[1] };
+  };
+  const verifier = randomBytes(32).toString("base64url");
+  const { page, request } = await startSignIn(verifier);
+  check(page.status === 200 && request, "authorize shows the sign-in page", `got ${page.status}`);
+  check(/frame-ancestors 'none'/.test(page.headers.get("content-security-policy") ?? ""), "the sign-in page cannot be framed");
+
+  res = await fetch(`${ORIGIN}/oauth/login`, form({ request, access_key: "keyA", secret_key: "wrong" }));
+  check(res.status === 401 && /accept these keys/.test(await res.text()), "wrong keys re-show the form", `got ${res.status}`);
+
+  res = await fetch(`${ORIGIN}/oauth/login`, form({ request, access_key: "keyA", secret_key: "secretA" }));
+  const location = new URL(res.headers.get("location") ?? "http://invalid/");
+  const code = location.searchParams.get("code");
+  check(res.status === 303 && location.href.startsWith(redirectUri) && code, "valid keys redirect back with a code", `got ${res.status}`);
+  check(location.searchParams.get("state") === "smoke-state", "the state round-trips");
+
+  const tokenRequest = (fields) =>
+    fetch(as.token_endpoint, { ...form({ client_id: client.client_id, ...fields }), redirect: "follow" });
+  res = await tokenRequest({ grant_type: "authorization_code", code, code_verifier: "wrong-verifier-".repeat(4), redirect_uri: redirectUri });
+  check(res.status === 400, "a wrong PKCE verifier is refused", `got ${res.status}`);
+  res = await tokenRequest({ grant_type: "authorization_code", code, code_verifier: verifier, redirect_uri: redirectUri, resource: MCP_URL });
+  const tokens = await res.json();
+  check(res.status === 200 && tokens.access_token && tokens.refresh_token, "the code buys access and refresh tokens", `got ${res.status}`);
+  check(!JSON.stringify(tokens).includes("secretA"), "tokens do not expose the keys");
+  res = await tokenRequest({ grant_type: "authorization_code", code, code_verifier: verifier, redirect_uri: redirectUri });
+  check(res.status === 400, "an authorization code works only once", `got ${res.status}`);
+
+  // Using the token.
+  const oauthA = await connect({ Authorization: `Bearer ${tokens.access_token}` });
+  const viaToken = await callCount(oauthA.client);
+  check(viaToken.includes("USER-A") && !viaToken.includes("USER-B"), "the access token reaches the signed-in user's workspace");
+
+  res = await raw({ Authorization: "Bearer not-a-real-token" }, initialize);
+  check(res.status === 401 && /error="invalid_token"/.test(res.headers.get("www-authenticate") ?? ""),
+    "a forged token gets invalid_token", `got ${res.status}`);
+  res = await raw({ Authorization: "Bearer not-a-real-token", ...A }, initialize);
+  const fallbackSid = res.headers.get("mcp-session-id");
+  check(res.status === 200 && fallbackSid, "header keys still work beside an unrecognised Bearer token", `got ${res.status}`);
+  await res.body?.cancel().catch(() => {});
+  if (fallbackSid) await raw({ "Mcp-Session-Id": fallbackSid, ...A }, undefined, "DELETE");
+  res = await raw({ "Mcp-Session-Id": oauthA.transport.sessionId, ...B }, toolCall("repliz_count_accounts"));
+  check(res.status === 403, "another user's keys cannot ride an OAuth session", `got ${res.status}`);
+
+  // Refresh keeps the session: it is bound to the keys, not to one token.
+  res = await tokenRequest({ grant_type: "refresh_token", refresh_token: tokens.refresh_token });
+  const refreshed = await res.json();
+  check(res.status === 200 && refreshed.access_token !== tokens.access_token, "a refresh token buys a new access token");
+  res = await raw(
+    { "Mcp-Session-Id": oauthA.transport.sessionId, Authorization: `Bearer ${refreshed.access_token}` },
+    toolCall("repliz_count_accounts")
+  );
+  check(res.status === 200, "the refreshed token keeps the existing session", `got ${res.status}`);
+
+  await oauthA.transport.terminateSession();
+  await oauthA.client.close();
+}
 
 console.log("\nIsolation");
 const a = await connect(A);

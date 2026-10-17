@@ -71,9 +71,12 @@ export class AuthCache {
 export class RateLimiter {
   private readonly windows = new Map<string, { count: number; resetAt: number }>();
 
+  /** `perMinute` defaults to the server-wide REPLIZ_RATE_LIMIT_PER_MINUTE. */
+  constructor(private readonly perMinute: () => number = rateLimitPerMinute) {}
+
   /** Returns true if the request is allowed. */
   take(key: string, now = Date.now()): boolean {
-    const limit = rateLimitPerMinute();
+    const limit = this.perMinute();
     const window = this.windows.get(key);
 
     if (!window || window.resetAt <= now) {

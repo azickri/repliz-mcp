@@ -6,9 +6,10 @@ workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads, managing
 automations and templates, and more.
 
-Users connect by pointing their MCP client at one URL and sending their own
-Repliz Access Key and Secret Key. There is nothing for them to install, build,
-or keep updated.
+Users connect by pointing their MCP client at one URL — then either click
+"Connect" and sign in with their Repliz Access Key and Secret Key (OAuth), or
+send those keys as headers. There is nothing for them to install, build, or
+keep updated.
 
 ```
 https://mcp.repliz.com/mcp
@@ -29,7 +30,17 @@ users ever share one.
 MCP client ──(URL + keys)──► this server ──(Basic auth)──► api.repliz.com
 ```
 
-Users authenticate in either of two ways:
+Users authenticate in one of three ways. Keys come from the Repliz dashboard
+under **Settings > API**.
+
+**OAuth** — for Claude.ai, ChatGPT, and any client with a "Connect" button.
+The user adds `https://mcp.repliz.com/mcp` as a connector, a sign-in page opens,
+and they paste their keys there once. Enabled when `REPLIZ_OAUTH_SECRET` is set;
+see [OAuth](#oauth).
+
+**Headers** — for API integrations (the Anthropic Messages API, the OpenAI
+Responses API) and clients with custom-header support (Cursor and most desktop
+clients):
 
 ```http
 Authorization: Basic base64(accessKey:secretKey)
@@ -39,14 +50,6 @@ Authorization: Basic base64(accessKey:secretKey)
 X-Repliz-Access-Key: <accessKey>
 X-Repliz-Secret-Key: <secretKey>
 ```
-
-Keys come from the Repliz dashboard under **Settings > API**.
-
-> **Which clients can send these?**
-> API integrations (the Anthropic Messages API, the OpenAI Responses API) and
-> clients with custom-header support (Cursor and most desktop clients) work
-> directly. The "add custom connector" screens in Claude.ai and ChatGPT are
-> built around OAuth and may not accept arbitrary headers — see [Roadmap](#roadmap).
 
 ---
 
@@ -62,7 +65,10 @@ npm start
 ```
 
 The endpoint is `POST/GET/DELETE /mcp`, plus `GET /health` for monitoring.
-Serve it over HTTPS in production, behind a reverse proxy or platform TLS.
+With OAuth on, the server also answers `/.well-known/oauth-protected-resource/mcp`,
+`/.well-known/oauth-authorization-server`, `/register`, `/authorize`, `/token`,
+and `/oauth/login` (the sign-in form). Serve it over HTTPS in production, behind
+a reverse proxy or platform TLS.
 
 ### Configuration
 
@@ -81,10 +87,52 @@ Everything is optional; the defaults suit a 1 GB VPS.
 | `REPLIZ_MAX_UPLOAD_MB`           | `100`                    | Largest file `repliz_upload_file` will stream through the server    |
 | `REPLIZ_ALLOWED_ORIGINS`         | —                        | Browser origins allowed to call `/mcp`; unset means no CORS headers |
 | `REPLIZ_UPLOAD_HOSTS`            | R2 + Repliz storage      | Hosts accepted as presigned-upload targets                         |
+| `REPLIZ_OAUTH_SECRET`            | —                        | Turns OAuth on; seals every token. At least 32 characters          |
+| `REPLIZ_PUBLIC_URL`              | —                        | Public origin, e.g. `https://mcp.repliz.com`; required with OAuth  |
+| `REPLIZ_OAUTH_ACCESS_TOKEN_MINUTES` | `60`                  | Access token lifetime                                              |
+| `REPLIZ_OAUTH_REFRESH_TOKEN_DAYS`   | `30`                  | How long an unused connection stays signed in                      |
 
 There is deliberately **no variable for the server's own Repliz credentials**.
 A fallback like that would quietly lend the operator's workspace to any caller
 who omitted their keys.
+
+### OAuth
+
+The Repliz API has no OAuth of its own, so this server acts as the
+authorization server and wraps the user's keys:
+
+```
+Claude.ai ──► /mcp: 401 ──► discovery ──► /register ──► /authorize (sign-in page)
+          ◄── code ◄── keys checked against Repliz ◄── user pastes keys
+          ──► /token (PKCE) ──► access + refresh token ──► /mcp with Bearer
+```
+
+To turn it on, add two lines to `.env` and restart:
+
+```bash
+REPLIZ_PUBLIC_URL=https://mcp.repliz.com
+REPLIZ_OAUTH_SECRET=<output of: openssl rand -base64 32>
+```
+
+There is **no token database**. Every client id, authorization code, and token
+is the user's keys (plus expiry and client binding) encrypted with AES-256-GCM
+under `REPLIZ_OAUTH_SECRET`. Only this server can open them, they survive a
+restart, and nothing new needs deploying or backing up. What follows from that:
+
+- **Keep `REPLIZ_OAUTH_SECRET` stable and private.** Changing it signs every
+  OAuth user out — which is also the emergency switch if it leaks.
+- **One token cannot be revoked early.** Instead, access tokens live an hour;
+  each tool call still presents the sealed keys to Repliz, so a key rotated in
+  the Repliz dashboard stops working at once; and a refresh re-checks the keys,
+  sending the client back to the sign-in page. No revocation endpoint is
+  advertised, because it could only pretend.
+- **Refreshing extends the connection.** Each refresh issues a new refresh
+  token, so a connection in regular use stays signed in; one left unused for
+  `REPLIZ_OAUTH_REFRESH_TOKEN_DAYS` has to sign in again.
+
+Clients register themselves (RFC 7591). Accepted redirect URIs are any
+`https://` URL, `http://` on localhost only, and a native app's own scheme such
+as `cursor://`. Header authentication keeps working alongside OAuth.
 
 ### PM2 + Nginx on a VPS
 
@@ -120,11 +168,22 @@ location /mcp {
     proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
 }
+
+# OAuth discovery, sign-in, and token endpoints live at the root.
+location / {
+    proxy_pass http://127.0.0.1:5301;
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
 ```
 
 `$proxy_add_x_forwarded_for` is correct here: the server trusts only loopback,
 so it reads the rightmost untrusted entry and a client cannot forge its way into
-a fresh rate-limit bucket.
+a fresh rate-limit bucket. It matters even more with OAuth on: `/register` allows
+20 registrations per IP per hour, and without `X-Forwarded-For` every user looks
+like `127.0.0.1` and shares that one budget.
 
 ### What a restart does
 
@@ -137,6 +196,7 @@ synchronous call to the Repliz API, so the cost is small:
 | **Mid-request** | That one call fails; retrying works. |
 | **Idle** | The next request gets `404 Session not found`, which the MCP spec defines as "start a new session" — compliant clients re-initialize silently. |
 | **After reconnecting** | Normal. One extra verification call, because the auth cache is empty again. |
+| **OAuth users** | Stay signed in. Their tokens are sealed, not stored, so they open again after a restart. |
 
 Shutdown on `SIGTERM` closes sessions and stops listening in about 0.1s, well
 inside PM2's default `kill_timeout`.
@@ -189,6 +249,15 @@ Because `/mcp` is open to the internet:
   active, the new connect gets `503` rather than cutting someone off.
 - **Requests are rate limited** per IP, counted against the address chosen by
   `REPLIZ_TRUST_PROXY`.
+- **The OAuth sign-in page guards the keys typed into it.** It cannot be framed
+  (`frame-ancestors 'none'`, `X-Frame-Options: DENY`), so a clickjacking
+  overlay cannot trick a user into submitting. Any client can register itself,
+  so the page escapes the client's chosen name and states where the user will be
+  sent next — a client calling itself "Claude" still cannot hide its own
+  redirect host. The form carries the authorization request sealed, so its
+  redirect target cannot be altered, and there is no session cookie for a
+  cross-site request to ride. Sign-in attempts are limited to 10 per IP per
+  minute, and PKCE (S256) is mandatory.
 - **Outbound calls time out**, so a stalled Repliz request cannot pin a session.
 - **Uploads never touch the host's disk.** See [File uploads](#file-uploads).
 - **Clean shutdown** on `SIGTERM` / `SIGINT`.
@@ -256,10 +325,11 @@ npm run build   # compile to dist/
 
 `npm test` covers the parts where a quiet mistake becomes a security hole: the
 SSRF and upload-host guards, credential parsing, the session credential binding,
-and the limits that bound memory. `npm run smoke` covers the wiring — that two
-users stay apart, that a session id alone opens nothing, and that the upload
-guards are reachable through the tool surface. Neither needs credentials or
-network access, and CI runs both.
+the limits that bound memory, and OAuth token sealing, single-use codes, and
+client binding. `npm run smoke` covers the wiring — that two users stay apart,
+that a session id alone opens nothing, that the full OAuth flow works over HTTP,
+and that the upload guards are reachable through the tool surface. Neither needs
+credentials or network access, and CI runs both.
 
 ```
 src/
@@ -269,9 +339,11 @@ src/
   server.ts    # createReplizServer(client)
   config.ts    # env config + per-request credential parsing
   client.ts    # Repliz API client (Basic auth, timeouts, errors)
+  oauth.ts     # OAuth provider: sealed clients, codes, and tokens
+  oauth-page.ts  # the sign-in page and its security headers
   net.ts       # upload-host allowlist and SSRF guards
   tools/       # one module per API domain, registered via tools/index.ts
-test/          # unit tests for config, session, and net
+test/          # unit tests for config, session, oauth, and net
 scripts/
   smoke-test.mjs   # end-to-end check against a stub API
 api.json           # the source OpenAPI spec, kept as reference
@@ -281,9 +353,6 @@ api.json           # the source OpenAPI spec, kept as reference
 
 ## Roadmap
 
-- **OAuth** so users can click "Connect" in Claude.ai and ChatGPT instead of
-  pasting headers. Those consumer UIs favour OAuth; header auth already covers
-  API and custom-header clients.
 - **Shared session store** (Redis) so several replicas can run behind a load
   balancer without sticky sessions.
 

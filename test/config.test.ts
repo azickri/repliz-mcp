@@ -7,10 +7,12 @@ import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import {
   allowedOrigins,
+  bearerTokenFromHeaders,
   credentialsFromHeaders,
   getBaseUrl,
   maxSessions,
   maxUploadBytes,
+  oauthSettings,
   port,
   rateLimitPerMinute,
   sessionIdleMs,
@@ -25,6 +27,10 @@ const ENV_KEYS = [
   "REPLIZ_MAX_UPLOAD_MB",
   "REPLIZ_ALLOWED_ORIGINS",
   "REPLIZ_TRUST_PROXY",
+  "REPLIZ_PUBLIC_URL",
+  "REPLIZ_OAUTH_SECRET",
+  "REPLIZ_OAUTH_ACCESS_TOKEN_MINUTES",
+  "REPLIZ_OAUTH_REFRESH_TOKEN_DAYS",
   "PORT",
 ];
 let saved: Record<string, string | undefined> = {};
@@ -190,4 +196,63 @@ describe("trustProxySetting", () => {
     process.env.REPLIZ_TRUST_PROXY = "10.0.0.0/8";
     assert.equal(trustProxySetting(), "10.0.0.0/8");
   });
+});
+
+describe("bearerTokenFromHeaders", () => {
+  test("reads an Authorization: Bearer header in any capitalisation", () => {
+    assert.equal(bearerTokenFromHeaders({ authorization: "Bearer abc.def" }), "abc.def");
+    assert.equal(bearerTokenFromHeaders({ authorization: "bearer abc" }), "abc");
+  });
+
+  test("ignores Basic credentials and malformed values", () => {
+    assert.equal(bearerTokenFromHeaders({ authorization: basic("k", "s") }), null);
+    assert.equal(bearerTokenFromHeaders({ authorization: "Bearer" }), null);
+    assert.equal(bearerTokenFromHeaders({ authorization: "Bearer a b" }), null);
+    assert.equal(bearerTokenFromHeaders({}), null);
+  });
+});
+
+describe("oauthSettings", () => {
+  const SECRET = "x".repeat(32);
+
+  test("is off when no secret is set", () => {
+    process.env.REPLIZ_PUBLIC_URL = "https://mcp.repliz.com";
+    assert.equal(oauthSettings(), null);
+  });
+
+  test("reads the public URL, secret, and token lifetimes", () => {
+    process.env.REPLIZ_OAUTH_SECRET = SECRET;
+    process.env.REPLIZ_PUBLIC_URL = "https://mcp.repliz.com/";
+    const settings = oauthSettings();
+    assert.equal(settings?.publicUrl.origin, "https://mcp.repliz.com");
+    assert.equal(settings?.accessTokenMs, 60 * 60_000);
+    assert.equal(settings?.refreshTokenMs, 30 * 86_400_000);
+
+    process.env.REPLIZ_OAUTH_ACCESS_TOKEN_MINUTES = "15";
+    process.env.REPLIZ_OAUTH_REFRESH_TOKEN_DAYS = "7";
+    assert.equal(oauthSettings()?.accessTokenMs, 15 * 60_000);
+    assert.equal(oauthSettings()?.refreshTokenMs, 7 * 86_400_000);
+  });
+
+  test("accepts plain http only for localhost", () => {
+    process.env.REPLIZ_OAUTH_SECRET = SECRET;
+    process.env.REPLIZ_PUBLIC_URL = "http://localhost:5301";
+    assert.equal(oauthSettings()?.publicUrl.origin, "http://localhost:5301");
+  });
+
+  // A half-finished setup must stop the server at startup, not at a user's first connect.
+  const broken: Array<[string, string | undefined, string | undefined, RegExp]> = [
+    ["a short secret", "too-short", "https://mcp.repliz.com", /at least 32/],
+    ["a secret without a public URL", SECRET, undefined, /REPLIZ_PUBLIC_URL is not/],
+    ["an unparseable public URL", SECRET, "not a url", /not a valid URL/],
+    ["a public URL with a path", SECRET, "https://mcp.repliz.com/mcp", /no path/],
+    ["a plain-http public host", SECRET, "http://mcp.repliz.com", /https/],
+  ];
+  for (const [name, secret, url, message] of broken) {
+    test(`throws on ${name}`, () => {
+      if (secret !== undefined) process.env.REPLIZ_OAUTH_SECRET = secret;
+      if (url !== undefined) process.env.REPLIZ_PUBLIC_URL = url;
+      assert.throws(() => oauthSettings(), message);
+    });
+  }
 });
