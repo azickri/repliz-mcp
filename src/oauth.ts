@@ -5,10 +5,12 @@
  * The Repliz API has no OAuth of its own — only an Access Key and Secret Key —
  * so this server is the authorization server. Its sign-in page asks for the
  * user's keys, checks them against Repliz, and seals them into the tokens it
- * issues. Every client id, authorization code, and token is AES-256-GCM
- * ciphertext under REPLIZ_OAUTH_SECRET, which keeps the server storage-free:
- * a token carries everything needed to serve it, survives a restart, and is
- * unreadable to anyone but this server.
+ * issues. Every authorization code and token, and the client id of every
+ * client that registers itself, is AES-256-GCM ciphertext under
+ * REPLIZ_OAUTH_SECRET, which keeps the server storage-free: a token carries
+ * everything needed to serve it, survives a restart, and is unreadable to
+ * anyone but this server. Clients that identify themselves with a metadata
+ * document URL instead (CIMD) are looked up from that URL.
  *
  * The price of holding no state is that a single token cannot be revoked
  * early. That is bounded three ways: access tokens are short-lived; every tool
@@ -42,6 +44,7 @@ import {
   ServerError,
 } from "@modelcontextprotocol/sdk/server/auth/errors.js";
 import type { ReplizCredentials } from "./config.js";
+import { assertPublicUrl } from "./net.js";
 import { renderMessagePage, renderSignInPage, sendPage } from "./oauth-page.js";
 
 // ─── Sealing ────────────────────────────────────────────────────────────────
@@ -153,6 +156,150 @@ function withParams(uri: string, params: Record<string, string | undefined>): st
   return url.href;
 }
 
+/**
+ * Add the issuer to an authorization response (RFC 9207), so a client talking
+ * to several servers can tell which one answered. Advertising support promises
+ * it on every response, errors included.
+ */
+export function withIssuer(location: string, issuer: string): string {
+  const url = new URL(location);
+  if (!url.searchParams.has("iss")) url.searchParams.set("iss", issuer);
+  return url.href;
+}
+
+// ─── Client ID Metadata Documents ───────────────────────────────────────────
+// A client may use an HTTPS URL as its client_id; the document at that URL
+// describes it (draft-ietf-oauth-client-id-metadata-document). Claude and
+// ChatGPT prefer this to registering, and it costs this server nothing to
+// store: the document is fetched when needed and cached briefly.
+
+const CIMD_MAX_BYTES = 5 * 1024;
+const CIMD_TIMEOUT_MS = 5_000;
+const CIMD_CACHE_DEFAULT_MS = 60 * 60_000;
+const CIMD_CACHE_MIN_MS = 60_000;
+const CIMD_CACHE_MAX_MS = 24 * 60 * 60_000;
+const CIMD_CACHE_ENTRIES = 500;
+
+/** A fetched metadata document and how long it may be cached. */
+export interface FetchedMetadata {
+  body: unknown;
+  maxAgeMs?: number;
+}
+
+export type MetadataFetcher = (url: URL) => Promise<FetchedMetadata>;
+
+/** True when a client_id is a metadata document URL rather than one this server issued. */
+export function isMetadataDocumentUrl(clientId: string): boolean {
+  return clientId.startsWith("https://");
+}
+
+/** Why a URL cannot serve as a client_id, or null if it can. */
+export function clientIdUrlProblem(clientId: string): string | null {
+  if (clientId.length > MAX_REDIRECT_URI_LENGTH) return `longer than ${MAX_REDIRECT_URI_LENGTH} characters`;
+  let url: URL;
+  try {
+    url = new URL(clientId);
+  } catch {
+    return "not a valid URL";
+  }
+  if (url.protocol !== "https:") return "must use https";
+  if (url.username || url.password) return "must not contain credentials";
+  if (clientId.includes("#")) return "must not contain a fragment";
+  if (url.pathname === "/") return "must have a path";
+  // Exact comparison with the document's own client_id only works on one
+  // spelling, so dot segments, an uppercase host and the like are refused.
+  if (url.href !== clientId) return "must be in canonical form";
+  return null;
+}
+
+function cacheLifetime(cacheControl: string | null): number | undefined {
+  const maxAge = cacheControl?.match(/max-age=(\d+)/i);
+  return maxAge ? Number(maxAge[1]) * 1000 : undefined;
+}
+
+async function readCapped(response: globalThis.Response, limit: number): Promise<string> {
+  const reader = response.body?.getReader();
+  if (!reader) return "";
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > limit) {
+      await reader.cancel().catch(() => {});
+      throw new Error(`larger than ${limit} bytes`);
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks).toString("utf8");
+}
+
+/**
+ * Fetch a metadata document from the internet. The client_id is chosen by
+ * whoever starts an authorization, so this is the same guarded fetch as an
+ * upload source: public addresses only, no redirects, a short timeout and a
+ * small size cap. Nothing fetched is ever relayed back to the caller.
+ */
+export async function fetchClientMetadata(url: URL): Promise<FetchedMetadata> {
+  await assertPublicUrl(url.href, "client metadata document");
+  const response = await fetch(url, {
+    headers: { Accept: "application/json" },
+    redirect: "error", // a redirect could land on a private address
+    signal: AbortSignal.timeout(CIMD_TIMEOUT_MS),
+  });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const text = await readCapped(response, CIMD_MAX_BYTES);
+  return { body: JSON.parse(text), maxAgeMs: cacheLifetime(response.headers.get("cache-control")) };
+}
+
+/** What a valid metadata document says, reduced to what this server uses. */
+interface MetadataClient {
+  redirectUris: string[];
+  name: string;
+}
+
+/** Check a fetched document against its URL; throws with the reason it is refused. */
+export function validateClientMetadata(clientId: string, document: unknown): MetadataClient {
+  if (typeof document !== "object" || document === null || Array.isArray(document)) {
+    throw new Error("not a JSON object");
+  }
+  const doc = document as Record<string, unknown>;
+  if (doc.client_id !== clientId) throw new Error("its client_id does not match the URL it was fetched from");
+  if (doc.client_secret !== undefined || doc.client_secret_expires_at !== undefined) {
+    throw new Error("it contains a client secret, which a public document must not");
+  }
+
+  const uris = doc.redirect_uris;
+  if (
+    !Array.isArray(uris) ||
+    uris.length === 0 ||
+    uris.length > MAX_REDIRECT_URIS ||
+    !uris.every((uri): uri is string => typeof uri === "string")
+  ) {
+    throw new Error(`redirect_uris must list between 1 and ${MAX_REDIRECT_URIS} URIs`);
+  }
+  for (const uri of uris) {
+    const problem = redirectUriProblem(uri);
+    if (problem) throw new Error(`redirect_uri ${JSON.stringify(uri)} is not allowed: ${problem}`);
+  }
+
+  // Of the methods the client can use, this server takes only "none": a
+  // public client, protected by PKCE. ChatGPT lists several in the plural
+  // field; a client that can only authenticate another way is refused.
+  const methods = Array.isArray(doc.token_endpoint_auth_methods_supported)
+    ? doc.token_endpoint_auth_methods_supported
+    : typeof doc.token_endpoint_auth_method === "string"
+      ? [doc.token_endpoint_auth_method]
+      : ["none"];
+  if (!methods.includes("none")) {
+    throw new Error("it doesn't allow token_endpoint_auth_method 'none', the only one this server accepts");
+  }
+
+  const name = typeof doc.client_name === "string" ? doc.client_name.trim().slice(0, MAX_CLIENT_NAME_LENGTH) : "";
+  return { redirectUris: uris, name: name || new URL(clientId).hostname };
+}
+
 // ─── Single-use codes ───────────────────────────────────────────────────────
 
 /**
@@ -207,6 +354,8 @@ interface SignInRequest {
   /** hash of the client_id — client ids carry metadata and can be long */
   c: string;
   n?: string;
+  /** host that published the client's metadata document, for CIMD clients */
+  h?: string;
   /** redirect_uri */
   r: string;
   /** PKCE code_challenge */
@@ -237,12 +386,16 @@ interface CodeGrant extends Grant {
 
 export interface ReplizOAuthOptions {
   secret: string;
+  /** This authorization server's issuer, exactly as its metadata states it. */
+  issuer: string;
   /** The protected MCP endpoint, e.g. https://mcp.repliz.com/mcp. */
   resourceUrl: URL;
   accessTokenMs: number;
   refreshTokenMs: number;
   /** Check keys against Repliz: false when rejected, throws when Repliz is unreachable. */
   verifyCredentials: (creds: ReplizCredentials) => Promise<boolean>;
+  /** Fetch a client metadata document; defaults to a guarded fetch from the internet. */
+  fetchClientMetadata?: MetadataFetcher;
 }
 
 export type SignInResult =
@@ -262,6 +415,8 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
   readonly clientsStore: OAuthRegisteredClientsStore;
   private readonly sealer: Sealer;
   private readonly usedCodes = new UsedCodes();
+  private readonly metadataCache = new Map<string, { client: MetadataClient; expiresAt: number }>();
+  private readonly metadataInFlight = new Map<string, Promise<MetadataClient | undefined>>();
 
   constructor(private readonly options: ReplizOAuthOptions) {
     this.sealer = new Sealer(options.secret);
@@ -297,9 +452,65 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
     return { ...client, ...this.clientInfo(clientId, record) };
   }
 
-  private getClient(clientId: string): OAuthClientInformationFull | undefined {
+  private async getClient(clientId: string): Promise<OAuthClientInformationFull | undefined> {
+    if (isMetadataDocumentUrl(clientId)) {
+      const client = await this.metadataClient(clientId);
+      return client
+        ? {
+            client_id: clientId,
+            client_name: client.name,
+            redirect_uris: client.redirectUris,
+            grant_types: ["authorization_code", "refresh_token"],
+            response_types: ["code"],
+            token_endpoint_auth_method: "none",
+          }
+        : undefined;
+    }
     const record = this.sealer.open<ClientRecord>("client", clientId);
     return record ? this.clientInfo(clientId, record) : undefined;
+  }
+
+  /**
+   * The client a metadata document describes, from the cache or fetched now.
+   * Concurrent requests for one URL share a single fetch. A refused document
+   * is logged and treated as an unknown client, which the SDK reports as
+   * invalid_client.
+   */
+  private async metadataClient(clientId: string, now = Date.now()): Promise<MetadataClient | undefined> {
+    const cached = this.metadataCache.get(clientId);
+    if (cached && cached.expiresAt > now) return cached.client;
+
+    const pending = this.metadataInFlight.get(clientId);
+    if (pending) return pending;
+
+    const load = (async () => {
+      try {
+        const problem = clientIdUrlProblem(clientId);
+        if (problem) throw new Error(`the client_id URL ${problem}`);
+        const fetched = await (this.options.fetchClientMetadata ?? fetchClientMetadata)(new URL(clientId));
+        const client = validateClientMetadata(clientId, fetched.body);
+        const lifetime = Math.min(
+          CIMD_CACHE_MAX_MS,
+          Math.max(CIMD_CACHE_MIN_MS, fetched.maxAgeMs ?? CIMD_CACHE_DEFAULT_MS)
+        );
+        if (this.metadataCache.size >= CIMD_CACHE_ENTRIES) {
+          const oldest = this.metadataCache.keys().next().value;
+          if (oldest !== undefined) this.metadataCache.delete(oldest);
+        }
+        this.metadataCache.delete(clientId);
+        this.metadataCache.set(clientId, { client, expiresAt: Date.now() + lifetime });
+        return client;
+      } catch (err) {
+        console.error(
+          `[oauth] refused client metadata document ${clientId}: ${err instanceof Error ? err.message : err}`
+        );
+        return undefined;
+      } finally {
+        this.metadataInFlight.delete(clientId);
+      }
+    })();
+    this.metadataInFlight.set(clientId, load);
+    return load;
   }
 
   private clientInfo(clientId: string, record: ClientRecord): OAuthClientInformationFull {
@@ -335,6 +546,7 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
     const request: SignInRequest = {
       c: clientHash(client.client_id),
       n: client.client_name,
+      h: isMetadataDocumentUrl(client.client_id) ? new URL(client.client_id).host : undefined,
       r: params.redirectUri,
       ch: params.codeChallenge,
       st: params.state,
@@ -342,7 +554,11 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
       rs: params.resource?.href,
     };
     const sealed = this.sealer.seal("signin", request, SIGN_IN_TTL_MS);
-    sendPage(res, 200, renderSignInPage({ request: sealed, clientName: request.n, redirectUri: request.r }));
+    sendPage(
+      res,
+      200,
+      renderSignInPage({ request: sealed, clientName: request.n, clientHost: request.h, redirectUri: request.r })
+    );
   }
 
   /**
@@ -375,6 +591,7 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
           error: "access_denied",
           error_description: "The user declined to connect their Repliz workspace.",
           state: request.st,
+          iss: this.options.issuer,
         }),
       };
     }
@@ -384,7 +601,14 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
     const retry = (status: number, error: string): SignInResult => ({
       type: "page",
       status,
-      html: renderSignInPage({ request: sealedRequest, clientName: request.n, redirectUri: request.r, accessKey, error }),
+      html: renderSignInPage({
+        request: sealedRequest,
+        clientName: request.n,
+        clientHost: request.h,
+        redirectUri: request.r,
+        accessKey,
+        error,
+      }),
     });
 
     if (!accessKey || !secretKey) return retry(400, "Enter both your Access Key and your Secret Key.");
@@ -410,7 +634,10 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
       j: randomBytes(16).toString("base64url"),
     };
     const code = this.sealer.seal("code", grant, CODE_TTL_MS);
-    return { type: "redirect", location: withParams(request.r, { code, state: request.st }) };
+    return {
+      type: "redirect",
+      location: withParams(request.r, { code, state: request.st, iss: this.options.issuer }),
+    };
   }
 
   // ── Tokens ────────────────────────────────────────────────────────────────
@@ -511,8 +738,11 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
   // No revokeToken: with nothing stored, a revoke endpoint could only pretend.
   // Leaving it out keeps the metadata honest about that.
 
-  /** Drop expired single-use bookkeeping. */
+  /** Drop expired single-use bookkeeping and stale metadata documents. */
   sweep(now = Date.now()): void {
     this.usedCodes.sweep(now);
+    for (const [clientId, entry] of this.metadataCache) {
+      if (entry.expiresAt <= now) this.metadataCache.delete(clientId);
+    }
   }
 }

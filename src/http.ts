@@ -22,7 +22,11 @@
 import express, { type Request, type Response, type NextFunction } from "express";
 import { randomUUID } from "node:crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
-import { getOAuthProtectedResourceMetadataUrl, mcpAuthRouter } from "@modelcontextprotocol/sdk/server/auth/router.js";
+import {
+  createOAuthMetadata,
+  getOAuthProtectedResourceMetadataUrl,
+  mcpAuthRouter,
+} from "@modelcontextprotocol/sdk/server/auth/router.js";
 import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { ReplizClient } from "./client.js";
 import { createReplizServer } from "./server.js";
@@ -39,7 +43,7 @@ import {
   trustProxySetting,
   type ReplizCredentials,
 } from "./config.js";
-import { ReplizOAuthProvider } from "./oauth.js";
+import { ReplizOAuthProvider, withIssuer } from "./oauth.js";
 import { SIGN_IN_PATH, renderMessagePage, sendPage } from "./oauth-page.js";
 import { AuthCache, RateLimiter, SessionStore, fingerprint, sameFingerprint } from "./session.js";
 
@@ -124,15 +128,48 @@ export async function runHttp(): Promise<void> {
   let resourceMetadataUrl: string | undefined;
   if (oauth) {
     const resourceUrl = new URL(MCP_PATH, oauth.publicUrl);
+    // The SDK publishes the issuer as the URL's href; RFC 9207 needs the same string.
+    const issuer = oauth.publicUrl.href;
     resourceMetadataUrl = getOAuthProtectedResourceMetadataUrl(resourceUrl);
     const oauthProvider = new ReplizOAuthProvider({
       secret: oauth.secret,
+      issuer,
       resourceUrl,
       accessTokenMs: oauth.accessTokenMs,
       refreshTokenMs: oauth.refreshTokenMs,
       verifyCredentials: checkCredentials,
     });
     provider = oauthProvider;
+
+    // The SDK's router serves this document too, but has no way to advertise
+    // Client ID Metadata Documents or RFC 9207. Registered first, this answers.
+    const authServerMetadata = {
+      ...createOAuthMetadata({ provider: oauthProvider, issuerUrl: oauth.publicUrl }),
+      client_id_metadata_document_supported: true,
+      authorization_response_iss_parameter_supported: true,
+    };
+    app.get("/.well-known/oauth-authorization-server", (_req: Request, res: Response) => {
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.json(authServerMetadata);
+    });
+
+    // RFC 9207 promises the issuer on every authorization response. Ours carry
+    // it already; this adds it to the error redirects the SDK sends itself.
+    app.use("/authorize", (_req: Request, res: Response, next: NextFunction) => {
+      const redirect = res.redirect.bind(res) as (status: number, url: string) => void;
+      const addIssuer = (url: string) => {
+        try {
+          return withIssuer(url, issuer);
+        } catch {
+          return url;
+        }
+      };
+      res.redirect = ((statusOrUrl: number | string, url?: string) =>
+        typeof statusOrUrl === "number"
+          ? redirect(statusOrUrl, addIssuer(url ?? ""))
+          : redirect(302, addIssuer(statusOrUrl))) as Response["redirect"];
+      next();
+    });
 
     app.use(
       mcpAuthRouter({

@@ -21,6 +21,7 @@ export function registerCommentTools(ctx: ToolContext): void {
     "repliz_list_comments",
     {
       title: "List Comments",
+      effect: "read",
       description:
         "List comments in your Repliz inbox across connected accounts. Supports pagination and filtering by status, account(s), and search term.",
       inputSchema: {
@@ -52,6 +53,7 @@ export function registerCommentTools(ctx: ToolContext): void {
     "repliz_get_comment",
     {
       title: "Get Comment",
+      effect: "read",
       description: "Get the full details of a single comment by its id.",
       inputSchema: {
         commentId: z.string().describe("The comment id."),
@@ -65,6 +67,7 @@ export function registerCommentTools(ctx: ToolContext): void {
     "repliz_reply_comment",
     {
       title: "Reply to Comment",
+      effect: "additive",
       description:
         "Post a public reply to a comment. The reply is published to the original platform (Facebook, Instagram, etc.). " +
         "Add `image` { url, mimetype, thumbnail? } to send a picture with the text on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
@@ -86,6 +89,7 @@ export function registerCommentTools(ctx: ToolContext): void {
     "repliz_update_comment_status",
     {
       title: "Update Comment Status",
+      effect: "destructive",
       description:
         "Update the handling status of a comment in your Repliz inbox (pending, resolved, or ignored).",
       inputSchema: {
@@ -104,6 +108,7 @@ export function registerCommentTools(ctx: ToolContext): void {
     "repliz_delete_comment",
     {
       title: "Delete Comment",
+      effect: "destructive",
       description:
         "Delete a comment from the social media platform by its id. Irreversible — confirm with the user before calling.",
       inputSchema: {

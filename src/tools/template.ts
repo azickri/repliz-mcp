@@ -9,6 +9,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
     'repliz_list_templates',
     {
       title: 'List Automation Templates',
+      effect: 'read',
       description:
         'Retrieve a list of automation templates. Useful for browsing and selecting templates before creating or configuring automations.',
       inputSchema: {
@@ -41,6 +42,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
     'repliz_create_template',
     {
       title: 'Create Automation Template',
+      effect: 'additive',
       description:
         'Create a new reusable automation template containing configuration and content rules for content automations.',
       inputSchema: {
@@ -66,6 +68,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
     'repliz_get_template',
     {
       title: 'Get Automation Template',
+      effect: 'read',
       description:
         'Retrieve detailed information and configuration of a specific automation template by its id.',
       inputSchema: {
@@ -81,6 +84,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
     'repliz_update_template',
     {
       title: 'Update Automation Template',
+      effect: 'destructive',
       description:
         'Update the configuration or rules of an existing automation template.',
       inputSchema: {
@@ -108,6 +112,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
     'repliz_delete_template',
     {
       title: 'Delete Automation Template',
+      effect: 'destructive',
       description:
         'Delete an automation template. Irreversible — confirm before calling.',
       inputSchema: {

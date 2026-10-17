@@ -3,6 +3,7 @@
  */
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import type { ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 import type { ZodRawShape } from "zod";
 import { ReplizApiError, type ReplizClient } from "../client.js";
 
@@ -10,6 +11,23 @@ export interface ToolContext {
   server: McpServer;
   client: ReplizClient;
 }
+
+/**
+ * What a tool does to the user's workspace. Clients decide what to ask before
+ * running a tool from the annotations this maps to — ChatGPT, for one, asks
+ * for confirmation before every tool not marked read-only.
+ *
+ *   read         only reads
+ *   additive     creates or sends something, leaving what exists as it was
+ *   destructive  changes or removes something that exists
+ */
+export type ToolEffect = "read" | "additive" | "destructive";
+
+const ANNOTATIONS: Record<ToolEffect, ToolAnnotations> = {
+  read: { readOnlyHint: true },
+  additive: { readOnlyHint: false, destructiveHint: false },
+  destructive: { readOnlyHint: false, destructiveHint: true },
+};
 
 type McpContent =
   | { type: "text"; text: string }
@@ -61,7 +79,7 @@ function formatData(data: unknown): string {
 export function registerTool<TShape extends ZodRawShape>(
   ctx: ToolContext,
   name: string,
-  meta: { title: string; description: string; inputSchema: TShape },
+  meta: { title: string; effect: ToolEffect; description: string; inputSchema: TShape },
   handler: (args: { [K in keyof TShape]: ReturnTypeOf<TShape[K]> }) => Promise<unknown>
 ): void {
   ctx.server.registerTool(
@@ -70,6 +88,7 @@ export function registerTool<TShape extends ZodRawShape>(
       title: meta.title,
       description: meta.description,
       inputSchema: meta.inputSchema,
+      annotations: ANNOTATIONS[meta.effect],
     },
     // The SDK validates args against inputSchema before calling us.
     (async (args: any) => {

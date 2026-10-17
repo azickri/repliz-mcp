@@ -4,7 +4,7 @@
  * user's workspace and everyone else. Pinned here without network or Express.
  */
 
-import { test, describe } from "node:test";
+import { test, describe, beforeEach, afterEach, mock } from "node:test";
 import assert from "node:assert/strict";
 import type { Response } from "express";
 import type { OAuthClientInformationFull } from "@modelcontextprotocol/sdk/shared/auth.js";
@@ -15,10 +15,22 @@ import {
   InvalidTokenError,
   ServerError,
 } from "@modelcontextprotocol/sdk/server/auth/errors.js";
-import { ReplizOAuthProvider, Sealer, UsedCodes, redirectUriProblem, type SignInResult } from "../src/oauth.js";
+import {
+  ReplizOAuthProvider,
+  Sealer,
+  UsedCodes,
+  clientIdUrlProblem,
+  redirectUriProblem,
+  validateClientMetadata,
+  withIssuer,
+  type FetchedMetadata,
+  type MetadataFetcher,
+  type SignInResult,
+} from "../src/oauth.js";
 import { describeDestination, escapeHtml } from "../src/oauth-page.js";
 
 const SECRET = "test-secret-that-is-at-least-32-characters-long";
+const ISSUER = "https://mcp.repliz.com/";
 const RESOURCE = new URL("https://mcp.repliz.com/mcp");
 const REDIRECT = "https://claude.ai/api/mcp/auth_callback";
 const KEYS = { accessKey: "ak-123", secretKey: "sk-456" };
@@ -140,13 +152,15 @@ describe("UsedCodes", () => {
 type Verify = (creds: { accessKey: string; secretKey: string }) => Promise<boolean>;
 const acceptKeys: Verify = async (c) => c.accessKey === KEYS.accessKey && c.secretKey === KEYS.secretKey;
 
-function makeProvider(verify: Verify = acceptKeys) {
+function makeProvider(verify: Verify = acceptKeys, fetchClientMetadata?: MetadataFetcher) {
   return new ReplizOAuthProvider({
     secret: SECRET,
+    issuer: ISSUER,
     resourceUrl: RESOURCE,
     accessTokenMs: 60 * 60_000,
     refreshTokenMs: 30 * 86_400_000,
     verifyCredentials: (creds) => verify(creds),
+    fetchClientMetadata,
   });
 }
 
@@ -197,12 +211,13 @@ const sealedRequestFrom = (html: string) => {
 async function signIn(
   provider: ReplizOAuthProvider,
   client: OAuthClientInformationFull,
-  form: Record<string, string> = { access_key: KEYS.accessKey, secret_key: KEYS.secretKey }
+  form: Record<string, string> = { access_key: KEYS.accessKey, secret_key: KEYS.secretKey },
+  redirectUri = REDIRECT
 ): Promise<SignInResult> {
   const { res, captured } = fakeResponse();
   await provider.authorize(
     client,
-    { redirectUri: REDIRECT, codeChallenge: "challenge-abc", state: "state-xyz", scopes: [], resource: RESOURCE },
+    { redirectUri, codeChallenge: "challenge-abc", state: "state-xyz", scopes: [], resource: RESOURCE },
     res
   );
   return provider.completeSignIn({ request: sealedRequestFrom(captured.html), ...form });
@@ -213,6 +228,7 @@ async function codeFor(provider: ReplizOAuthProvider, client: OAuthClientInforma
   assert.equal(result.type, "redirect");
   const url = new URL((result as { location: string }).location);
   assert.equal(url.searchParams.get("state"), "state-xyz");
+  assert.equal(url.searchParams.get("iss"), ISSUER, "the issuer rides along (RFC 9207)");
   return url.searchParams.get("code")!;
 }
 
@@ -331,6 +347,7 @@ describe("sign-in", () => {
     const url = new URL((result as { location: string }).location);
     assert.equal(url.searchParams.get("error"), "access_denied");
     assert.equal(url.searchParams.get("state"), "state-xyz");
+    assert.equal(url.searchParams.get("iss"), ISSUER, "errors carry the issuer too");
     assert.equal(url.searchParams.get("code"), null);
   });
 
@@ -433,6 +450,7 @@ describe("tokens", () => {
   test("tokens from a server with a different secret are worthless here", async () => {
     const elsewhere = new ReplizOAuthProvider({
       secret: "a-completely-different-secret-of-32-chars",
+      issuer: ISSUER,
       resourceUrl: RESOURCE,
       accessTokenMs: 60_000,
       refreshTokenMs: 60_000,
@@ -441,5 +459,183 @@ describe("tokens", () => {
     const client = await register(elsewhere);
     const tokens = await elsewhere.exchangeAuthorizationCode(client, await codeFor(elsewhere, client));
     assert.equal(makeProvider().credentialsFromAccessToken(tokens.access_token), null);
+  });
+});
+
+// ─── RFC 9207 and Client ID Metadata Documents ────────────────────────────
+
+describe("withIssuer", () => {
+  test("adds the issuer to a redirect", () => {
+    const url = new URL(withIssuer("https://claude.ai/cb?error=access_denied&state=s", ISSUER));
+    assert.equal(url.searchParams.get("iss"), ISSUER);
+    assert.equal(url.searchParams.get("state"), "s");
+  });
+
+  test("leaves an issuer that is already there", () => {
+    const url = new URL(withIssuer(`https://claude.ai/cb?iss=${encodeURIComponent(ISSUER)}`, "https://other/"));
+    assert.equal(url.searchParams.getAll("iss").length, 1);
+    assert.equal(url.searchParams.get("iss"), ISSUER);
+  });
+});
+
+// The documents Claude Code and ChatGPT publish, as fetched in October 2026.
+const CLAUDE_CODE_ID = "https://claude.ai/oauth/claude-code-client-metadata";
+const CLAUDE_CODE_DOC = {
+  client_id: CLAUDE_CODE_ID,
+  client_name: "Claude Code",
+  client_uri: "https://claude.ai",
+  redirect_uris: ["http://localhost/callback", "http://127.0.0.1/callback"],
+  grant_types: ["authorization_code", "refresh_token"],
+  response_types: ["code"],
+  token_endpoint_auth_method: "none",
+};
+const CHATGPT_ID = "https://chatgpt.com/oauth/client.json";
+const CHATGPT_DOC = {
+  client_id: CHATGPT_ID,
+  client_uri: "https://chatgpt.com/",
+  redirect_uris: ["https://chatgpt.com/connector_platform_oauth_redirect"],
+  token_endpoint_auth_method: "private_key_jwt",
+  token_endpoint_auth_methods_supported: ["none", "private_key_jwt"],
+  grant_types: ["authorization_code", "refresh_token"],
+  response_types: ["code"],
+  client_name: "ChatGPT",
+  token_endpoint_auth_signing_alg: "RS256",
+  jwks_uri: "https://chatgpt.com/oauth/jwks.json",
+};
+
+describe("clientIdUrlProblem", () => {
+  for (const id of [CLAUDE_CODE_ID, CHATGPT_ID, "https://example.com:8443/client.json"]) {
+    test(`accepts ${id}`, () => assert.equal(clientIdUrlProblem(id), null));
+  }
+  const refused = [
+    "http://example.com/client.json",
+    "https://example.com",
+    "https://example.com/",
+    "https://user:pass@example.com/client.json",
+    "https://example.com/client.json#x",
+    "https://example.com/a/../client.json",
+    "https://EXAMPLE.com/client.json",
+  ];
+  for (const id of refused) {
+    test(`refuses ${id}`, () => assert.notEqual(clientIdUrlProblem(id), null));
+  }
+});
+
+describe("validateClientMetadata", () => {
+  test("accepts Claude Code's document", () => {
+    const client = validateClientMetadata(CLAUDE_CODE_ID, CLAUDE_CODE_DOC);
+    assert.equal(client.name, "Claude Code");
+    assert.deepEqual(client.redirectUris, CLAUDE_CODE_DOC.redirect_uris);
+  });
+
+  test("accepts ChatGPT's document, which allows 'none' among its methods", () => {
+    assert.equal(validateClientMetadata(CHATGPT_ID, CHATGPT_DOC).name, "ChatGPT");
+  });
+
+  test("falls back to the host when there is no client_name", () => {
+    const { client_name: _, ...doc } = CLAUDE_CODE_DOC;
+    assert.equal(validateClientMetadata(CLAUDE_CODE_ID, doc).name, "claude.ai");
+  });
+
+  const refused: Array<[string, unknown]> = [
+    ["a document for another URL", { ...CLAUDE_CODE_DOC, client_id: "https://evil.example.com/client.json" }],
+    ["a document with a client secret", { ...CLAUDE_CODE_DOC, client_secret: "s" }],
+    ["a client that can only use private_key_jwt", { ...CLAUDE_CODE_DOC, token_endpoint_auth_method: "private_key_jwt" }],
+    ["a disallowed redirect URI", { ...CLAUDE_CODE_DOC, redirect_uris: ["http://evil.example.com/cb"] }],
+    ["no redirect URIs", { ...CLAUDE_CODE_DOC, redirect_uris: [] }],
+    ["an array", [CLAUDE_CODE_DOC]],
+    ["a string", "hello"],
+  ];
+  for (const [name, doc] of refused) {
+    test(`refuses ${name}`, () => assert.throws(() => validateClientMetadata(CLAUDE_CODE_ID, doc)));
+  }
+});
+
+/** A fetcher serving fixed documents, counting how often it is asked. */
+function fakeFetcher(documents: Record<string, unknown>, maxAgeMs?: number) {
+  const calls: string[] = [];
+  const fetcher: MetadataFetcher = async (url): Promise<FetchedMetadata> => {
+    calls.push(url.href);
+    await new Promise((resolve) => setImmediate(resolve));
+    if (!(url.href in documents)) throw new Error("HTTP 404");
+    return { body: documents[url.href], maxAgeMs };
+  };
+  return { fetcher, calls };
+}
+
+describe("metadata document clients", () => {
+  // Refused documents are logged; keep the test output clean.
+  beforeEach(() => mock.method(console, "error", () => {}));
+  afterEach(() => mock.restoreAll());
+
+  test("a URL client_id resolves to the client its document describes", async () => {
+    const { fetcher } = fakeFetcher({ [CLAUDE_CODE_ID]: CLAUDE_CODE_DOC });
+    const client = await makeProvider(acceptKeys, fetcher).clientsStore.getClient(CLAUDE_CODE_ID);
+    assert.equal(client?.client_name, "Claude Code");
+    assert.deepEqual(client?.redirect_uris, CLAUDE_CODE_DOC.redirect_uris);
+    assert.equal(client?.token_endpoint_auth_method, "none");
+    assert.equal(client?.client_secret, undefined, "a public client, protected by PKCE");
+  });
+
+  test("documents are cached, and concurrent lookups share one fetch", async () => {
+    const { fetcher, calls } = fakeFetcher({ [CHATGPT_ID]: CHATGPT_DOC });
+    const provider = makeProvider(acceptKeys, fetcher);
+    await Promise.all([1, 2, 3].map(() => provider.clientsStore.getClient(CHATGPT_ID)));
+    await provider.clientsStore.getClient(CHATGPT_ID);
+    assert.equal(calls.length, 1);
+  });
+
+  test("the cache expires, and sweep drops what has", async () => {
+    const { fetcher, calls } = fakeFetcher({ [CHATGPT_ID]: CHATGPT_DOC });
+    const provider = makeProvider(acceptKeys, fetcher);
+    await provider.clientsStore.getClient(CHATGPT_ID);
+    provider.sweep(Date.now() + 2 * 60 * 60_000);
+    await provider.clientsStore.getClient(CHATGPT_ID);
+    assert.equal(calls.length, 2);
+  });
+
+  test("an unreachable or refused document means an unknown client", async () => {
+    const { fetcher } = fakeFetcher({ [CLAUDE_CODE_ID]: { ...CLAUDE_CODE_DOC, client_id: "https://evil.example.com/x" } });
+    const provider = makeProvider(acceptKeys, fetcher);
+    assert.equal(await provider.clientsStore.getClient(CLAUDE_CODE_ID), undefined);
+    assert.equal(await provider.clientsStore.getClient("https://missing.example.com/client.json"), undefined);
+  });
+
+  test("a malformed client_id URL is refused without fetching anything", async () => {
+    const { fetcher, calls } = fakeFetcher({});
+    const provider = makeProvider(acceptKeys, fetcher);
+    assert.equal(await provider.clientsStore.getClient("https://example.com/a/../client.json"), undefined);
+    assert.equal(calls.length, 0);
+  });
+
+  test("the sign-in page names the host that published the document", async () => {
+    const { fetcher } = fakeFetcher({ [CLAUDE_CODE_ID]: CLAUDE_CODE_DOC });
+    const provider = makeProvider(acceptKeys, fetcher);
+    const client = (await provider.clientsStore.getClient(CLAUDE_CODE_ID))!;
+    const { res, captured } = fakeResponse();
+    await provider.authorize(client, { redirectUri: "http://localhost:53682/callback", codeChallenge: "c", scopes: [] }, res);
+    assert.match(captured.html, /App details come from <strong>claude\.ai<\/strong>/);
+    assert.match(captured.html, /Connect Claude Code to Repliz/);
+  });
+
+  test("the full flow works for a metadata document client", async () => {
+    const { fetcher } = fakeFetcher({ [CHATGPT_ID]: CHATGPT_DOC });
+    const provider = makeProvider(acceptKeys, fetcher);
+    const client = (await provider.clientsStore.getClient(CHATGPT_ID))!;
+    const result = await signIn(provider, client, undefined, CHATGPT_DOC.redirect_uris[0]);
+    assert.equal(result.type, "redirect");
+    const code = new URL((result as { location: string }).location).searchParams.get("code")!;
+    const tokens = await provider.exchangeAuthorizationCode(client, code, undefined, CHATGPT_DOC.redirect_uris[0], RESOURCE);
+    assert.deepEqual(provider.credentialsFromAccessToken(tokens.access_token), KEYS);
+    const refreshed = await provider.exchangeRefreshToken(client, tokens.refresh_token!);
+    assert.deepEqual(provider.credentialsFromAccessToken(refreshed.access_token), KEYS);
+  });
+
+  test("registered clients are untouched", async () => {
+    const { fetcher, calls } = fakeFetcher({});
+    const provider = makeProvider(acceptKeys, fetcher);
+    const client = await register(provider);
+    assert.ok(await provider.clientsStore.getClient(client.client_id));
+    assert.equal(calls.length, 0);
   });
 });

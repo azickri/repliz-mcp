@@ -22,6 +22,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_get_storage_statistic",
     {
       title: "Get Storage Statistics",
+      effect: "read",
       description:
         "Retrieve storage usage statistics: total files, used bytes, free bytes, and storage limit.",
       inputSchema: {},
@@ -36,6 +37,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_list_files",
     {
       title: "List Storage Files",
+      effect: "read",
       description:
         "List uploaded files with pagination and optional filename search. Each file includes id, filename, size, mimetype, url, and status.",
       inputSchema: {
@@ -59,6 +61,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_get_file",
     {
       title: "Get Storage File",
+      effect: "read",
       description: "Get the full details of a single stored file by its id.",
       inputSchema: {
         fileId: z.string().describe("The file id."),
@@ -75,6 +78,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_init_file",
     {
       title: "Init File Upload",
+      effect: "additive",
       description:
         "Step 1 of 3 — Initialize a file upload session.\n\n" +
         "Provide the filename, file size in bytes, and MIME type. " +
@@ -118,6 +122,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_upload_file",
     {
       title: "Upload File to Presigned URL",
+      effect: "additive",
       description:
         "Step 2 of 3 — Copy a file from a public URL to the presigned URL returned by `repliz_init_file`.\n\n" +
         "This server runs remotely and has no access to your local disk. Host the file at a publicly " +
@@ -208,6 +213,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_complete_file",
     {
       title: "Complete File Upload",
+      effect: "additive",
       description:
         "Step 3 of 3 — Finalize a file upload after the binary has been PUT to the presigned URL.\n\n" +
         "Provide the `fileId` (the `id` field from `repliz_init_file`). " +
@@ -231,6 +237,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_delete_file",
     {
       title: "Delete Storage File",
+      effect: "destructive",
       description:
         "Permanently delete a single file from storage by its id. Irreversible — confirm before calling.",
       inputSchema: {
@@ -250,6 +257,7 @@ export function registerStorageTools(ctx: ToolContext): void {
     "repliz_delete_files",
     {
       title: "Delete Multiple Storage Files",
+      effect: "destructive",
       description:
         "Permanently delete several files at once by their ids. Irreversible — confirm before calling.",
       inputSchema: {

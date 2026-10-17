@@ -198,6 +198,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_list_schedules',
     {
       title: 'List Scheduled Posts',
+      effect: 'read',
       description:
         'List scheduled and published posts. Supports pagination and filtering by account(s), status, and date range.',
       inputSchema: {
@@ -248,6 +249,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_get_schedule',
     {
       title: 'Get Scheduled Post',
+      effect: 'read',
       description: 'Get the full details of a single scheduled post by its id.',
       inputSchema: { scheduleId: z.string().describe('The schedule id.') },
     },
@@ -260,6 +262,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_create_schedule',
     {
       title: 'Create Scheduled Post',
+      effect: 'additive',
       description:
         'Schedule a post to be published to a connected account at a specific time.\n\n' +
         'Post type support by platform:\n' +
@@ -324,6 +327,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_update_schedule',
     {
       title: 'Update Scheduled Post',
+      effect: 'destructive',
       description:
         'Update an existing scheduled post. The account cannot be changed; provide the new content fields. `scheduleAt` must be a future ISO 8601 timestamp. ' +
         '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`.',
@@ -357,6 +361,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_retry_schedule',
     {
       title: 'Retry Scheduled Post',
+      effect: 'additive',
       description:
         "Retry publishing a scheduled post that previously failed (status 'error').",
       inputSchema: {
@@ -374,6 +379,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_delete_schedule',
     {
       title: 'Delete Scheduled Post',
+      effect: 'destructive',
       description:
         'Delete a single scheduled post by id. Irreversible — confirm before calling.',
       inputSchema: {
@@ -391,6 +397,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
     'repliz_delete_schedules',
     {
       title: 'Delete Multiple Scheduled Posts',
+      effect: 'destructive',
       description:
         'Delete several scheduled posts at once by their ids. Irreversible — confirm before calling.',
       inputSchema: {

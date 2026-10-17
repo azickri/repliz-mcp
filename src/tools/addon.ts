@@ -13,6 +13,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_tiktok_trending_music",
     {
       title: "TikTok Trending Music",
+      effect: "read",
       description:
         "Get trending TikTok music for a given genre, country, and time window. Useful for picking a `music` track when scheduling a TikTok post.",
       inputSchema: {
@@ -42,6 +43,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_shopee_products",
     {
       title: "List Shopee Products",
+      effect: "read",
       description:
         "List Shopee products for a connected Shopee account. Useful for tagging products on posts. Uses cursor pagination via `nextToken`.",
       inputSchema: {
@@ -61,6 +63,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_whatsapp_channels",
     {
       title: "List WhatsApp Channels",
+      effect: "read",
       description:
         "List the WhatsApp channels a connected WhatsApp account owns and the groups it belongs to. Pass the chosen item as `additionalInfo.channel` when scheduling a WhatsApp post to it.",
       inputSchema: {
@@ -75,6 +78,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_telegram_channels",
     {
       title: "List Telegram Channels",
+      effect: "read",
       description:
         "List the Telegram channels a connected Telegram account owns and the groups it belongs to. Pass the chosen item as `additionalInfo.channel` when scheduling a Telegram post to it. Pictures come inline as base64, so they are left empty here.",
       inputSchema: {
@@ -95,6 +99,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_pinterest_boards",
     {
       title: "List Pinterest Boards",
+      effect: "read",
       description:
         "List the boards of a connected Pinterest account. A Pinterest post always goes to a board: pass the chosen item as `additionalInfo.channel` when scheduling (one schedule per board), or its id as `channelId` in repliz_list_content.",
       inputSchema: {
@@ -109,6 +114,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_link_metadata",
     {
       title: "Get Link Metadata",
+      effect: "read",
       description:
         "Fetch Open Graph / link-preview metadata (title, description, image) for a URL. Useful for building the `meta` field of a 'link' post.",
       inputSchema: {
@@ -123,6 +129,7 @@ export function registerAddonTools(ctx: ToolContext): void {
     "repliz_get_me_addon",
     {
       title: "Get Account Addon Limits",
+      effect: "read",
       description:
         "Retrieve addon information and resource allocations (accounts, operators, storage, Twitter/X addon) for your Repliz account.",
       inputSchema: {},

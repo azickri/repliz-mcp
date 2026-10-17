@@ -162,6 +162,9 @@ console.log("\nOAuth");
   check(as.registration_endpoint && as.authorization_endpoint && as.token_endpoint,
     "authorization server metadata lists register, authorize and token");
   check(as.revocation_endpoint === undefined, "no revocation endpoint is claimed (tokens are stateless)");
+  check(as.client_id_metadata_document_supported === true, "Client ID Metadata Documents are advertised");
+  check(as.authorization_response_iss_parameter_supported === true, "RFC 9207 issuer identification is advertised");
+  check(prm.authorization_servers[0] === as.issuer, "resource and server metadata agree on the issuer");
 
   // Registration.
   const redirectUri = "http://localhost:9999/callback";
@@ -208,6 +211,38 @@ console.log("\nOAuth");
   const code = location.searchParams.get("code");
   check(res.status === 303 && location.href.startsWith(redirectUri) && code, "valid keys redirect back with a code", `got ${res.status}`);
   check(location.searchParams.get("state") === "smoke-state", "the state round-trips");
+  check(location.searchParams.get("iss") === as.issuer, "the redirect carries the issuer (RFC 9207)");
+
+  // An error the SDK's handler redirects with itself must carry the issuer too.
+  const foreign = new URL(as.authorization_endpoint);
+  foreign.search = new URLSearchParams({
+    response_type: "code",
+    client_id: client.client_id,
+    redirect_uri: redirectUri,
+    code_challenge: "x".repeat(43),
+    code_challenge_method: "S256",
+    state: "s2",
+    resource: "https://elsewhere.example.com/mcp",
+  }).toString();
+  res = await fetch(foreign, { redirect: "manual" });
+  const errorLocation = new URL(res.headers.get("location") ?? "http://invalid/");
+  check(
+    errorLocation.searchParams.get("error") === "invalid_target" && errorLocation.searchParams.get("iss") === as.issuer,
+    "an error redirect carries the issuer too",
+    errorLocation.search
+  );
+
+  // A metadata-document client_id is fetched, but never from a private address.
+  const cimd = new URL(as.authorization_endpoint);
+  cimd.search = new URLSearchParams({
+    response_type: "code",
+    client_id: "https://127.0.0.1/client.json",
+    redirect_uri: "https://127.0.0.1/cb",
+    code_challenge: "x".repeat(43),
+    code_challenge_method: "S256",
+  }).toString();
+  res = await fetch(cimd, { redirect: "manual" });
+  check(res.status === 400 && /invalid_client/.test(await res.text()), "a metadata document on a private address is refused", `got ${res.status}`);
 
   const tokenRequest = (fields) =>
     fetch(as.token_endpoint, { ...form({ client_id: client.client_id, ...fields }), redirect: "follow" });
@@ -283,6 +318,14 @@ check(res.status === 404, "an unknown session id returns 404 so clients re-initi
 console.log("\nTool surface");
 const { tools } = await a.client.listTools();
 check(tools.length === 105, `all 105 tools are registered`, `got ${tools.length}`);
+const annotated = (name) => tools.find((t) => t.name === name)?.annotations ?? {};
+check(tools.every((t) => typeof t.annotations?.readOnlyHint === "boolean"), "every tool says whether it only reads");
+check(annotated("repliz_list_accounts").readOnlyHint === true, "listing accounts is read-only");
+check(
+  annotated("repliz_reply_comment").readOnlyHint === false && annotated("repliz_reply_comment").destructiveHint === false,
+  "replying to a comment is a write, but additive"
+);
+check(annotated("repliz_delete_account").destructiveHint === true, "deleting an account is destructive");
 const upload = tools.find((t) => t.name === "repliz_upload_file");
 const params = Object.keys(upload?.inputSchema?.properties ?? {});
 check(!params.includes("localPath"), "the upload tool exposes no local filesystem path");

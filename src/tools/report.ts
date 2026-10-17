@@ -9,6 +9,7 @@ export function registerReportTools(ctx: ToolContext): void {
     "repliz_list_reports",
     {
       title: "List Reports",
+      effect: "read",
       description:
         "List system and analytics reports. Supports pagination and filtering by type, status, account id(s), and search term.",
       inputSchema: {
@@ -39,6 +40,7 @@ export function registerReportTools(ctx: ToolContext): void {
     "repliz_get_report",
     {
       title: "Get Report",
+      effect: "read",
       description: "Get full details of a single report by its report id.",
       inputSchema: {
         reportId: z.string().describe("The report id."),
@@ -52,6 +54,7 @@ export function registerReportTools(ctx: ToolContext): void {
     "repliz_retry_report",
     {
       title: "Retry Report",
+      effect: "additive",
       description: "Retry generating or processing a report that failed or encountered errors.",
       inputSchema: {
         reportId: z.string().describe("The report id to retry."),

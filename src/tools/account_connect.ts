@@ -29,6 +29,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_facebook",
     {
       title: "Authorize Facebook",
+      effect: "read",
       description: "Get Facebook OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -42,6 +43,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_exchange_facebook",
     {
       title: "Exchange Facebook Code",
+      effect: "additive",
       description: "Exchange Facebook OAuth code for access token.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -55,6 +57,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_get_facebook_pages",
     {
       title: "Get Facebook Pages",
+      effect: "read",
       description: "List Facebook pages accessible with the provided token.",
       inputSchema: {
         token: z.string().describe("Facebook access token."),
@@ -68,6 +71,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_facebook",
     {
       title: "Connect Facebook Page",
+      effect: "additive",
       description: "Connect a Facebook Page account to Repliz.",
       inputSchema: {
         pageId: z.string().describe("Facebook Page ID."),
@@ -86,6 +90,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_facebook",
     {
       title: "Reconnect Facebook Page",
+      effect: "additive",
       description: "Reconnect an existing Facebook Page account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -107,6 +112,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_instagram",
     {
       title: "Authorize Instagram",
+      effect: "read",
       description: "Get Instagram OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -120,6 +126,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_instagram",
     {
       title: "Connect Instagram",
+      effect: "additive",
       description: "Connect an Instagram account to Repliz using OAuth code.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -133,6 +140,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_instagram",
     {
       title: "Reconnect Instagram",
+      effect: "additive",
       description: "Reconnect an existing Instagram account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -152,6 +160,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_threads",
     {
       title: "Authorize Threads",
+      effect: "read",
       description: "Get Threads OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -165,6 +174,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_threads",
     {
       title: "Connect Threads",
+      effect: "additive",
       description: "Connect a Threads account to Repliz using OAuth code.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -178,6 +188,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_threads",
     {
       title: "Reconnect Threads",
+      effect: "additive",
       description: "Reconnect an existing Threads account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -197,6 +208,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_youtube",
     {
       title: "Authorize YouTube",
+      effect: "read",
       description: "Get YouTube OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -210,6 +222,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_exchange_youtube",
     {
       title: "Exchange YouTube Code",
+      effect: "additive",
       description: "Exchange YouTube OAuth code for access token.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -223,6 +236,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_get_youtube_channels",
     {
       title: "Get YouTube Channels",
+      effect: "read",
       description: "List YouTube channels accessible with the provided token.",
       inputSchema: {
         token: z.string().describe("YouTube access token."),
@@ -236,6 +250,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_youtube",
     {
       title: "Connect YouTube Channel",
+      effect: "additive",
       description: "Connect a YouTube channel account to Repliz.",
       inputSchema: {
         channelId: z.string().describe("YouTube channel ID."),
@@ -254,6 +269,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_youtube",
     {
       title: "Reconnect YouTube Channel",
+      effect: "additive",
       description: "Reconnect an existing YouTube channel account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -275,6 +291,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_linkedin",
     {
       title: "Authorize LinkedIn",
+      effect: "read",
       description: "Get LinkedIn OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -288,6 +305,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_exchange_linkedin",
     {
       title: "Exchange LinkedIn Code",
+      effect: "additive",
       description: "Exchange LinkedIn OAuth code for access token.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -301,6 +319,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_get_linkedin_organizations",
     {
       title: "Get LinkedIn Organizations",
+      effect: "read",
       description: "List LinkedIn organizations accessible with the provided token.",
       inputSchema: {
         token: z.string().describe("LinkedIn access token."),
@@ -314,6 +333,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_linkedin",
     {
       title: "Connect LinkedIn Organization",
+      effect: "additive",
       description: "Connect a LinkedIn organization/profile account to Repliz.",
       inputSchema: {
         organizationId: z.string().describe("LinkedIn organization ID."),
@@ -332,6 +352,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_linkedin",
     {
       title: "Reconnect LinkedIn Organization",
+      effect: "additive",
       description: "Reconnect an existing LinkedIn organization/profile account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -353,6 +374,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_tiktok",
     {
       title: "Authorize TikTok",
+      effect: "read",
       description: "Get TikTok OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -366,6 +388,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_tiktok",
     {
       title: "Connect TikTok",
+      effect: "additive",
       description: "Connect a TikTok account to Repliz using OAuth code.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -379,6 +402,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_tiktok",
     {
       title: "Reconnect TikTok",
+      effect: "additive",
       description: "Reconnect an existing TikTok account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -398,6 +422,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_shopee",
     {
       title: "Authorize Shopee",
+      effect: "read",
       description: "Get Shopee OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -411,6 +436,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_shopee",
     {
       title: "Connect Shopee",
+      effect: "additive",
       description: "Connect a Shopee account to Repliz using OAuth code.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -424,6 +450,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_shopee",
     {
       title: "Reconnect Shopee",
+      effect: "additive",
       description: "Reconnect an existing Shopee account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -443,6 +470,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_twitter",
     {
       title: "Authorize Twitter",
+      effect: "read",
       description: "Get Twitter OAuth authorization URL.",
       inputSchema: {
         redirect: z.string().describe("Redirect URL after authorization."),
@@ -456,6 +484,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_twitter",
     {
       title: "Connect Twitter",
+      effect: "additive",
       description: "Connect a Twitter account to Repliz using OAuth code.",
       inputSchema: {
         code: z.string().describe("OAuth authorization code."),
@@ -469,6 +498,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_twitter",
     {
       title: "Reconnect Twitter",
+      effect: "additive",
       description: "Reconnect an existing Twitter account.",
       inputSchema: {
         accountId: z.string().describe("Repliz account ID."),
@@ -492,6 +522,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_authorize_pinterest",
     {
       title: "Authorize Pinterest",
+      effect: "read",
       description:
         "Get the Pinterest OAuth authorization URL. After the user approves, Pinterest redirects to `redirect` with a `code` to pass to repliz_connect_pinterest or repliz_reconnect_pinterest.",
       inputSchema: {
@@ -506,6 +537,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_pinterest",
     {
       title: "Connect Pinterest",
+      effect: "additive",
       description:
         "Connect a Pinterest account to Repliz using the OAuth code. Returns the new accountId. Boards are picked per schedule with repliz_pinterest_boards, not connected as accounts.",
       inputSchema: {
@@ -520,6 +552,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_pinterest",
     {
       title: "Reconnect Pinterest",
+      effect: "additive",
       description:
         "Reconnect an existing Pinterest account. The OAuth code must come from the same Pinterest account.",
       inputSchema: {
@@ -548,6 +581,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_create_whatsapp_session",
     {
       title: "Create WhatsApp Session",
+      effect: "additive",
       description:
         "Start a new WhatsApp session (step 1 of connecting WhatsApp). Returns a session token; pass it to repliz_get_whatsapp_session to get the QR code.",
       inputSchema: {},
@@ -560,6 +594,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_get_whatsapp_session",
     {
       title: "Get WhatsApp Session",
+      effect: "read",
       description:
         "Get a WhatsApp session's status and latest QR code (step 2). The QR code expires quickly, so call this every few seconds and show the user the newest one to scan in WhatsApp > Linked devices, until isConnected is true. Then call repliz_connect_whatsapp, or repliz_reconnect_whatsapp, with the same token.",
       inputSchema: {
@@ -577,6 +612,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_whatsapp",
     {
       title: "Connect WhatsApp",
+      effect: "additive",
       description:
         "Connect the WhatsApp number linked to a session to Repliz (step 3). Call once repliz_get_whatsapp_session reports isConnected true. Returns the new accountId.",
       inputSchema: {
@@ -591,6 +627,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_whatsapp",
     {
       title: "Reconnect WhatsApp",
+      effect: "additive",
       description:
         "Reconnect an existing WhatsApp account using a new session (step 3, instead of connecting). Call once repliz_get_whatsapp_session reports isConnected true; the QR code must be scanned with the same WhatsApp number as the account.",
       inputSchema: {
@@ -621,6 +658,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_create_telegram_session",
     {
       title: "Create Telegram Session",
+      effect: "additive",
       description:
         "Start a new Telegram session (step 1 of connecting Telegram). Returns a session token; pass it to repliz_get_telegram_session to get the QR code.",
       inputSchema: {},
@@ -633,6 +671,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_get_telegram_session",
     {
       title: "Get Telegram Session",
+      effect: "read",
       description:
         "Get a Telegram session's status and latest QR code (step 2). Show the user the newest QR code to scan in Telegram > Settings > Devices > Link Desktop Device; it changes every 30 seconds and the session stops waiting after about 3 minutes, so call this every few seconds until isConnected is true. " +
         "If isPasswordRequired is true, the account has two-step verification: ask the user for their password (passwordHint is their hint), send it with repliz_send_telegram_password, and keep polling. " +
@@ -652,6 +691,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_send_telegram_password",
     {
       title: "Send Telegram Password",
+      effect: "additive",
       description:
         "Finish a Telegram login that needs the account's two-step verification password. Only valid while repliz_get_telegram_session reports isPasswordRequired true. A wrong password returns an error; ask the user again. Never store or repeat the password.",
       inputSchema: {
@@ -671,6 +711,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_connect_telegram",
     {
       title: "Connect Telegram",
+      effect: "additive",
       description:
         "Connect the Telegram account linked to a session to Repliz (step 3). Call once repliz_get_telegram_session reports isConnected true. Returns the new accountId.",
       inputSchema: {
@@ -685,6 +726,7 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     "repliz_reconnect_telegram",
     {
       title: "Reconnect Telegram",
+      effect: "additive",
       description:
         "Reconnect an existing Telegram account using a new session (step 3, instead of connecting). Call once repliz_get_telegram_session reports isConnected true; the QR code must be scanned from the same Telegram account.",
       inputSchema: {

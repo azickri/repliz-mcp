@@ -9,6 +9,7 @@ export function registerResearchTools(ctx: ToolContext): void {
     'repliz_search_threads_content',
     {
       title: 'Search Threads Content',
+      effect: 'read',
       description:
         'Search public Threads posts by keyword. Requires a connected Threads account id (used to authorize the search). Supports filtering by sort, search mode, media type, date range (since/until timestamps in seconds), and author username. Uses cursor pagination via `nextToken`.',
       inputSchema: {
@@ -71,6 +72,7 @@ export function registerResearchTools(ctx: ToolContext): void {
     'repliz_search_threads_user_content',
     {
       title: 'Get Threads User Content',
+      effect: 'read',
       description:
         'Fetch public Threads posts authored by a specific username. Requires a connected Threads account id. Uses cursor pagination via `nextToken`.',
       inputSchema: {
@@ -99,6 +101,7 @@ export function registerResearchTools(ctx: ToolContext): void {
     'repliz_search_threads_user',
     {
       title: 'Get Threads User Profile',
+      effect: 'read',
       description:
         'Look up the public profile of a Threads user by username. Requires a connected Threads account id.',
       inputSchema: {

@@ -31,6 +31,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_list_content",
     {
       title: "List Content",
+      effect: "read",
       description:
         "List published content (posts/media or stories) for a connected account. Uses cursor pagination via `nextToken`. WhatsApp and Telegram accounts list the posts of one of their channels, so pass `channelId`. Pinterest accounts list all their pins, or the pins of one board with `channelId`.",
       inputSchema: {
@@ -59,6 +60,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_get_content",
     {
       title: "Get Content",
+      effect: "read",
       description: "Get the details of a single piece of content.",
       inputSchema: {
         contentId: z.string().describe("The content id."),
@@ -76,6 +78,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_get_content_comments",
     {
       title: "Get Content Comments",
+      effect: "read",
       description:
         "List comments on a piece of content. Pass `commentId` to fetch replies to a specific comment. Uses cursor pagination via `nextToken`.",
       inputSchema: {
@@ -98,6 +101,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_create_content_comment",
     {
       title: "Comment on Content",
+      effect: "additive",
       description:
         "Post a comment on a piece of content, or reply to an existing comment by passing `commentId`. " +
         "Add `image` { url, mimetype, thumbnail? } to send a picture with the text on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
@@ -123,6 +127,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_get_content_statistic",
     {
       title: "Get Content Statistics",
+      effect: "read",
       description: "Get engagement statistics/insights for a piece of content.",
       inputSchema: {
         contentId: z.string().describe("The content id."),
@@ -140,6 +145,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_message_content_comment",
     {
       title: "Send DM to Content Commenter",
+      effect: "additive",
       description:
         "Send a private message (DM) to the author of a comment on your content. Provide `text` and/or a `button` payload.",
       inputSchema: {
@@ -164,6 +170,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_delete_content_comment",
     {
       title: "Delete Content Comment",
+      effect: "destructive",
       description:
         "Delete a comment on a piece of content. Irreversible — confirm before calling.",
       inputSchema: {
@@ -186,6 +193,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_delete_content",
     {
       title: "Delete Content",
+      effect: "destructive",
       description:
         "Remove/delete a published post/content from a connected account. Irreversible — confirm before calling.",
       inputSchema: {
@@ -204,6 +212,7 @@ export function registerContentTools(ctx: ToolContext): void {
     "repliz_like_content_comment",
     {
       title: "Like Content Comment",
+      effect: "additive",
       description:
         "Like or add a reaction to a specific comment on a piece of content using a connected account.",
       inputSchema: {

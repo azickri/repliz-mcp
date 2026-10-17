@@ -26,6 +26,7 @@ export function registerChatTools(ctx: ToolContext): void {
     "repliz_list_chats",
     {
       title: "List Chats",
+      effect: "read",
       description:
         "List direct-message conversations across connected accounts. Supports pagination and filtering by status (unread/unreplied), account(s), and search.",
       inputSchema: {
@@ -51,6 +52,7 @@ export function registerChatTools(ctx: ToolContext): void {
     "repliz_get_chat",
     {
       title: "Get Chat",
+      effect: "read",
       description: "Get the details of a single conversation by its chat id.",
       inputSchema: { chatId: z.string().describe("The chat id.") },
     },
@@ -62,6 +64,7 @@ export function registerChatTools(ctx: ToolContext): void {
     "repliz_list_messages",
     {
       title: "List Chat Messages",
+      effect: "read",
       description: "List the messages within a conversation, paginated (newest first).",
       inputSchema: {
         chatId: z.string().describe("The chat id."),
@@ -81,6 +84,7 @@ export function registerChatTools(ctx: ToolContext): void {
     "repliz_send_message",
     {
       title: "Send Chat Message",
+      effect: "additive",
       description:
         "Send a message in a conversation. Set `type` and provide the matching field:\n" +
         "- text: provide `text`\n" +
@@ -137,6 +141,7 @@ export function registerChatTools(ctx: ToolContext): void {
     "repliz_read_chat",
     {
       title: "Mark Chat as Read",
+      effect: "additive",
       description: "Mark a conversation as read.",
       inputSchema: { chatId: z.string().describe("The chat id to mark read.") },
     },

@@ -9,6 +9,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
     "repliz_list_automations",
     {
       title: "List Automations",
+      effect: "read",
       description:
         "List configured content automations. Supports pagination and filtering by account id(s) and search query.",
       inputSchema: {
@@ -35,6 +36,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
     "repliz_create_automation",
     {
       title: "Create Automation",
+      effect: "additive",
       description: "Create a new content automation rule for a specific post/content.",
       inputSchema: {
         contentId: z.string().describe("The content id to attach automation to."),
@@ -55,6 +57,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
     "repliz_get_automation",
     {
       title: "Get Automation",
+      effect: "read",
       description: "Get full details of a single content automation by its automation id.",
       inputSchema: {
         automationId: z.string().describe("The automation id."),
@@ -68,6 +71,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
     "repliz_update_automation",
     {
       title: "Update Automation",
+      effect: "destructive",
       description: "Update the configuration of an existing content automation.",
       inputSchema: {
         automationId: z.string().describe("The automation id to update."),
@@ -85,6 +89,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
     "repliz_delete_automation",
     {
       title: "Delete Automation",
+      effect: "destructive",
       description: "Remove/delete a content automation rule. Irreversible — confirm before calling.",
       inputSchema: {
         automationId: z.string().describe("The automation id to remove."),

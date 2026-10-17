@@ -130,9 +130,23 @@ restart, and nothing new needs deploying or backing up. What follows from that:
   token, so a connection in regular use stays signed in; one left unused for
   `REPLIZ_OAUTH_REFRESH_TOKEN_DAYS` has to sign in again.
 
-Clients register themselves (RFC 7591). Accepted redirect URIs are any
-`https://` URL, `http://` on localhost only, and a native app's own scheme such
-as `cursor://`. Header authentication keeps working alongside OAuth.
+Clients identify themselves in either of two ways, and need no setup on this
+side for either:
+
+- **Client ID Metadata Documents** (what Claude and ChatGPT prefer). The
+  `client_id` is an HTTPS URL, such as `https://chatgpt.com/oauth/client.json`,
+  serving a JSON document that names the client and its redirect URIs. The
+  server fetches it on first use and caches it as its `Cache-Control` says
+  (between one minute and a day; an hour without the header). Only public
+  clients are accepted: the document must allow `token_endpoint_auth_method`
+  `none`, as both Claude's and ChatGPT's do.
+- **Dynamic Client Registration** (RFC 7591), for everything else. The client
+  id it hands out is the registration itself, sealed.
+
+Accepted redirect URIs are any `https://` URL, `http://` on localhost only, and
+a native app's own scheme such as `cursor://`. Every authorization response
+carries the issuer (`iss`, RFC 9207), which ChatGPT needs to use its stable
+redirect URI. Header authentication keeps working alongside OAuth.
 
 ### PM2 + Nginx on a VPS
 
@@ -257,7 +271,14 @@ Because `/mcp` is open to the internet:
   redirect host. The form carries the authorization request sealed, so its
   redirect target cannot be altered, and there is no session cookie for a
   cross-site request to ride. Sign-in attempts are limited to 10 per IP per
-  minute, and PKCE (S256) is mandatory.
+  minute, and PKCE (S256) is mandatory. For a client identified by a metadata
+  document, the page also names the host that published it.
+- **Client metadata documents are fetched like untrusted URLs** — because the
+  `client_id` is whatever the caller sends. The fetch refuses private and
+  loopback addresses and redirects, times out after 5 seconds, and reads at most
+  5 KB. A document whose `client_id` differs from its URL, that carries a client
+  secret, or that lists a disallowed redirect URI is refused, and nothing
+  fetched is ever relayed back to the caller.
 - **Outbound calls time out**, so a stalled Repliz request cannot pin a session.
 - **Uploads never touch the host's disk.** See [File uploads](#file-uploads).
 - **Clean shutdown** on `SIGTERM` / `SIGINT`.
@@ -311,6 +332,12 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 
 Tool availability follows the caller's Repliz plan; calling one above your tier
 returns a clear error.
+
+Every tool declares what it does, as MCP tool annotations: 48 only read
+(`readOnlyHint`), 42 create or send something without touching what exists
+(`destructiveHint: false`), and 15 change or delete (`destructiveHint: true`).
+Clients use these to decide what to confirm first; ChatGPT asks before any tool
+not marked read-only. A new tool must state its `effect` to compile.
 
 ---
 

@@ -101,6 +101,8 @@ export interface SignInPageInput {
   /** The sealed authorization request, posted back with the form. */
   request: string;
   clientName?: string;
+  /** For a client identified by a metadata document URL: the host that published it. */
+  clientHost?: string;
   redirectUri: string;
   /** Re-filled after a failed attempt so the user only retypes the secret. */
   accessKey?: string;
@@ -112,6 +114,7 @@ export function renderSignInPage(input: SignInPageInput): string {
   const destination = escapeHtml(describeDestination(input.redirectUri));
   const accessKey = escapeHtml(input.accessKey ?? "");
   const error = input.error ? `<p class="error" role="alert">${escapeHtml(input.error)}</p>` : "";
+  const publisher = input.clientHost ? `App details come from <strong>${escapeHtml(input.clientHost)}</strong>. ` : "";
   const focusSecret = accessKey !== "";
 
   return layout(`<h1>Connect ${name} to Repliz</h1>
@@ -129,7 +132,7 @@ ${error}
 <button type="submit" name="action" value="cancel" formnovalidate>Cancel</button>
 </div>
 </form>
-<p class="note">You'll be sent back to <strong>${destination}</strong>. Only continue if you started connecting from ${name} yourself.</p>`);
+<p class="note">${publisher}You'll be sent back to <strong>${destination}</strong>. Only continue if you started connecting from ${name} yourself.</p>`);
 }
 
 export function renderMessagePage(title: string, message: string): string {

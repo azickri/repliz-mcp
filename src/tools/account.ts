@@ -23,6 +23,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     "repliz_list_accounts",
     {
       title: "List Accounts",
+      effect: "read",
       description:
         "List the social accounts connected to your Repliz workspace. Returns each account's id, platform, username, picture, and status. Supports pagination and filtering by platform type or search term.",
       inputSchema: {
@@ -49,6 +50,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     "repliz_count_accounts",
     {
       title: "Count Accounts",
+      effect: "read",
       description: "Get the total number of accounts connected to your Repliz workspace.",
       inputSchema: {},
     },
@@ -60,6 +62,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     "repliz_get_account",
     {
       title: "Get Account",
+      effect: "read",
       description: "Get details of a single connected account by its Repliz account id.",
       inputSchema: {
         accountId: z.string().describe("The Repliz account id (e.g. 680affa5ce12f2f72916f67e)."),
@@ -73,6 +76,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     "repliz_get_account_statistics",
     {
       title: "Get Account Statistics",
+      effect: "read",
       description:
         "Retrieve aggregated statistics and activity metrics for a specific connected account, including platform-specific overview metrics. Available for Instagram, Threads, TikTok and Pinterest.",
       inputSchema: {
@@ -87,6 +91,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     "repliz_update_account_automation",
     {
       title: "Update Account Automation",
+      effect: "destructive",
       description:
         "Update the default automation configurations (delete, reply, like, message, chat, story) for a connected account.",
       inputSchema: {
@@ -115,6 +120,7 @@ export function registerAccountTools(ctx: ToolContext): void {
     "repliz_delete_account",
     {
       title: "Delete Account",
+      effect: "destructive",
       description:
         "Disconnect and remove an account from your Repliz workspace. This is irreversible — confirm with the user before calling.",
       inputSchema: {
