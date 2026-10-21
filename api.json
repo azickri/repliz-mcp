@@ -113,7 +113,7 @@
     },
     "/public/account/count": {
       "get": {
-        "description": "\nRetrieve account usage statistics across all connected platforms.\n\nThis endpoint is used to get the total number of connected accounts along with a breakdown per platform.\nIt is typically used for monitoring account usage and checking limits based on the current plan.\n\nResponse:\n- Returns an object containing total accounts and count per platform\n- Includes platform breakdown such as Facebook, Instagram, YouTube, TikTok, Threads, and LinkedIn\n- Includes account limit information\n",
+        "description": "\nRetrieve account usage statistics across all connected platforms.\n\nThis endpoint is used to get the total number of connected accounts along with a breakdown per platform.\nIt is typically used for monitoring account usage and checking limits based on the current plan.\n\nResponse:\n- Returns an object containing total accounts and count per platform\n- Includes platform breakdown such as Facebook, Instagram, YouTube, TikTok, Threads, and LinkedIn\n- Includes account limit information\n- Includes operator, the same breakdown for the accounts assigned to the operator when called with an operator API key, otherwise null\n",
         "operationId": "AccountController_countAccount",
         "parameters": [],
         "responses": {
@@ -131,8 +131,24 @@
                   "linkedin": 1,
                   "shopee": 0,
                   "twitter": 0,
+                  "whatsapp": 0,
+                  "telegram": 0,
                   "pinterest": 0,
-                  "limit": 1
+                  "limit": 1,
+                  "operator": {
+                    "total": 4,
+                    "facebook": 2,
+                    "youtube": 0,
+                    "instagram": 1,
+                    "threads": 0,
+                    "tiktok": 1,
+                    "linkedin": 0,
+                    "shopee": 0,
+                    "twitter": 0,
+                    "whatsapp": 0,
+                    "telegram": 0,
+                    "pinterest": 0
+                  }
                 }
               }
             }

@@ -51,7 +51,8 @@ export function registerAccountTools(ctx: ToolContext): void {
     {
       title: "Count Accounts",
       effect: "read",
-      description: "Get the total number of accounts connected to your Repliz workspace.",
+      description:
+        "Get the number of accounts connected to your Repliz workspace, per platform, with the plan's account limit. With an operator's API key, `operator` holds the same per-platform count for the accounts assigned to that operator; otherwise it is null.",
       inputSchema: {},
     },
     async () => ctx.client.get("/public/account/count")
