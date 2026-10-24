@@ -7,6 +7,17 @@ import type { ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 import type { ZodRawShape } from "zod";
 import { ReplizApiError, type ReplizClient } from "../client.js";
 
+/**
+ * Appended to the automation config fields. Keywords can answer with an
+ * opening DM, which a model can't tell from the field names alone, and an
+ * update that drops a keyword's id breaks the buttons already sent.
+ */
+export const KEYWORD_OPENING_NOTE =
+  "Keywords in message, story and chat (Instagram and Facebook) can answer with buttons: a keyword.values item " +
+  '{ "keyword", "type": "opening", "opening": { postback, additional, webUrl } } instead of { "keyword", "text" }. ' +
+  'Send the "id" Repliz returns on such a keyword back unchanged, or the buttons in DMs already sent stop working. ' +
+  "Schema: https://docs.repliz.com/api/guides/automation-config#keyword-with-buttons";
+
 export interface ToolContext {
   server: McpServer;
   client: ReplizClient;

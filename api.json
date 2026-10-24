@@ -7895,7 +7895,11 @@
             "enum": ["postback", "web_url"]
           },
           "title": { "type": "string", "example": "Click Me" },
-          "payload": { "type": "string", "example": "payloadcustompostback" },
+          "payload": {
+            "type": "string",
+            "example": "payloadcustompostback",
+            "description": "Set by Repliz on save for postback buttons, any value sent is replaced"
+          },
           "url": { "type": "string", "example": "https://repliz.com" }
         },
         "required": ["type", "title", "payload", "url"]
@@ -8001,6 +8005,50 @@
         },
         "required": ["postback", "additional", "webUrl"]
       },
+      "ConfigMessageKeywordValue": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "0b6f7c1e-4f0a-4c2b-9d3e-8a1f2b3c4d5e",
+            "description": "Identifies an opening keyword in its button payloads. Send it back unchanged so buttons already sent keep working; a missing, non-UUID or duplicate id is replaced with a new one on save"
+          },
+          "keyword": {
+            "type": "string",
+            "example": "Hello",
+            "description": "Leave empty to answer every message no other keyword matches"
+          },
+          "type": {
+            "type": "string",
+            "example": "text",
+            "enum": ["text", "opening"],
+            "description": "text: reply with text, opening: reply with an opening message with buttons (Instagram and Facebook only). Text when left out"
+          },
+          "text": {
+            "type": "string",
+            "example": "Text to reply message",
+            "description": "Reply for this keyword, required unless type is 'opening'"
+          },
+          "opening": {
+            "description": "Opening message for this keyword, for type 'opening'",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpening" }]
+          }
+        },
+        "required": ["keyword"]
+      },
+      "ConfigMessageKeyword": {
+        "type": "object",
+        "properties": {
+          "isExactMatch": { "type": "boolean", "example": false },
+          "values": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ConfigMessageKeywordValue"
+            }
+          }
+        },
+        "required": ["isExactMatch", "values"]
+      },
       "ConfigAutomationMessage": {
         "type": "object",
         "properties": {
@@ -8018,7 +8066,7 @@
             "description": "Also send the DM to comments on an Instagram Live, only while it is on air. Off when left out"
           },
           "opening": { "$ref": "#/components/schemas/ConfigOpening" },
-          "keyword": { "$ref": "#/components/schemas/ConfigKeyword" },
+          "keyword": { "$ref": "#/components/schemas/ConfigMessageKeyword" },
           "condition": { "$ref": "#/components/schemas/ConfigCondition" },
           "delay": { "$ref": "#/components/schemas/ConfigDelay" }
         },
@@ -8044,7 +8092,7 @@
           },
           "text": { "type": "string", "example": "Hello" },
           "prompt": { "type": "string", "example": "You are..." },
-          "keyword": { "$ref": "#/components/schemas/ConfigKeyword" },
+          "keyword": { "$ref": "#/components/schemas/ConfigMessageKeyword" },
           "delay": { "$ref": "#/components/schemas/ConfigDelay" }
         },
         "required": ["isActive", "type", "text", "prompt", "keyword", "delay"]
@@ -8061,7 +8109,7 @@
           "text": { "type": "string", "example": "Hello" },
           "prompt": { "type": "string", "example": "You are..." },
           "opening": { "$ref": "#/components/schemas/ConfigOpening" },
-          "keyword": { "$ref": "#/components/schemas/ConfigKeyword" },
+          "keyword": { "$ref": "#/components/schemas/ConfigMessageKeyword" },
           "condition": { "$ref": "#/components/schemas/ConfigCondition" },
           "delay": { "$ref": "#/components/schemas/ConfigDelay" }
         },

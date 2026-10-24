@@ -1,7 +1,7 @@
 /** Template tools: manage reusable automation templates. */
 
 import { z } from 'zod';
-import { registerTool, type ToolContext } from './helpers.js';
+import { KEYWORD_OPENING_NOTE, registerTool, type ToolContext } from './helpers.js';
 
 export function registerTemplateTools(ctx: ToolContext): void {
   registerTool(
@@ -52,7 +52,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
         config: z
           .record(z.unknown())
           .describe(
-            'Automation template configuration object containing rules (delete, reply, like, message, chat, story).',
+            `Automation template configuration object containing rules (delete, reply, like, message, chat, story). ${KEYWORD_OPENING_NOTE}`,
           ),
       },
     },
@@ -93,7 +93,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
         config: z
           .record(z.unknown())
           .describe(
-            'Updated automation template configuration object containing rules (delete, reply, like, message, chat, story).',
+            `Updated automation template configuration object containing rules (delete, reply, like, message, chat, story). ${KEYWORD_OPENING_NOTE}`,
           ),
       },
     },

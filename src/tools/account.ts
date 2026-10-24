@@ -1,7 +1,7 @@
 /** Account management tools. */
 
 import { z } from "zod";
-import { registerTool, type ToolContext } from "./helpers.js";
+import { KEYWORD_OPENING_NOTE, registerTool, type ToolContext } from "./helpers.js";
 
 const PLATFORMS = [
   "facebook",
@@ -94,7 +94,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "Update Account Automation",
       effect: "destructive",
       description:
-        "Update the default automation configurations (delete, reply, like, message, chat, story) for a connected account.",
+        `Update the default automation configurations (delete, reply, like, message, chat, story) for a connected account. ${KEYWORD_OPENING_NOTE}`,
       inputSchema: {
         accountId: z.string().describe("The Repliz account id."),
         delete: z.record(z.unknown()).describe("Delete automation configuration object."),
