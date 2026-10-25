@@ -101,6 +101,12 @@ const additionalInfoSchema = z
       .describe(
         "Whether to share to Instagram main feed. Only applicable for Instagram scheduled posts with type 'video'.",
       ),
+    privacy: z
+      .enum(['public', 'unlisted', 'private'])
+      .default('public')
+      .describe(
+        "YouTube only: who can watch the video. 'unlisted' is watchable by link only, 'private' only by the channel owner. A private video is not listed by repliz_list_content, so its automation and statistics don't run.",
+      ),
     collaborators: z.array(z.string()).default([]),
     music: musicSchema.optional(),
     products: z.array(productSchema).default([]),
@@ -114,7 +120,7 @@ const additionalInfoSchema = z
       .describe('Pinterest only: the destination URL the pin opens when tapped.'),
   })
   .describe(
-    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
+    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
   );
 
 const replySchema = z.object({
@@ -132,6 +138,7 @@ const DEFAULT_ADDITIONAL_INFO = {
   isDraft: false,
   isAutoAddMusic: false,
   isShareToFeed: false,
+  privacy: 'public',
   collaborators: [] as string[],
   music: {
     id: '',
@@ -303,7 +310,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
+            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
           ),
         replies: z
           .array(replySchema)
@@ -330,7 +337,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
       effect: 'destructive',
       description:
         'Update an existing scheduled post. The account cannot be changed; provide the new content fields. `scheduleAt` must be a future ISO 8601 timestamp. ' +
-        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`.',
+        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`. A YouTube video without `additionalInfo.privacy` goes back to public.',
       inputSchema: {
         scheduleId: z.string().describe('The schedule id to update.'),
         type: z.enum(POST_TYPE).describe('The kind of post.'),
