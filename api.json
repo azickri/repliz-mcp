@@ -2067,6 +2067,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2108,6 +2109,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2149,6 +2151,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2190,6 +2193,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2237,6 +2241,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2282,6 +2287,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2323,6 +2329,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2356,6 +2363,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2420,6 +2428,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2462,6 +2471,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": ["replizofficial"],
                       "music": {
                         "id": "",
@@ -2498,11 +2508,12 @@
                     ],
                     "meta": { "title": "", "description": "", "url": "" },
                     "additionalInfo": {
-                      "isShareToFeed": false,
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "7602104441417107457",
@@ -2541,18 +2552,16 @@
                       "isAiGenerated": false,
                       "isDraft": false,
                       "isAutoAddMusic": false,
+                      "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
                         "artist": "",
                         "name": "",
                         "thumbnail": "",
-                        "volume": {
-                          "video": 50,
-                          "music": 100,
-                          "isShareToFeed": false
-                        }
+                        "volume": { "video": 50, "music": 100 }
                       },
                       "products": [
                         {
@@ -2595,6 +2604,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2636,6 +2646,49 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "unlisted",
+                      "trialParams": { "graduationStrategy": "" },
+                      "collaborators": [],
+                      "music": {
+                        "id": "",
+                        "artist": "",
+                        "name": "",
+                        "thumbnail": "",
+                        "volume": { "video": 50, "music": 100 }
+                      },
+                      "products": [],
+                      "tags": [],
+                      "mentions": [],
+                      "targetCountries": []
+                    },
+                    "replies": [],
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                  }
+                },
+                "additionalInfoTrialParams": {
+                  "summary": "Post with Additional Info Trial Params (Instagram)",
+                  "value": {
+                    "title": "",
+                    "description": "Hola! This is example for post Instagram trial reel",
+                    "topic": "",
+                    "type": "video",
+                    "medias": [
+                      {
+                        "alt": "",
+                        "customThumbnail": false,
+                        "type": "video",
+                        "thumbnail": "https://storage.repliz.com/thumbnail.png",
+                        "url": "https://storage.repliz.com/video.mp4"
+                      }
+                    ],
+                    "meta": { "title": "", "description": "", "url": "" },
+                    "additionalInfo": {
+                      "isAiGenerated": false,
+                      "isDraft": false,
+                      "isAutoAddMusic": false,
+                      "isShareToFeed": false,
+                      "privacy": "public",
+                      "trialParams": { "graduationStrategy": "MANUAL" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2677,6 +2730,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2718,6 +2772,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -2766,6 +2821,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
                         "id": "",
@@ -8251,6 +8307,17 @@
         },
         "required": ["title", "description", "url"]
       },
+      "ScheduleAdditionalInfoTrialParams": {
+        "type": "object",
+        "properties": {
+          "graduationStrategy": {
+            "type": "string",
+            "enum": ["MANUAL", "SS_PERFORMANCE"],
+            "example": "MANUAL"
+          }
+        },
+        "required": ["graduationStrategy"]
+      },
       "ScheduleAdditionalInfoMusicVolume": {
         "type": "object",
         "properties": {
@@ -8323,6 +8390,9 @@
             "type": "string",
             "enum": ["public", "unlisted", "private"],
             "example": "public"
+          },
+          "trialParams": {
+            "$ref": "#/components/schemas/ScheduleAdditionalInfoTrialParams"
           },
           "collaborators": {
             "example": ["replizofficial", "azickri.ai"],
