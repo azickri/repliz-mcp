@@ -33,7 +33,7 @@ export function registerContentTools(ctx: ToolContext): void {
       title: "List Content",
       effect: "read",
       description:
-        "List published content (posts/media or stories) for a connected account. Uses cursor pagination via `nextToken`. WhatsApp and Telegram accounts list the posts of one of their channels, so pass `channelId`. Pinterest accounts list all their pins, or the pins of one board with `channelId`.",
+        "List published content (posts/media or stories) for a connected account. Uses cursor pagination via `nextToken`. WhatsApp and Telegram accounts list the posts of one of their channels, so pass `channelId`. Pinterest accounts list all their pins, or the pins of one board with `channelId`. A Threads post with a text attachment includes `textAttachment` ({ text, link }).",
       inputSchema: {
         accountId: z.string().describe("The account id whose content to list."),
         type: z.enum(["media", "story"]).optional().describe("Content type to list."),

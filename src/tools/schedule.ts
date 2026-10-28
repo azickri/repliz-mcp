@@ -130,9 +130,26 @@ const additionalInfoSchema = z
       .string()
       .optional()
       .describe('Pinterest only: the destination URL the pin opens when tapped.'),
+    textAttachment: z
+      .object({
+        text: z
+          .string()
+          .max(10000)
+          .describe(
+            'The attached text, up to 10,000 characters, posted as plain text. Empty for no attachment.',
+          ),
+        link: z
+          .string()
+          .default('')
+          .describe('Optional link shown at the end of the attachment.'),
+      })
+      .optional()
+      .describe(
+        "Threads only, type 'text': a long text attached under the post that opens like an article. Main post only, not replies. A post can have at most 5 links, counting the description and this link.",
+      ),
   })
   .describe(
-    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
+    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text).',
   );
 
 const replySchema = z.object({
@@ -296,6 +313,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         'For media posts, attach `medias`. For threaded/multi-part posts, attach `replies`. ' +
         "A WhatsApp post goes to the account's Status, and a Telegram post to its story, unless `additionalInfo.channel` names a channel or group from repliz_whatsapp_channels or repliz_telegram_channels; create one schedule per target. " +
         'A Pinterest pin must name a board from repliz_pinterest_boards in `additionalInfo.channel` (one schedule per board); `title` (max 100) is the pin title, `description` max 800, `additionalInfo.link` the destination URL and medias[0].alt the alt text. ' +
+        'A Threads text post can carry a long article-like text (up to 10,000 characters) in `additionalInfo.textAttachment`, beyond the 500-character `description`. ' +
         '`scheduleAt` must be a future ISO 8601 timestamp (UTC).',
       inputSchema: {
         accountId: z.string().describe('The target account id to publish to.'),
@@ -323,7 +341,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest).',
+            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link).',
           ),
         replies: z
           .array(replySchema)
@@ -350,7 +368,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
       effect: 'destructive',
       description:
         'Update an existing scheduled post. The account cannot be changed; provide the new content fields. `scheduleAt` must be a future ISO 8601 timestamp. ' +
-        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`. A YouTube video without `additionalInfo.privacy` goes back to public, and an Instagram trial reel without `additionalInfo.trialParams` becomes a regular reel.',
+        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`. A YouTube video without `additionalInfo.privacy` goes back to public, an Instagram trial reel without `additionalInfo.trialParams` becomes a regular reel, and a Threads post without `additionalInfo.textAttachment` loses its text attachment.',
       inputSchema: {
         scheduleId: z.string().describe('The schedule id to update.'),
         type: z.enum(POST_TYPE).describe('The kind of post.'),

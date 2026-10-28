@@ -35,18 +35,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Accounts are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "types",
             "required": false,
             "in": "query",
+            "description": "Only return accounts of these platforms. Send each one as `types[]=facebook`.",
             "schema": {
               "example": ["facebook"],
               "type": "array",
@@ -57,8 +65,13 @@
                   "instagram",
                   "threads",
                   "tiktok",
+                  "youtube",
                   "linkedin",
-                  "youtube"
+                  "shopee",
+                  "twitter",
+                  "whatsapp",
+                  "telegram",
+                  "pinterest"
                 ]
               }
             }
@@ -67,6 +80,7 @@
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the account name or username, case-insensitive.",
             "schema": { "example": "Azickri", "type": "string" }
           }
         ],
@@ -168,6 +182,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -218,6 +233,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -249,6 +265,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -801,6 +818,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -842,18 +860,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Comments are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "status",
             "required": false,
             "in": "query",
+            "description": "`pending` (not handled yet), `resolved` (replied to or handled), or `ignored`. Every status when left out.",
             "schema": {
               "example": "pending",
               "type": "string",
@@ -864,6 +890,7 @@
             "name": "accountIds",
             "required": false,
             "in": "query",
+            "description": "Only return items of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`. All accounts when left out.",
             "schema": {
               "example": ["680affa5ce12f2f72916f67e"],
               "type": "array",
@@ -874,6 +901,7 @@
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the comment text, case-insensitive.",
             "schema": { "example": "Wahoyyy", "type": "string" }
           }
         ],
@@ -972,6 +1000,7 @@
             "name": "commentId",
             "required": true,
             "in": "path",
+            "description": "ID of the comment in Repliz, the `_id` from Get Comment. This isn't the platform's comment ID.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1066,6 +1095,7 @@
             "name": "commentId",
             "required": true,
             "in": "path",
+            "description": "ID of the comment in Repliz, the `_id` from Get Comment. This isn't the platform's comment ID.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1110,6 +1140,7 @@
             "name": "commentId",
             "required": true,
             "in": "path",
+            "description": "ID of the comment in Repliz, the `_id` from Get Comment. This isn't the platform's comment ID.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1141,6 +1172,7 @@
             "name": "commentId",
             "required": true,
             "in": "path",
+            "description": "ID of the comment in Repliz, the `_id` from Get Comment. This isn't the platform's comment ID.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1182,6 +1214,7 @@
             "name": "genre",
             "required": true,
             "in": "query",
+            "description": "Filter music by genre category, for example `ALL`, `POP`, or `HIP_HOP/RAP`.",
             "schema": {
               "example": "ALL",
               "type": "string",
@@ -1303,6 +1336,7 @@
             "name": "countryCode",
             "required": true,
             "in": "query",
+            "description": "ISO 3166-1 alpha-2 country code of the chart, for example `ID` or `US`.",
             "schema": {
               "example": "ID",
               "type": "string",
@@ -1560,6 +1594,7 @@
             "name": "dateRange",
             "required": true,
             "in": "query",
+            "description": "Time range of the chart: `1DAY`, `7DAY`, `30DAY`, or `90DAY`.",
             "schema": {
               "example": "7DAY",
               "type": "string",
@@ -1610,6 +1645,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected Shopee account, the `_id` from Get Account. Its shop products are listed.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1619,6 +1655,7 @@
             "name": "nextToken",
             "required": false,
             "in": "query",
+            "description": "Cursor for the next page: the `nextToken` of the previous response. Leave it out for the first page. An empty `nextToken` in the response means there are no more pages.",
             "schema": {
               "example": "06584df0146aabfc81fae7ae34ca55099f88ca8f6b7bf3b7b5521a422dc54fc07d86c9751523a501861d6b15228cd68b",
               "type": "string"
@@ -1669,6 +1706,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected WhatsApp account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1714,6 +1752,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected Telegram account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1759,6 +1798,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected Pinterest account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -1806,6 +1846,7 @@
             "name": "url",
             "required": true,
             "in": "query",
+            "description": "The full URL of the page, with `https://`, for example `https://repliz.com`. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -1838,18 +1879,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Schedules are sorted by `scheduleAt`, the earliest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "accountIds",
             "required": false,
             "in": "query",
+            "description": "Only return items of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`. All accounts when left out.",
             "schema": {
               "example": ["680affa5ce12f2f72916f67e"],
               "type": "array",
@@ -1860,6 +1909,7 @@
             "name": "status",
             "required": false,
             "in": "query",
+            "description": "`pending` (waiting for `scheduleAt`), `process` (being published), `success` (published), or `error` (failed, the reason is in `errorMessage`). Every status when left out.",
             "schema": {
               "example": "pending",
               "type": "string",
@@ -1870,9 +1920,10 @@
             "name": "fromDate",
             "required": false,
             "in": "query",
+            "description": "Only schedules with `scheduleAt` from this moment, as an ISO 8601 date and time. Used only together with `toDate`.",
             "schema": {
               "format": "date-time",
-              "example": "2026-10-16T15:42:32.954Z",
+              "example": "2026-10-28T06:06:23.939Z",
               "type": "string"
             }
           },
@@ -1880,9 +1931,10 @@
             "name": "toDate",
             "required": false,
             "in": "query",
+            "description": "Only schedules with `scheduleAt` up to this moment, as an ISO 8601 date and time. Used only together with `fromDate`.",
             "schema": {
               "format": "date-time",
-              "example": "2026-10-16T15:42:32.954Z",
+              "example": "2026-10-28T06:06:23.939Z",
               "type": "string"
             }
           }
@@ -2083,7 +2135,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "image": {
@@ -2125,7 +2177,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "video": {
@@ -2167,7 +2219,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "reel": {
@@ -2209,7 +2261,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "album": {
@@ -2257,7 +2309,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "link": {
@@ -2303,7 +2355,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "story": {
@@ -2345,7 +2397,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "nested": {
@@ -2410,7 +2462,7 @@
                       }
                     ],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "template": {
@@ -2444,7 +2496,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z",
+                    "scheduleAt": "2026-10-28T06:06:24.150Z",
                     "templateId": "680affa5ce12f2f72a16f67c"
                   }
                 },
@@ -2487,7 +2539,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionaoInfoMusic": {
@@ -2528,7 +2580,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionalInfoProduct": {
@@ -2578,7 +2630,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionalInfoTag": {
@@ -2620,7 +2672,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionalInfoPrivacy": {
@@ -2662,7 +2714,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionalInfoTrialParams": {
@@ -2704,7 +2756,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionalInfoMention": {
@@ -2746,7 +2798,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionaoInfoLink": {
@@ -2795,7 +2847,45 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
+                  }
+                },
+                "additionalInfoTextAttachment": {
+                  "summary": "Post with Additional Info Text Attachment (Threads)",
+                  "value": {
+                    "title": "",
+                    "description": "Hola! This is example for post text with a text attachment",
+                    "topic": "AI Threads",
+                    "type": "text",
+                    "medias": [],
+                    "meta": { "title": "", "description": "", "url": "" },
+                    "additionalInfo": {
+                      "isAiGenerated": false,
+                      "isDraft": false,
+                      "isAutoAddMusic": false,
+                      "isShareToFeed": false,
+                      "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
+                      "collaborators": [],
+                      "music": {
+                        "id": "",
+                        "artist": "",
+                        "name": "",
+                        "thumbnail": "",
+                        "volume": { "video": 50, "music": 100 }
+                      },
+                      "products": [],
+                      "tags": [],
+                      "mentions": [],
+                      "targetCountries": [],
+                      "textAttachment": {
+                        "text": "Repliz started as a small tool to answer comments faster. This is the story of how it grew...",
+                        "link": "https://repliz.com"
+                      }
+                    },
+                    "replies": [],
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
                 "additionalInfoTargetCountries": {
@@ -2837,7 +2927,7 @@
                     },
                     "replies": [],
                     "accountId": "680affa5ce12f2f72916f67e",
-                    "scheduleAt": "2026-10-16T15:42:33.113Z"
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 }
               }
@@ -2885,6 +2975,7 @@
             "name": "scheduleId",
             "required": true,
             "in": "path",
+            "description": "ID of the schedule, the `scheduleId` returned by Create Schedule or the `_id` from Get Schedule.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -2979,6 +3070,7 @@
             "name": "scheduleId",
             "required": true,
             "in": "path",
+            "description": "ID of the schedule, the `scheduleId` returned by Create Schedule or the `_id` from Get Schedule.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3018,6 +3110,7 @@
             "name": "scheduleId",
             "required": true,
             "in": "path",
+            "description": "ID of the schedule, the `scheduleId` returned by Create Schedule or the `_id` from Get Schedule.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3049,6 +3142,7 @@
             "name": "scheduleId",
             "required": true,
             "in": "path",
+            "description": "ID of the schedule, the `scheduleId` returned by Create Schedule or the `_id` from Get Schedule.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3080,6 +3174,7 @@
             "name": "scheduleIds",
             "required": true,
             "in": "query",
+            "description": "IDs of the schedules to remove, at least one, sent as `scheduleIds[]=ID`. IDs that don't exist are skipped.",
             "schema": {
               "example": [
                 "680affa5ce12f2f72916f67e",
@@ -3105,18 +3200,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Chats with the most recent message come first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "status",
             "required": false,
             "in": "query",
+            "description": "`unread`: chats with unread messages. `unreplied`: chats whose last message came from the other person. Every chat when left out.",
             "schema": {
               "example": "unread",
               "type": "string",
@@ -3127,6 +3230,7 @@
             "name": "accountIds",
             "required": false,
             "in": "query",
+            "description": "Only return items of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`. All accounts when left out.",
             "schema": {
               "example": ["680affa5ce12f2f72916f67e"],
               "type": "array",
@@ -3137,6 +3241,7 @@
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the name of the person or the text of the last message, case-insensitive.",
             "schema": { "example": "Azickri", "type": "string" }
           }
         ],
@@ -3213,6 +3318,7 @@
             "name": "chatId",
             "required": true,
             "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3287,6 +3393,7 @@
             "name": "chatId",
             "required": true,
             "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3296,13 +3403,20 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           }
         ],
         "responses": {
@@ -3371,6 +3485,7 @@
             "name": "chatId",
             "required": true,
             "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3520,6 +3635,7 @@
             "name": "chatId",
             "required": true,
             "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3551,6 +3667,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account whose posts to list, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3560,6 +3677,7 @@
             "name": "nextToken",
             "required": false,
             "in": "query",
+            "description": "Cursor for the next page: the `nextToken` of the previous response. Leave it out for the first page. An empty `nextToken` in the response means there are no more pages.",
             "schema": {
               "example": "QVFIU0R6TnJ2V2w1Q3N6a3FXUUc3Tkd2aEZAMUjdmQXg4ZAzU0QlFaemVGWUFVOXVPTkVWUEdPN1JMalNtemJhaTdPOTNFN2VSUW5kUEpmSEVUNnlNWGZAsSmJsaHNTN3lKTkczXzJkQmk3NEpNNDRHa0VIc0lfQ25OeFp3RzgxcWVJZATZARUURNVFhlOG8waG5zSzJCanVGYkQtU0pKcDdlTVZAHYkdSaVdCSlJlS0xmS05aSFZA3ZADRZAMzl4SHk4WVpjZAHBXX0xacC1PTVVsZA3lhcjRoMngxckVqWEZAkSlpLTy1oWUo0RDBOSEhhUG1Gek9jeHFtMWhsT3lIVHhoYmU1LUxyRTktYVowZAE1XV19ERDA3dmFhN09TZAXljMmdmRW1tWms5N2tJNUkzdTBKelVJN3V4ekhRRC1KNzJzSmZAuUUVfd2hoQjA1RV9yNDJCZAG9jRFozTXRkOVc2UGFmSExrUUR6YmkxTnp2eHktd1FZAWVlMY205TkdyTVFvYXowVFhEbS1wZA3lkSVNYR3BtMDZA1YXI4TlpNZAWxqVmVyTk9OMC0talpld3BSSFBVWjYzSlpFUjd3dzZAWLWJlZAkIwaTBNejVVdFcwX2h0U1V1V2doMXZAuRWRvdW90T19XVVhJcmtSSFpYQjdjM0dQTkhzZAlZAjdHdqTDYzVzRDYjNyUkVqa1Y4ZA0wwV3kxblVkdlJBVmdnWURfdmNNYndDZAwZDZD",
               "type": "string"
@@ -3569,6 +3687,7 @@
             "name": "channelId",
             "required": false,
             "in": "query",
+            "description": "WhatsApp and Telegram: the channel to read posts from, as the `id` of an item with `type: \"channel\"` from Get WhatsApp Channel or Get Telegram Channel. On Pinterest it is optional: a board `id` from Get Pinterest Board lists only that board pins, otherwise every pin of the account is listed.",
             "schema": {
               "example": "120363413774168194@newsletter",
               "type": "string"
@@ -3578,6 +3697,7 @@
             "name": "type",
             "required": false,
             "in": "query",
+            "description": "Instagram only: `media` for posts (the default) or `story` for the stories that are still live.",
             "schema": {
               "example": "media",
               "type": "string",
@@ -3725,6 +3845,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -3734,6 +3855,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3800,6 +3922,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -3809,6 +3932,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3849,6 +3973,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -3858,6 +3983,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -3867,6 +3993,7 @@
             "name": "nextToken",
             "required": false,
             "in": "query",
+            "description": "Cursor for the next page: the `nextToken` of the previous response. Leave it out for the first page. An empty `nextToken` in the response means there are no more pages.",
             "schema": {
               "example": "QVFIU0R6TnJ2V2w1Q3N6a3FXUUc3Tkd2aEZAMUjdmQXg4ZAzU0QlFaemVGWUFVOXVPTkVWUEdPN1JMalNtemJhaTdPOTNFN2VSUW5kUEpmSEVUNnlNWGZAsSmJsaHNTN3lKTkczXzJkQmk3NEpNNDRHa0VIc0lfQ25OeFp3RzgxcWVJZATZARUURNVFhlOG8waG5zSzJCanVGYkQtU0pKcDdlTVZAHYkdSaVdCSlJlS0xmS05aSFZA3ZADRZAMzl4SHk4WVpjZAHBXX0xacC1PTVVsZA3lhcjRoMngxckVqWEZAkSlpLTy1oWUo0RDBOSEhhUG1Gek9jeHFtMWhsT3lIVHhoYmU1LUxyRTktYVowZAE1XV19ERDA3dmFhN09TZAXljMmdmRW1tWms5N2tJNUkzdTBKelVJN3V4ekhRRC1KNzJzSmZAuUUVfd2hoQjA1RV9yNDJCZAG9jRFozTXRkOVc2UGFmSExrUUR6YmkxTnp2eHktd1FZAWVlMY205TkdyTVFvYXowVFhEbS1wZA3lkSVNYR3BtMDZA1YXI4TlpNZAWxqVmVyTk9OMC0talpld3BSSFBVWjYzSlpFUjd3dzZAWLWJlZAkIwaTBNejVVdFcwX2h0U1V1V2doMXZAuRWRvdW90T19XVVhJcmtSSFpYQjdjM0dQTkhzZAlZAjdHdqTDYzVzRDYjNyUkVqa1Y4ZA0wwV3kxblVkdlJBVmdnWURfdmNNYndDZAwZDZD",
               "type": "string"
@@ -3876,6 +4003,7 @@
             "name": "commentId",
             "required": false,
             "in": "query",
+            "description": "ID of a comment on the platform. With it, the replies to that comment are returned instead of the post comments.",
             "schema": { "example": "18083576267346315", "type": "string" }
           }
         ],
@@ -3964,6 +4092,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -4053,6 +4182,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -4062,6 +4192,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4205,6 +4336,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -4309,6 +4441,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -4318,12 +4451,14 @@
             "name": "commentId",
             "required": true,
             "in": "path",
+            "description": "ID of the comment on the platform, the `id` from Get Comment of the post.",
             "schema": { "example": "113958387982006", "type": "string" }
           },
           {
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4364,6 +4499,7 @@
             "name": "contentId",
             "required": true,
             "in": "path",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook.",
             "schema": {
               "example": "113958387982006_942538351814577",
               "type": "string"
@@ -4373,12 +4509,14 @@
             "name": "commentId",
             "required": true,
             "in": "path",
+            "description": "ID of the comment on the platform, the `id` from Get Comment of the post.",
             "schema": { "example": "113958387982006", "type": "string" }
           },
           {
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4419,6 +4557,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected Threads account, the `_id` from Get Account. The search runs with its access.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4428,12 +4567,14 @@
             "name": "search",
             "required": true,
             "in": "query",
+            "description": "Keyword or phrase to search for.",
             "schema": { "example": "Video", "type": "string" }
           },
           {
             "name": "sort",
             "required": false,
             "in": "query",
+            "description": "Sort order for search results: `TOP` (default) or `RECENT`.",
             "schema": {
               "example": "TOP",
               "type": "string",
@@ -4444,6 +4585,7 @@
             "name": "mode",
             "required": false,
             "in": "query",
+            "description": "Search matching mode: `KEYWORD` (default) searches by keyword, `TAG` by topic tag.",
             "schema": {
               "example": "KEYWORD",
               "type": "string",
@@ -4454,6 +4596,7 @@
             "name": "type",
             "required": false,
             "in": "query",
+            "description": "Filter content by media type: `TEXT`, `IMAGE`, or `VIDEO`.",
             "schema": {
               "example": "TEXT",
               "type": "string",
@@ -4464,24 +4607,28 @@
             "name": "since",
             "required": false,
             "in": "query",
-            "schema": { "example": 1792165353, "type": "number" }
+            "description": "Unix timestamp in seconds for the start of the date filter. Use it together with `until`.",
+            "schema": { "example": 1793167584, "type": "number" }
           },
           {
             "name": "until",
             "required": false,
             "in": "query",
-            "schema": { "example": 1792165353, "type": "number" }
+            "description": "Unix timestamp in seconds for the end of the date filter. Use it together with `since`.",
+            "schema": { "example": 1793167584, "type": "number" }
           },
           {
             "name": "username",
             "required": false,
             "in": "query",
+            "description": "Only posts by this Threads username, for example `replizofficial`.",
             "schema": { "example": "replizofficial", "type": "string" }
           },
           {
             "name": "nextToken",
             "required": false,
             "in": "query",
+            "description": "Cursor for the next page: the `nextToken` of the previous response. Leave it out for the first page. An empty `nextToken` in the response means there are no more pages.",
             "schema": {
               "example": "06584df0146aabfc81fae7ae34ca55099f88ca8f6b7bf3b7b5521a422dc54fc07d86c9751523a501861d6b15228cd68b",
               "type": "string"
@@ -4538,6 +4685,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected Threads account, the `_id` from Get Account. The search runs with its access.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4547,12 +4695,14 @@
             "name": "username",
             "required": true,
             "in": "query",
+            "description": "Threads username whose posts to list, without `@`, for example `replizofficial`.",
             "schema": { "example": "meta", "type": "string" }
           },
           {
             "name": "nextToken",
             "required": false,
             "in": "query",
+            "description": "Cursor for the next page: the `nextToken` of the previous response. Leave it out for the first page. An empty `nextToken` in the response means there are no more pages.",
             "schema": {
               "example": "06584df0146aabfc81fae7ae34ca55099f88ca8f6b7bf3b7b5521a422dc54fc07d86c9751523a501861d6b15228cd68b",
               "type": "string"
@@ -4611,6 +4761,7 @@
             "name": "accountId",
             "required": true,
             "in": "query",
+            "description": "ID of a connected Threads account, the `_id` from Get Account. The search runs with its access.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4620,6 +4771,7 @@
             "name": "username",
             "required": true,
             "in": "query",
+            "description": "Threads username to look up, without `@`, for example `replizofficial`.",
             "schema": { "example": "meta", "type": "string" }
           }
         ],
@@ -4668,18 +4820,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Reports are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "type",
             "required": false,
             "in": "query",
+            "description": "The automation module that ran: `delete`, `reply`, `like`, `message`, `chat`, or `story`. Every type when left out.",
             "schema": {
               "example": "delete",
               "type": "string",
@@ -4690,6 +4850,7 @@
             "name": "status",
             "required": false,
             "in": "query",
+            "description": "`success` or `error`. Every status when left out.",
             "schema": {
               "example": "error",
               "type": "string",
@@ -4700,6 +4861,7 @@
             "name": "accountIds",
             "required": false,
             "in": "query",
+            "description": "Only return items of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`. All accounts when left out.",
             "schema": {
               "example": ["680affa5ce12f2f72916f67e"],
               "type": "array",
@@ -4710,6 +4872,7 @@
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the comment or message text, or the name of the person who sent it, case-insensitive.",
             "schema": { "example": "Azickri", "type": "string" }
           }
         ],
@@ -4799,6 +4962,7 @@
             "name": "reportId",
             "required": true,
             "in": "path",
+            "description": "ID of the report, the `_id` from Get Report. Retry runs the same action again on the same comment or message.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4886,6 +5050,7 @@
             "name": "reportId",
             "required": true,
             "in": "path",
+            "description": "ID of the report, the `_id` from Get Report. Retry runs the same action again on the same comment or message.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -4917,18 +5082,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Automations are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "accountIds",
             "required": false,
             "in": "query",
+            "description": "Only return items of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`. All accounts when left out.",
             "schema": {
               "example": ["680affa5ce12f2f72916f67e"],
               "type": "array",
@@ -4939,6 +5112,7 @@
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the title, caption, or URL of the post, case-insensitive.",
             "schema": { "example": "Wahuyy", "type": "string" }
           }
         ],
@@ -5160,7 +5334,7 @@
         "tags": ["API Automation (Gold+)"]
       },
       "post": {
-        "description": "\nCreate a new content automation.\n\nThis endpoint is used to create an automation that performs predefined actions when specific conditions or triggers are met.\nAutomation can be configured to streamline content management and engagement workflows.\n\nResponse:\n- Returns the created automation object\n",
+        "description": "\nCreate a new content automation.\n\nThis endpoint is used to create an automation that performs predefined actions when specific conditions or triggers are met.\nAutomation can be configured to streamline content management and engagement workflows.\nA post has one automation. If it already has one, the request fails with 409 Conflict and the message names the existing automation id, so use Update Automation to change it.\n\nResponse:\n- Returns the created automation object\n",
         "operationId": "AutomationController_createAutomation",
         "parameters": [],
         "requestBody": {
@@ -5218,6 +5392,7 @@
             "name": "automationId",
             "required": true,
             "in": "path",
+            "description": "ID of the automation, the `automationId` returned by Create Automation or the `_id` from Get Automation.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -5444,6 +5619,7 @@
             "name": "automationId",
             "required": true,
             "in": "path",
+            "description": "ID of the automation, the `automationId` returned by Create Automation or the `_id` from Get Automation.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -5483,6 +5659,7 @@
             "name": "automationId",
             "required": true,
             "in": "path",
+            "description": "ID of the automation, the `automationId` returned by Create Automation or the `_id` from Get Automation.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -5514,18 +5691,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Templates are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the template name, case-insensitive.",
             "schema": { "example": "Auto Comment", "type": "string" }
           },
           {
@@ -5753,6 +5938,7 @@
             "name": "templateId",
             "required": true,
             "in": "path",
+            "description": "ID of the template, the `templateId` returned by Create Template or the `_id` from Get Template.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -5942,6 +6128,7 @@
             "name": "templateId",
             "required": true,
             "in": "path",
+            "description": "ID of the template, the `templateId` returned by Create Template or the `_id` from Get Template.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -5986,6 +6173,7 @@
             "name": "templateId",
             "required": true,
             "in": "path",
+            "description": "ID of the template, the `templateId` returned by Create Template or the `_id` from Get Template.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6022,6 +6210,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that Facebook sends the user back to after they approve, for example `https://app.example.com/oauth/facebook`. The access token is added to its URL fragment (`#access_token=...`). URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6051,6 +6240,7 @@
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Access token obtained from Exchange Facebook.",
             "schema": {
               "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406.2255a73f-8431-4458-abcf-ee7f867952db",
               "type": "string"
@@ -6153,6 +6343,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6205,6 +6396,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that Instagram sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6264,6 +6456,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6316,6 +6509,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that Threads sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6373,6 +6567,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6423,6 +6618,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that Google sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6452,6 +6648,7 @@
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Access token obtained from Exchange YouTube.",
             "schema": {
               "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406.2255a73f-8431-4458-abcf-ee7f867952db",
               "type": "string"
@@ -6554,6 +6751,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6606,6 +6804,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that LinkedIn sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6635,6 +6834,7 @@
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Access token obtained from Exchange LinkedIn.",
             "schema": {
               "example": "775576f02bebcc13b176c6cc217946a0f4e566e7cd2564ebb7003999d9ccd017f24acd8df14035d0f67f394909f7790fe30ed0be2889d67c67105f278cc26eed7065de54db7980cb07fe64af576e0f350972f1648a69568f7eea18792f6394b7b32277012d365a90e8c7d2ad34f0e23e52de15f1750ad6cf7a99405313f9beeb580b452f57dd9278ee592ad3f9879407fd11ba8d0ea95a770da93e3c81ac407fd310946d541bf94e025c556e189e60f49e10297d2720ef66393ec705319ad38bdd15028b9e5890d4c5db2c6d19659d5240b4581fe4a552b86d099f561d71e7fa45d33ef44fe066a2230c13223eff3a79276756dd2f6672f6a4aa7669f50f671e6b2c7027c4fb9424a5d679c7d2228964689907fd80ad2a433216580be40e7a84943c2eeddd045f29cacfe48a32f4a3557327aea196e38da1ad7c491e73698238c60a4642b320b31087954a2fdfd0b224f81720adfc07e0128c198e31d20b1674b1f7cb7251700e0dac416a6fdb6faebec272efceff7cf09b365d5be84ca9c58c5d891ea328092ab71328669080a08f12b518e6bf539dddd90c6b5f24bf2176a06301293a0ad0406b427e34ab25e91eddf7048693947ec6c2f42dc268be32bba5db9c15278b2b7d6bb2768eb1865a65575b20e6598b923aa4317161bc9a9e85c9ee6b1fa3dbdda22c28f6109f98be7f505f4da24d801cf987d1ef2d02755edcd752d062a612fbb84d01cf99f84b4a291f3626df2b909c5bd6793c7f729c4960f68b3c68265ca1bd865cac8ade52226ab4fa14fdea77703968838243440c6c02bad5aa32f4c3900cc9190cbad896bdcbd157979ccf568f196dbd2f9938b80adb1df21efec6563766eca23a748452e911e77e7fe5ef8476c58f489609f9899de0f2da0e9cbd3b95c00fe73ded734a2a10b7884c476bc7e13db0404bbb40fc78a75342c6d817be9240d2011ef4983d020da15c60ce41a928aa11e026b4392fad8d7995405b3141e26883260dca2a509f1c21e432db67f164582b19921b8198c861c2.d54e218b-e463-443f-8e44-bf89c66ccc64",
               "type": "string"
@@ -6737,6 +6937,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6789,6 +6990,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that TikTok sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6846,6 +7048,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -6896,6 +7099,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that Shopee sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -6953,6 +7157,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7003,6 +7208,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that X sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -7060,6 +7266,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7110,6 +7317,7 @@
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Session token returned by Create Session WhatsApp.",
             "schema": {
               "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
               "type": "string"
@@ -7213,6 +7421,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7262,6 +7471,7 @@
             "name": "token",
             "required": true,
             "in": "query",
+            "description": "Session token returned by Create Session Telegram.",
             "schema": {
               "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
               "type": "string"
@@ -7409,6 +7619,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7458,6 +7669,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
+            "description": "The full URL of your page that Pinterest sends the user back to after they approve, for example `https://app.example.com/oauth/...`. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -7517,6 +7729,7 @@
             "name": "accountId",
             "required": true,
             "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7596,18 +7809,26 @@
             "name": "page",
             "required": true,
             "in": "query",
-            "schema": { "example": 1, "type": "number" }
+            "description": "Page to return, starting from `1`. Files are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
           },
           {
             "name": "limit",
             "required": true,
             "in": "query",
-            "schema": { "example": 20, "type": "number" }
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
           },
           {
             "name": "search",
             "required": false,
             "in": "query",
+            "description": "Matches the file name, case-insensitive.",
             "schema": { "example": "hello", "type": "string" }
           }
         ],
@@ -7675,6 +7896,7 @@
             "name": "fileId",
             "required": true,
             "in": "path",
+            "description": "ID of the file, the `id` returned by Init File or the `_id` from Get File.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7724,6 +7946,7 @@
             "name": "fileId",
             "required": true,
             "in": "path",
+            "description": "ID of the file, the `id` returned by Init File or the `_id` from Get File.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7799,6 +8022,7 @@
             "name": "fileId",
             "required": true,
             "in": "path",
+            "description": "ID of the file, the `id` returned by Init File or the `_id` from Get File.",
             "schema": {
               "example": "680affa5ce12f2f72916f67e",
               "type": "string"
@@ -7833,6 +8057,7 @@
             "name": "fileIds",
             "required": true,
             "in": "query",
+            "description": "IDs of the files to remove, at least one, sent as `fileIds[]=ID`.",
             "schema": {
               "example": [
                 "680affa5ce12f2f72916f67e",
@@ -7868,18 +8093,28 @@
       "ConfigAutomationDelete": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": true },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the other fields are saved but not used."
+          },
           "type": {
             "type": "string",
             "example": "ai",
-            "enum": ["ai", "keyword"]
+            "enum": ["ai", "keyword"],
+            "description": "How a comment is picked: `keyword` deletes comments that contain one of `keywords`, `ai` asks the AI whether the comment fits `prompt`."
           },
           "keywords": {
             "example": ["baca", "oke"],
+            "description": "Words or phrases to delete on, used by `keyword`. Case-insensitive, and a comment matches when it contains one anywhere. Send `[]` when `type` is `ai`.",
             "type": "array",
             "items": { "type": "string" }
           },
-          "prompt": { "type": "string", "example": "You are..." }
+          "prompt": {
+            "type": "string",
+            "example": "You are...",
+            "description": "What the AI should delete, used by `ai`, for example `Delete spam, scam links, and hate speech`. Send `\"\"` when `type` is `keyword`."
+          }
         },
         "required": ["isActive", "type", "keywords", "prompt"]
       },
@@ -7888,29 +8123,48 @@
         "properties": {
           "url": {
             "type": "string",
-            "example": "https://storage.repliz.com/image.png"
+            "example": "https://storage.repliz.com/image.png",
+            "description": "Public URL of the image. The platform downloads it from here."
           },
           "thumbnail": {
             "type": "string",
-            "example": "https://storage.repliz.com/thumbnail.png"
+            "example": "https://storage.repliz.com/thumbnail.png",
+            "description": "Smaller preview shown in Repliz. It is not sent to the platform or the recipient."
           },
-          "mimetype": { "type": "string", "example": "image/jpeg" }
+          "mimetype": {
+            "type": "string",
+            "example": "image/jpeg",
+            "description": "MIME type of the image, like `image/jpeg` or `image/png`."
+          }
         },
         "required": ["url", "mimetype"]
       },
       "ConfigKeywordValue": {
         "type": "object",
         "properties": {
-          "keyword": { "type": "string", "example": "Hello" },
-          "text": { "type": "string", "example": "Text to reply message" }
+          "keyword": {
+            "type": "string",
+            "example": "Hello",
+            "description": "The word or phrase to match. Leave it empty for the default reply to comments no other keyword matches, wherever it sits in the list. With more than one empty keyword, the first one is used."
+          },
+          "text": {
+            "type": "string",
+            "example": "Text to reply message",
+            "description": "The reply for this keyword. Supports `{name}` and spintax."
+          }
         },
         "required": ["keyword", "text"]
       },
       "ConfigKeyword": {
         "type": "object",
         "properties": {
-          "isExactMatch": { "type": "boolean", "example": false },
+          "isExactMatch": {
+            "type": "boolean",
+            "example": false,
+            "description": "`false`: a keyword matches when the comment contains it. `true`: the whole comment must equal the keyword. Case-insensitive either way."
+          },
           "values": {
+            "description": "Keyword and reply pairs. They are checked in order and the first match is sent. A comment that matches none gets the item with an empty keyword, or no reply when there is none.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ConfigKeywordValue" }
           }
@@ -7920,10 +8174,19 @@
       "ConfigException": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": false },
-          "isExactMatch": { "type": "boolean", "example": false },
+          "isActive": {
+            "type": "boolean",
+            "example": false,
+            "description": "Turns the exception list on."
+          },
+          "isExactMatch": {
+            "type": "boolean",
+            "example": false,
+            "description": "`false`: skip comments that contain a keyword. `true`: skip only comments equal to a keyword."
+          },
           "keywords": {
             "example": ["hello"],
+            "description": "Keywords that block the reply, for example `[\"admin\", \"giveaway\"]`.",
             "type": "array",
             "items": { "type": "string" }
           }
@@ -7933,10 +8196,19 @@
       "ConfigCondition": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": false },
-          "isExactMatch": { "type": "boolean", "example": false },
+          "isActive": {
+            "type": "boolean",
+            "example": false,
+            "description": "Turns the condition on. With `false`, every comment that passes `exception` gets a reply."
+          },
+          "isExactMatch": {
+            "type": "boolean",
+            "example": false,
+            "description": "`false`: the text must contain a keyword. `true`: it must equal one."
+          },
           "keywords": {
             "example": ["hello"],
+            "description": "Keywords the text needs to get an answer.",
             "type": "array",
             "items": { "type": "string" }
           }
@@ -7946,12 +8218,22 @@
       "ConfigDelay": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": false },
-          "value": { "type": "number", "example": 10 },
+          "isActive": {
+            "type": "boolean",
+            "example": false,
+            "description": "Turns the delay on."
+          },
+          "value": {
+            "type": "number",
+            "example": 10,
+            "minimum": 0,
+            "description": "How long to wait, in seconds. The dashboard offers 10 to 60."
+          },
           "type": {
             "type": "string",
             "example": "second",
-            "enum": ["second", "minute"]
+            "enum": ["second", "minute"],
+            "description": "Send `second`. The value is always read as seconds."
           }
         },
         "required": ["isActive", "value", "type"]
@@ -7959,28 +8241,57 @@
       "ConfigAutomationReply": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": true },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the other fields are saved but not used."
+          },
           "type": {
             "type": "string",
             "example": "ai",
-            "enum": ["ai", "text", "keyword"]
+            "enum": ["ai", "text", "keyword"],
+            "description": "Where the reply comes from: `text` always sends `text`, `keyword` sends the matching item of `keyword.values`, `ai` lets the AI write it from `prompt`."
           },
-          "text": { "type": "string", "example": "Hello" },
+          "text": {
+            "type": "string",
+            "example": "Hello",
+            "description": "The reply for `text`. Supports `{name}` for the commenter name and spintax such as `{Hi|Hello}`. Send `\"\"` for the other types."
+          },
           "image": {
-            "description": "Optional image sent along with the reply text. Supported on Facebook, Threads, TikTok and LinkedIn",
+            "description": "An image posted with every reply, whatever the `type`. Sent on Facebook, Threads, TikTok, and LinkedIn, and ignored on Instagram and YouTube.",
             "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
           },
-          "prompt": { "type": "string", "example": "You are..." },
-          "isIncludeContentContext": { "type": "boolean", "example": false },
+          "prompt": {
+            "type": "string",
+            "example": "You are...",
+            "description": "Instructions for `ai`: tone, language, and what the reply should say. Send `\"\"` for the other types."
+          },
+          "isIncludeContentContext": {
+            "type": "boolean",
+            "example": false,
+            "description": "Used by `ai`. With `true`, the AI also reads the post title, type, caption, and media, so it can answer questions about the post itself."
+          },
           "isIncludeLiveComment": {
             "type": "boolean",
             "example": false,
-            "description": "Also reply to comments on an Instagram Live while it is on air. Off when left out"
+            "description": "Instagram only. Also reply to comments on an Instagram Live while it is on air. Off when left out."
           },
-          "keyword": { "$ref": "#/components/schemas/ConfigKeyword" },
-          "exception": { "$ref": "#/components/schemas/ConfigException" },
-          "condition": { "$ref": "#/components/schemas/ConfigCondition" },
-          "delay": { "$ref": "#/components/schemas/ConfigDelay" }
+          "keyword": {
+            "description": "Keyword replies, used by `keyword`. For the other types, send it with `values: []`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigKeyword" }]
+          },
+          "exception": {
+            "description": "Comments that never get a reply. Checked first, for every `type`. Off when left out.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigException" }]
+          },
+          "condition": {
+            "description": "Reply only to comments with one of these keywords. Ignored when `type` is `keyword`, because `keyword.values` already decides.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigCondition" }]
+          },
+          "delay": {
+            "description": "Waits before replying, so replies do not arrive the same second as the comment.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          }
         },
         "required": [
           "isActive",
@@ -7989,14 +8300,19 @@
           "prompt",
           "isIncludeContentContext",
           "keyword",
-          "exception",
           "condition",
           "delay"
         ]
       },
       "ConfigAutomationLike": {
         "type": "object",
-        "properties": { "isActive": { "type": "boolean", "example": true } },
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Likes every new comment from other people."
+          }
+        },
         "required": ["isActive"]
       },
       "ConfigOpeningButton": {
@@ -8005,50 +8321,103 @@
           "type": {
             "type": "string",
             "example": "postback",
-            "enum": ["postback", "web_url"]
+            "enum": ["postback", "web_url"],
+            "description": "Send `postback`."
           },
-          "title": { "type": "string", "example": "Click Me" },
+          "title": {
+            "type": "string",
+            "example": "Click Me",
+            "description": "Button label, for example `Send me the link`."
+          },
           "payload": {
             "type": "string",
             "example": "payloadcustompostback",
-            "description": "Set by Repliz on save for postback buttons, any value sent is replaced"
+            "description": "Set by Repliz when the automation is saved. Any value you send is replaced."
           },
-          "url": { "type": "string", "example": "https://repliz.com" }
+          "url": {
+            "type": "string",
+            "example": "",
+            "description": "Not used by `postback` buttons. Send `\"\"`."
+          }
         },
-        "required": ["type", "title", "payload", "url"]
+        "required": ["type", "title"]
       },
       "ConfigOpeningPostback": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": false },
-          "text": { "type": "string", "example": "Want to know?" },
+          "isActive": {
+            "type": "boolean",
+            "example": false,
+            "description": "With `false`, the flow starts at `additional`, or at `webUrl` if that is off too."
+          },
+          "text": {
+            "type": "string",
+            "example": "Want to know?",
+            "description": "Message text. Supports `{name}` and spintax."
+          },
           "image": {
             "type": "string",
-            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png"
+            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png",
+            "description": "Public image URL shown above the text."
           },
-          "button": { "$ref": "#/components/schemas/ConfigOpeningButton" }
+          "button": {
+            "description": "The one button of this message.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningButton" }]
+          }
         },
-        "required": ["isActive", "text", "image", "button"]
+        "required": ["isActive", "text", "button"]
       },
       "ConfigOpeningAdditional": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": false },
-          "isPreventBeforeFollow": { "type": "boolean", "example": false },
-          "text": { "type": "string", "example": "Want to know?" },
+          "isActive": {
+            "type": "boolean",
+            "example": false,
+            "description": "With `false`, tapping the First Message button sends `webUrl` straight away."
+          },
+          "isPreventBeforeFollow": {
+            "type": "boolean",
+            "example": false,
+            "description": "Instagram only. With `true`, the person must follow the account before getting `webUrl`. Until then, tapping the button sends this message again."
+          },
+          "text": {
+            "type": "string",
+            "example": "Want to know?",
+            "description": "Message text, for example `Follow us first, then tap the button again`. Supports `{name}` and spintax."
+          },
           "image": {
             "type": "string",
-            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png"
+            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png",
+            "description": "Public image URL shown above the text."
           },
-          "button": { "$ref": "#/components/schemas/ConfigOpeningButton" }
+          "button": {
+            "description": "The one button of this message, with the same fields as `opening.postback.button`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningButton" }]
+          }
         },
-        "required": [
-          "isActive",
-          "isPreventBeforeFollow",
-          "text",
-          "image",
-          "button"
-        ]
+        "required": ["isActive", "isPreventBeforeFollow", "text", "button"]
+      },
+      "ConfigOpeningWebUrlButton": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "web_url",
+            "enum": ["web_url"],
+            "description": "Always `web_url`."
+          },
+          "title": {
+            "type": "string",
+            "example": "Visit Repliz",
+            "description": "Button label."
+          },
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "The link opened when the button is tapped."
+          }
+        },
+        "required": ["title", "url"]
       },
       "ConfigOpeningElementButton": {
         "type": "object",
@@ -8056,24 +8425,47 @@
           "type": {
             "type": "string",
             "example": "web_url",
-            "enum": ["web_url"]
+            "enum": ["web_url"],
+            "description": "Always `web_url`."
           },
-          "title": { "type": "string", "example": "Rp49.000 click here!" },
-          "url": { "type": "string", "example": "https://repliz.com" }
+          "title": {
+            "type": "string",
+            "example": "Rp49.000 click here!",
+            "description": "Button label."
+          },
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "The link opened when the button is tapped."
+          }
         },
         "required": ["type", "title", "url"]
       },
       "ConfigOpeningElement": {
         "type": "object",
         "properties": {
-          "title": { "type": "string", "example": "Ebook Content Creator" },
-          "subtitle": { "type": "string", "example": "Bangun aset digital!" },
+          "title": {
+            "type": "string",
+            "example": "Ebook Content Creator",
+            "description": "Card title, cut to 80 characters. Supports `{name}` and spintax."
+          },
+          "subtitle": {
+            "type": "string",
+            "example": "Bangun aset digital!",
+            "description": "Text under the title, cut to 80 characters. Supports `{name}` and spintax."
+          },
           "image": {
             "type": "string",
-            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png"
+            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png",
+            "description": "Public URL of the card image."
           },
-          "url": { "type": "string", "example": "https://repliz.com" },
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "Link opened when the card itself is tapped."
+          },
           "buttons": {
+            "description": "Up to 3 link buttons on the card. Can be `[]`.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ConfigOpeningElementButton"
@@ -8089,32 +8481,50 @@
             "type": "string",
             "example": "button",
             "enum": ["button", "element"],
-            "description": "button: text + image + buttons, element: carousel from elements"
+            "description": "`button` (default) sends `text`, `image`, and `buttons`. `element` sends a carousel of `elements` instead."
           },
-          "text": { "type": "string", "example": "Want to know?" },
+          "text": {
+            "type": "string",
+            "example": "Want to know?",
+            "description": "Message text, used by `button`. Supports `{name}` and spintax."
+          },
           "image": {
             "type": "string",
-            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png"
+            "example": "https://storage.repliz.com/automations/008556e6-0efe-4197-9d39-5849616d6c56.png",
+            "description": "Public image URL shown with the message, used by `button`."
           },
           "buttons": {
+            "description": "Up to 3 link buttons, used by `button`. Send `[]` when `type` is `element`.",
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ConfigOpeningButton" }
+            "items": {
+              "$ref": "#/components/schemas/ConfigOpeningWebUrlButton"
+            }
           },
           "elements": {
+            "description": "1 to 10 carousel cards, required when `type` is `element`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ConfigOpeningElement" }
           }
         },
-        "required": ["text", "image", "buttons"]
+        "required": ["text", "buttons"]
       },
       "ConfigOpening": {
         "type": "object",
         "properties": {
-          "postback": { "$ref": "#/components/schemas/ConfigOpeningPostback" },
-          "additional": {
-            "$ref": "#/components/schemas/ConfigOpeningAdditional"
+          "postback": {
+            "description": "First Message, sent right after the comment. Its button only asks the person to tap, which lets Repliz send the rest.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningPostback" }]
           },
-          "webUrl": { "$ref": "#/components/schemas/ConfigOpeningWebUrl" }
+          "additional": {
+            "description": "Additional Message, sent when the person taps the First Message button. Same fields as `postback`, plus `isPreventBeforeFollow`.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigOpeningAdditional" }
+            ]
+          },
+          "webUrl": {
+            "description": "Follow-up Message, the last step, with the links you want to give.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningWebUrl" }]
+          }
         },
         "required": ["postback", "additional", "webUrl"]
       },
@@ -8129,7 +8539,7 @@
           "keyword": {
             "type": "string",
             "example": "Hello",
-            "description": "Leave empty to answer every message no other keyword matches"
+            "description": "The word or phrase to match. Leave it empty for a fallback that answers every message no other keyword matches, wherever it sits in the list. With more than one empty keyword, the first one is used."
           },
           "type": {
             "type": "string",
@@ -8152,8 +8562,13 @@
       "ConfigMessageKeyword": {
         "type": "object",
         "properties": {
-          "isExactMatch": { "type": "boolean", "example": false },
+          "isExactMatch": {
+            "type": "boolean",
+            "example": false,
+            "description": "`false`: a keyword matches when the text contains it. `true`: the whole text must equal the keyword. Case-insensitive either way."
+          },
           "values": {
+            "description": "Keyword and answer pairs. They are checked in order and the first match is sent.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ConfigMessageKeywordValue"
@@ -8165,23 +8580,48 @@
       "ConfigAutomationMessage": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": true },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the other fields are saved but not used."
+          },
           "type": {
             "type": "string",
             "example": "ai",
-            "enum": ["ai", "text", "opening", "keyword"]
+            "enum": ["ai", "text", "opening", "keyword"],
+            "description": "What is sent: `text` sends `text`, `ai` lets the AI write it from `prompt`, `keyword` sends the matching item of `keyword.values`, `opening` sends the button flow in `opening`."
           },
-          "text": { "type": "string", "example": "Hello" },
-          "prompt": { "type": "string", "example": "You are..." },
+          "text": {
+            "type": "string",
+            "example": "Hello",
+            "description": "The DM for `text`. Supports `{name}` and spintax. Send `\"\"` for the other types."
+          },
+          "prompt": {
+            "type": "string",
+            "example": "You are...",
+            "description": "Instructions for `ai`. Send `\"\"` for the other types."
+          },
           "isIncludeLiveComment": {
             "type": "boolean",
             "example": false,
-            "description": "Also send the DM to comments on an Instagram Live, only while it is on air. Off when left out"
+            "description": "Instagram only. Also DM commenters on an Instagram Live, while it is on air. Off when left out."
           },
-          "opening": { "$ref": "#/components/schemas/ConfigOpening" },
-          "keyword": { "$ref": "#/components/schemas/ConfigMessageKeyword" },
-          "condition": { "$ref": "#/components/schemas/ConfigCondition" },
-          "delay": { "$ref": "#/components/schemas/ConfigDelay" }
+          "opening": {
+            "description": "The button flow for `opening`: First Message, Additional Message, then Follow-up Message with your links. Send it for every `type`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpening" }]
+          },
+          "keyword": {
+            "description": "Keyword DMs, used by `keyword`. For the other types, send it with `values: []`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigMessageKeyword" }]
+          },
+          "condition": {
+            "description": "DM only comments with one of these keywords. Ignored when `type` is `keyword`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigCondition" }]
+          },
+          "delay": {
+            "description": "Waits before sending. Keep it short for Instagram Live comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          }
         },
         "required": [
           "isActive",
@@ -8197,34 +8637,78 @@
       "ConfigAutomationChat": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": true },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the other fields are saved but not used."
+          },
           "type": {
             "type": "string",
             "example": "ai",
-            "enum": ["ai", "text", "keyword"]
+            "enum": ["ai", "text", "keyword"],
+            "description": "What is sent: `text` sends `text`, `ai` lets the AI write it from `prompt`, `keyword` sends the matching item of `keyword.values`."
           },
-          "text": { "type": "string", "example": "Hello" },
-          "prompt": { "type": "string", "example": "You are..." },
-          "keyword": { "$ref": "#/components/schemas/ConfigMessageKeyword" },
-          "delay": { "$ref": "#/components/schemas/ConfigDelay" }
+          "text": {
+            "type": "string",
+            "example": "Hello",
+            "description": "The answer for `text`. Supports `{name}` and spintax. Send `\"\"` for the other types."
+          },
+          "prompt": {
+            "type": "string",
+            "example": "You are...",
+            "description": "Instructions for `ai`, for example what the business sells and how to answer. Send `\"\"` for the other types."
+          },
+          "keyword": {
+            "description": "Keyword answers, used by `keyword`, including the empty fallback keyword. On Facebook and Instagram, an item can answer with buttons.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigMessageKeyword" }]
+          },
+          "delay": {
+            "description": "Waits before answering.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          }
         },
         "required": ["isActive", "type", "text", "prompt", "keyword", "delay"]
       },
       "ConfigAutomationStory": {
         "type": "object",
         "properties": {
-          "isActive": { "type": "boolean", "example": true },
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the other fields are saved but not used. Runs on Instagram only."
+          },
           "type": {
             "type": "string",
             "example": "ai",
-            "enum": ["ai", "text", "opening", "keyword"]
+            "enum": ["ai", "text", "opening", "keyword"],
+            "description": "What is sent: `text` sends `text`, `ai` lets the AI write it from `prompt`, `keyword` sends the matching item of `keyword.values`, `opening` sends the button flow in `opening`."
           },
-          "text": { "type": "string", "example": "Hello" },
-          "prompt": { "type": "string", "example": "You are..." },
-          "opening": { "$ref": "#/components/schemas/ConfigOpening" },
-          "keyword": { "$ref": "#/components/schemas/ConfigMessageKeyword" },
-          "condition": { "$ref": "#/components/schemas/ConfigCondition" },
-          "delay": { "$ref": "#/components/schemas/ConfigDelay" }
+          "text": {
+            "type": "string",
+            "example": "Hello",
+            "description": "The DM for `text`. Supports `{name}` and spintax. Send `\"\"` for the other types."
+          },
+          "prompt": {
+            "type": "string",
+            "example": "You are...",
+            "description": "Instructions for `ai`. Send `\"\"` for the other types."
+          },
+          "opening": {
+            "description": "The button flow for `opening`, with the same fields as in the Message module. Send it for every `type`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpening" }]
+          },
+          "keyword": {
+            "description": "Keyword DMs, used by `keyword`, matched against the text of the story reply. For the other types, send it with `values: []`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigMessageKeyword" }]
+          },
+          "condition": {
+            "description": "DM only story replies with one of these keywords. Ignored when `type` is `keyword`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigCondition" }]
+          },
+          "delay": {
+            "description": "Waits before sending.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          }
         },
         "required": [
           "isActive",
@@ -8240,21 +8724,45 @@
       "BodyUpdateAutomationAccountDTO": {
         "type": "object",
         "properties": {
-          "delete": { "$ref": "#/components/schemas/ConfigAutomationDelete" },
-          "reply": { "$ref": "#/components/schemas/ConfigAutomationReply" },
-          "like": { "$ref": "#/components/schemas/ConfigAutomationLike" },
-          "message": { "$ref": "#/components/schemas/ConfigAutomationMessage" },
-          "chat": { "$ref": "#/components/schemas/ConfigAutomationChat" },
-          "story": { "$ref": "#/components/schemas/ConfigAutomationStory" }
+          "delete": {
+            "description": "Deletes matching comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationDelete" }]
+          },
+          "reply": {
+            "description": "Replies to comments in public.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationReply" }]
+          },
+          "like": {
+            "description": "Likes comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationLike" }]
+          },
+          "message": {
+            "description": "Sends a DM to the people who comment.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationMessage" }
+            ]
+          },
+          "chat": {
+            "description": "Answers direct messages sent to the account.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationChat" }]
+          },
+          "story": {
+            "description": "Sends a DM to the people who reply to an Instagram Story.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationStory" }]
+          }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
       },
       "BodyReplyCommentDTO": {
         "type": "object",
         "properties": {
-          "text": { "type": "string", "example": "Reply from Repliz" },
+          "text": {
+            "type": "string",
+            "example": "Reply from Repliz",
+            "description": "Text of the reply. Required, even when an `image` is attached. The comment is set to `resolved` after the reply is sent."
+          },
           "image": {
-            "description": "Optional image sent along with the reply text. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter)",
+            "description": "An image posted together with `text`. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
             "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
           }
         },
@@ -8266,7 +8774,8 @@
           "status": {
             "type": "string",
             "example": "pending",
-            "enum": ["pending", "resolved", "ignored"]
+            "enum": ["pending", "resolved", "ignored"],
+            "description": "The new status: `pending` (not handled yet), `resolved` (handled), or `ignored`. It only changes the comment in Repliz, nothing is sent to the platform."
           }
         },
         "required": ["status"]
@@ -8274,20 +8783,31 @@
       "ScheduleMedia": {
         "type": "object",
         "properties": {
-          "alt": { "type": "string", "example": "image of cat" },
-          "customThumbnail": { "type": "boolean", "example": false },
+          "alt": {
+            "type": "string",
+            "example": "image of cat",
+            "description": "Alt text that describes the image for screen readers. Read by Instagram (`image` and `album`) and Pinterest (cut to 500 characters)."
+          },
+          "customThumbnail": {
+            "type": "boolean",
+            "example": false,
+            "description": "`true` makes Facebook, Instagram, TikTok, and YouTube use `thumbnail` as the video cover. Otherwise the platform picks one. Default `false`."
+          },
           "type": {
             "type": "string",
             "example": "image",
-            "enum": ["image", "video"]
+            "enum": ["image", "video"],
+            "description": "`image` or `video`."
           },
           "thumbnail": {
             "type": "string",
-            "example": "https://storage.repliz.com/thumbnail.jpg"
+            "example": "https://storage.repliz.com/thumbnail.jpg",
+            "description": "Cover image URL for a video. Facebook, Instagram, TikTok, and YouTube use it only when `customThumbnail` is `true`. WhatsApp, Telegram, and Pinterest use it whenever it is set."
           },
           "url": {
             "type": "string",
-            "example": "https://storage.repliz.com/video.mp4"
+            "example": "https://storage.repliz.com/video.mp4",
+            "description": "Public URL of the file. The platform downloads it when the post is published, so it has to stay reachable until then. Files in Repliz Storage work everywhere."
           }
         },
         "required": ["type", "url"]
@@ -8297,23 +8817,30 @@
         "properties": {
           "title": {
             "type": "string",
-            "example": "Repliz – Smart Comment Management for All Platforms"
+            "example": "Repliz – Smart Comment Management for All Platforms",
+            "description": "Preview title, shown in Repliz. Get Link Metadata returns it for a URL."
           },
           "description": {
             "type": "string",
-            "example": "Repliz helps you manage comments from YouTube, Facebook, Instagram, Threads, TikTok and LinkedIn – all in one app. Automate replies, filter spam, and save time."
+            "example": "Repliz helps you manage comments from YouTube, Facebook, Instagram, Threads, TikTok and LinkedIn – all in one app. Automate replies, filter spam, and save time.",
+            "description": "Preview description, shown in Repliz."
           },
-          "url": { "type": "string", "example": "https://repliz.com" }
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "The page to share. Facebook builds the preview card from this page itself."
+          }
         },
-        "required": ["title", "description", "url"]
+        "required": ["url"]
       },
       "ScheduleAdditionalInfoTrialParams": {
         "type": "object",
         "properties": {
           "graduationStrategy": {
             "type": "string",
-            "enum": ["MANUAL", "SS_PERFORMANCE"],
-            "example": "MANUAL"
+            "enum": ["", "MANUAL", "SS_PERFORMANCE"],
+            "example": "MANUAL",
+            "description": "`MANUAL`: you share it with your followers yourself from the Instagram app. `SS_PERFORMANCE`: Instagram shares it with your followers automatically if it performs well. An empty string posts a regular Reel."
           }
         },
         "required": ["graduationStrategy"]
@@ -8321,90 +8848,181 @@
       "ScheduleAdditionalInfoMusicVolume": {
         "type": "object",
         "properties": {
-          "video": { "type": "number", "example": 50 },
-          "music": { "type": "number", "example": 100 }
-        },
-        "required": ["video", "music"]
+          "video": {
+            "type": "number",
+            "example": 50,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Volume of the video original sound in percent, `0` to mute it. The dashboard sends `50`. Left out, TikTok gets `100`."
+          },
+          "music": {
+            "type": "number",
+            "example": 100,
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Track volume in percent, `0` to mute it. The dashboard sends `100`. Left out, TikTok gets `50`."
+          }
+        }
       },
       "ScheduleAdditionalInfoMusic": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "example": "7569541912459692049" },
-          "artist": { "type": "string", "example": "Valent Duga" },
+          "id": {
+            "type": "string",
+            "example": "7569541912459692049",
+            "description": "TikTok music ID, from Get TikTok Music. It is the only field sent to TikTok. Leave it empty for no track."
+          },
+          "artist": {
+            "type": "string",
+            "example": "Valent Duga",
+            "description": "Artist name, shown in Repliz."
+          },
           "name": {
             "type": "string",
-            "example": "Untukmu yang masih bertahan"
+            "example": "Untukmu yang masih bertahan",
+            "description": "Track name, shown in Repliz."
           },
           "thumbnail": {
             "type": "string",
-            "example": "https://p16-sg.tiktokcdn.com/aweme/100x100/tos-alisg-v-2774/ocTKEQKXXDCpsoAcArF9BZpABtfgwBEQEVfxCE.jpeg"
+            "example": "https://p16-sg.tiktokcdn.com/aweme/100x100/tos-alisg-v-2774/ocTKEQKXXDCpsoAcArF9BZpABtfgwBEQEVfxCE.jpeg",
+            "description": "Track cover image URL, shown in Repliz."
           },
           "volume": {
-            "$ref": "#/components/schemas/ScheduleAdditionalInfoMusicVolume"
+            "description": "How loud the track and the video own sound are, for `video` only. Photo posts play the track at TikTok default volume.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScheduleAdditionalInfoMusicVolume"
+              }
+            ]
           }
         },
-        "required": ["id", "artist", "name", "thumbnail", "volume"]
+        "required": ["id"]
       },
       "ScheduleAdditionalProduct": {
         "type": "object",
         "properties": {
-          "id": { "type": "string", "example": "50060886180" },
-          "name": { "type": "string", "example": "Apply Meta" },
+          "id": {
+            "type": "string",
+            "example": "50060886180",
+            "description": "Shopee item ID, the `id` from Get Shopee Product. Sent to Shopee with `name`."
+          },
+          "name": {
+            "type": "string",
+            "example": "Apply Meta",
+            "description": "Product name."
+          },
           "thumbnail": {
             "type": "string",
-            "example": "https://cf.shopee.co.id/file/id-11134207-822wh-moho65xqkn4ca1"
+            "example": "https://cf.shopee.co.id/file/id-11134207-822wh-moho65xqkn4ca1",
+            "description": "Product image URL, shown in Repliz."
           },
-          "currency": { "type": "string", "example": "IDR" },
-          "price": { "type": "number", "example": 100000 }
+          "currency": {
+            "type": "string",
+            "example": "IDR",
+            "description": "Currency code of `price`, shown in Repliz."
+          },
+          "price": {
+            "type": "number",
+            "example": 100000,
+            "description": "Product price, shown in Repliz."
+          }
         },
-        "required": ["id", "name", "thumbnail", "currency", "price"]
+        "required": ["id", "name"]
       },
       "ScheduleAdditionalInfoChannel": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "example": "120363413774168194@newsletter"
+            "example": "120363413774168194@newsletter",
+            "description": "ID of the channel, group, or board, from Get WhatsApp Channel, Get Telegram Channel, or Get Pinterest Board. On WhatsApp, its ending decides where the post goes: `@newsletter` for a Channel, `@g.us` for a group. Leave it empty to post to the WhatsApp Status or Telegram Story."
           },
-          "name": { "type": "string", "example": "Boom" },
+          "name": {
+            "type": "string",
+            "example": "Boom",
+            "description": "Name of the channel, group, or board, shown in Repliz."
+          },
           "picture": {
             "type": "string",
-            "example": "https://pps.whatsapp.net/v/t61.24694-24/534425366_1602052011300539_4061624974523006608_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5Aa5wFxyS0_C_Ttnd6Va3g2jG7iY2sbvaPfX5k4YFqmIUOyVg&oe=6AD03E1F&_nc_sid=5e03e0&_nc_cat=111"
+            "example": "https://pps.whatsapp.net/v/t61.24694-24/534425366_1602052011300539_4061624974523006608_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5Aa5wFxyS0_C_Ttnd6Va3g2jG7iY2sbvaPfX5k4YFqmIUOyVg&oe=6AD03E1F&_nc_sid=5e03e0&_nc_cat=111",
+            "description": "Its picture, shown in Repliz: a URL on WhatsApp and Pinterest, a `data:` URI on Telegram. Can be empty."
           },
           "type": {
             "type": "string",
             "enum": ["channel", "group", "board"],
-            "example": "channel"
+            "example": "channel",
+            "description": "`channel` or `group`, or `board` on Pinterest. On Telegram, this decides where the post goes, because channel and supergroup IDs look the same. Pinterest needs `board`."
           }
         },
-        "required": ["id", "name", "picture", "type"]
+        "required": ["id", "type"]
+      },
+      "ScheduleAdditionalInfoTextAttachment": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Repliz started as a small tool to answer comments faster. This is the story of how it grew...",
+            "maxLength": 10000,
+            "description": "The long text attached under the post, up to 10,000 characters. Leave it empty for no attachment."
+          },
+          "link": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "A link shown at the end of the attachment. A post can have at most 5 links, counting the ones in `description`."
+          }
+        }
       },
       "ScheduleAdditionalInfo": {
         "type": "object",
         "properties": {
-          "isAiGenerated": { "type": "boolean", "example": false },
-          "isDraft": { "type": "boolean", "example": false },
-          "isAutoAddMusic": { "type": "boolean", "example": false },
-          "isShareToFeed": { "type": "boolean", "example": false },
+          "isAiGenerated": {
+            "type": "boolean",
+            "example": false,
+            "description": "TikTok `video`, YouTube `video`, Facebook `reel`, and Pinterest. Declares that the post was made or changed with AI, with each platform own label. Default `false`."
+          },
+          "isDraft": {
+            "type": "boolean",
+            "example": false,
+            "description": "TikTok. `true` sends the post to the creator TikTok inbox as a draft instead of publishing it. The schedule `postId` is then `INBOX_TIKTOK`, so automation and statistics do not run on it. Default `false`."
+          },
+          "isAutoAddMusic": {
+            "type": "boolean",
+            "example": false,
+            "description": "TikTok `image` and `album`. `true` lets TikTok add a recommended track to the photo post. Ignored when `music.id` is set. Default `false`."
+          },
+          "isShareToFeed": {
+            "type": "boolean",
+            "example": false,
+            "description": "Instagram `video` and `reel`. `true` also shows the Reel on the profile grid. `false` keeps it in the Reels tab only."
+          },
           "privacy": {
             "type": "string",
-            "enum": ["public", "unlisted", "private"],
-            "example": "public"
+            "enum": ["", "public", "unlisted", "private"],
+            "example": "public",
+            "description": "YouTube `video`. Who can watch the video: `public` for everyone, `unlisted` for people with the link, `private` for the channel owner only. Empty or left out is `public`. A `private` video does not appear in Get Content, so its automation and statistics do not run."
           },
           "trialParams": {
-            "$ref": "#/components/schemas/ScheduleAdditionalInfoTrialParams"
+            "description": "Instagram `video` and `reel`. Posts the Reel as a trial reel, shown to non-followers first. Leave it out for a regular Reel.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScheduleAdditionalInfoTrialParams"
+              }
+            ]
           },
           "collaborators": {
             "example": ["replizofficial", "azickri.ai"],
+            "description": "Instagram `image`, `video`, `reel`, and `album`. Usernames, without `@`, invited to co-author the post. Up to 3. The post shows on their profile once they accept.",
             "type": "array",
             "items": { "type": "string" }
           },
           "music": {
+            "description": "TikTok. A TikTok track to put on the post. Leave `id` empty for no track.",
             "allOf": [
               { "$ref": "#/components/schemas/ScheduleAdditionalInfoMusic" }
             ]
           },
           "products": {
+            "description": "Shopee. Products tagged on the video, from Get Shopee Product.",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ScheduleAdditionalProduct"
@@ -8417,175 +9035,231 @@
               "kitty kitty",
               "stardenburdenhardenbart"
             ],
+            "description": "YouTube. Search tags for the video. All tags together cannot exceed 500 characters.",
             "type": "array",
             "items": { "type": "string" }
           },
           "mentions": {
             "example": ["replizofficial", "azickri.ai"],
+            "description": "Instagram `story`. Usernames, without `@`, mentioned in the story. Up to 3.",
             "type": "array",
             "items": { "type": "string" }
           },
           "targetCountries": {
-            "example": ["ID", "EN"],
+            "example": ["ID", "MY"],
+            "description": "Facebook `text`, `image`, `video`, `album`, and `link`. Shows the post only to people in these countries, as ISO 3166-1 alpha-2 codes. Leave it empty to show it everywhere.",
             "type": "array",
             "items": { "type": "string" }
           },
           "channel": {
+            "description": "WhatsApp, Telegram, and Pinterest. Where the post goes: a WhatsApp Channel or group, a Telegram channel or group, or a Pinterest board. Required for Pinterest. Without it, WhatsApp posts to the number Status and Telegram to the account Story.",
             "allOf": [
               { "$ref": "#/components/schemas/ScheduleAdditionalInfoChannel" }
             ]
           },
-          "link": { "type": "string", "example": "https://repliz.com" }
-        },
-        "required": [
-          "isAiGenerated",
-          "isDraft",
-          "isAutoAddMusic",
-          "isShareToFeed",
-          "collaborators",
-          "music",
-          "products",
-          "tags",
-          "mentions",
-          "targetCountries",
-          "channel"
-        ]
+          "link": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "Pinterest. The page the pin opens when someone taps it, for example `https://repliz.com`."
+          },
+          "textAttachment": {
+            "description": "Threads `text`. A long text attached under the post, read like an article. Only the main post gets it, not `replies`.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScheduleAdditionalInfoTextAttachment"
+              }
+            ]
+          }
+        }
       },
       "ScheduleReply": {
         "type": "object",
         "properties": {
-          "title": { "type": "string", "example": "Title of Content" },
+          "title": {
+            "type": "string",
+            "example": "",
+            "description": "Not used. Send `\"\"`."
+          },
           "description": {
             "type": "string",
-            "example": "Description/Caption of Content"
+            "example": "Description/Caption of Content",
+            "description": "Text of the reply. Required for `text`."
           },
-          "topic": { "type": "string", "example": "Content AI" },
+          "topic": {
+            "type": "string",
+            "example": "Content AI",
+            "description": "Threads topic tag of the reply."
+          },
           "type": {
             "type": "string",
             "example": "text",
-            "enum": ["text", "image", "video", "reel", "album", "link", "story"]
+            "enum": ["text", "image", "video", "album"],
+            "description": "`text`, `image`, `video`, or `album`."
           },
           "medias": {
+            "description": "Media objects, with the same rules as the main post. Send `[]` for `text`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleMedia" }
           }
         },
-        "required": ["title", "description", "topic", "type", "medias"]
+        "required": ["description", "type", "medias"]
       },
       "BodyCreateSchedulePublicDTO": {
         "type": "object",
         "properties": {
-          "title": { "type": "string", "example": "Title of Content" },
+          "title": {
+            "type": "string",
+            "example": "Title of Content",
+            "description": "Title of the post. Read by YouTube (video title, which YouTube needs), Facebook `video`, TikTok `image` and `album` (up to 90 characters), and Pinterest (pin title, cut to 100 characters). Other platforms ignore it, so send `\"\"`."
+          },
           "description": {
             "type": "string",
-            "example": "Description/Caption of Content"
+            "example": "Description/Caption of Content",
+            "description": "The caption, or the post text for `text`, where it is required. YouTube uses it as the video description and Pinterest as the pin description, cut to 800 characters. Shopee needs 1 to 150 characters. Not used by `story`."
           },
-          "topic": { "type": "string", "example": "Content AI" },
+          "topic": {
+            "type": "string",
+            "example": "Content AI",
+            "description": "Threads only: the topic tag shown on the post, for example `Social Media`. Send `\"\"` for other platforms."
+          },
           "type": {
             "type": "string",
             "example": "text",
-            "enum": ["text", "image", "video", "reel", "album", "link", "story"]
+            "enum": [
+              "text",
+              "image",
+              "video",
+              "reel",
+              "album",
+              "link",
+              "story"
+            ],
+            "description": "The kind of post: `text`, `image`, `video`, `reel`, `album`, `link`, or `story`. It decides which `medias` are needed."
           },
           "medias": {
+            "description": "The images and videos of the post. `text` needs none, so send `[]`. `image` and `link` need 1 image, `video` and `reel` 1 video, `album` 2 or more, and `story` 1 image or video.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleMedia" }
           },
-          "meta": { "$ref": "#/components/schemas/ScheduleMeta" },
+          "meta": {
+            "description": "The shared link of a `link` post, where it is required. Other types can leave it out.",
+            "allOf": [{ "$ref": "#/components/schemas/ScheduleMeta" }]
+          },
           "additionalInfo": {
-            "$ref": "#/components/schemas/ScheduleAdditionalInfo"
+            "description": "Options that only some platforms have, such as music, privacy, or the channel to post to. Required for Pinterest, which needs `additionalInfo.channel`.",
+            "allOf": [{ "$ref": "#/components/schemas/ScheduleAdditionalInfo" }]
           },
           "replies": {
+            "description": "Threads and X (Twitter) only: posts added under the main post as a thread, in order. Other platforms reject it with `400`, so send `[]`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleReply" }
-          },
-          "accountId": {
-            "type": "string",
-            "example": "680affa5ce12f2f72916f67e"
           },
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-10-16T15:42:32.954Z"
+            "example": "2026-10-28T06:06:23.939Z",
+            "description": "When to publish, as an ISO 8601 date and time with a time zone, for example `2026-06-01T12:00:00.000Z`. Due schedules are picked up every minute, so a time in the past is published within a minute."
           },
           "templateId": {
             "type": "string",
-            "example": "680affa5ce12f2f72916f67e"
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of an automation template, the `_id` from Get Template. Its configuration is copied into the schedule when it is saved and set on the post after it is published. Not applied on Shopee, X (Twitter), or Pinterest."
+          },
+          "accountId": {
+            "type": "string",
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the connected account to post to, the `_id` from Get Account. Its platform decides which fields are read. One schedule posts to one account, so create one for each account."
           }
         },
-        "required": [
-          "title",
-          "description",
-          "topic",
-          "type",
-          "medias",
-          "meta",
-          "additionalInfo",
-          "replies",
-          "accountId",
-          "scheduleAt"
-        ]
+        "required": ["description", "type", "medias", "scheduleAt", "accountId"]
       },
       "BodyUpdateSchedulePublicDTO": {
         "type": "object",
         "properties": {
-          "title": { "type": "string", "example": "Title of Content" },
+          "title": {
+            "type": "string",
+            "example": "Title of Content",
+            "description": "Title of the post. Read by YouTube (video title, which YouTube needs), Facebook `video`, TikTok `image` and `album` (up to 90 characters), and Pinterest (pin title, cut to 100 characters). Other platforms ignore it, so send `\"\"`."
+          },
           "description": {
             "type": "string",
-            "example": "Description/Caption of Content"
+            "example": "Description/Caption of Content",
+            "description": "The caption, or the post text for `text`, where it is required. YouTube uses it as the video description and Pinterest as the pin description, cut to 800 characters. Shopee needs 1 to 150 characters. Not used by `story`."
           },
-          "topic": { "type": "string", "example": "Content AI" },
+          "topic": {
+            "type": "string",
+            "example": "Content AI",
+            "description": "Threads only: the topic tag shown on the post, for example `Social Media`. Send `\"\"` for other platforms."
+          },
           "type": {
             "type": "string",
             "example": "text",
-            "enum": ["text", "image", "video", "reel", "album", "link", "story"]
+            "enum": [
+              "text",
+              "image",
+              "video",
+              "reel",
+              "album",
+              "link",
+              "story"
+            ],
+            "description": "The kind of post: `text`, `image`, `video`, `reel`, `album`, `link`, or `story`. It decides which `medias` are needed."
           },
           "medias": {
+            "description": "The images and videos of the post. `text` needs none, so send `[]`. `image` and `link` need 1 image, `video` and `reel` 1 video, `album` 2 or more, and `story` 1 image or video.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleMedia" }
           },
-          "meta": { "$ref": "#/components/schemas/ScheduleMeta" },
+          "meta": {
+            "description": "The shared link of a `link` post, where it is required. Other types can leave it out.",
+            "allOf": [{ "$ref": "#/components/schemas/ScheduleMeta" }]
+          },
           "additionalInfo": {
-            "$ref": "#/components/schemas/ScheduleAdditionalInfo"
+            "description": "Options that only some platforms have, such as music, privacy, or the channel to post to. Required for Pinterest, which needs `additionalInfo.channel`.",
+            "allOf": [{ "$ref": "#/components/schemas/ScheduleAdditionalInfo" }]
           },
           "replies": {
+            "description": "Threads and X (Twitter) only: posts added under the main post as a thread, in order. Other platforms reject it with `400`, so send `[]`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleReply" }
           },
           "scheduleAt": {
             "format": "date-time",
             "type": "string",
-            "example": "2026-10-16T15:42:32.954Z"
+            "example": "2026-10-28T06:06:23.939Z",
+            "description": "When to publish, as an ISO 8601 date and time with a time zone, for example `2026-06-01T12:00:00.000Z`. Due schedules are picked up every minute, so a time in the past is published within a minute."
           },
           "templateId": {
             "type": "string",
-            "example": "680affa5ce12f2f72916f67e"
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of an automation template, the `_id` from Get Template. Its configuration is copied into the schedule when it is saved and set on the post after it is published. Not applied on Shopee, X (Twitter), or Pinterest."
           }
         },
-        "required": [
-          "title",
-          "description",
-          "topic",
-          "type",
-          "medias",
-          "meta",
-          "additionalInfo",
-          "replies",
-          "scheduleAt"
-        ]
+        "required": ["description", "type", "medias", "scheduleAt"]
       },
       "ObjectVideo": {
         "type": "object",
         "properties": {
           "url": {
             "type": "string",
-            "example": "https://storage.repliz.com/video.mp4"
+            "example": "https://storage.repliz.com/video.mp4",
+            "description": "Public URL of the video file. MP4 is the safest choice."
           },
           "thumbnail": {
             "type": "string",
-            "example": "https://storage.repliz.com/thumbnail.png"
+            "example": "https://storage.repliz.com/thumbnail.png",
+            "description": "Cover image URL. The Repliz inbox shows it, and Telegram uses it as the video cover. Without it, Telegram uses the first frame."
           },
-          "duration": { "type": "number", "example": 10 },
-          "mimetype": { "type": "string", "example": "video/mp4" }
+          "duration": {
+            "type": "number",
+            "example": 10,
+            "description": "Video length in seconds, greater than `0`."
+          },
+          "mimetype": {
+            "type": "string",
+            "example": "video/mp4",
+            "description": "MIME type of the video, like `video/mp4`."
+          }
         },
         "required": ["url", "duration", "mimetype"]
       },
@@ -8594,10 +9268,19 @@
         "properties": {
           "url": {
             "type": "string",
-            "example": "https://storage.repliz.com/audio.mp3"
+            "example": "https://storage.repliz.com/audio.mp3",
+            "description": "Public URL of the audio file. MP3 is the safest choice."
           },
-          "duration": { "type": "number", "example": 10 },
-          "mimetype": { "type": "string", "example": "audio/mp3" }
+          "duration": {
+            "type": "number",
+            "example": 10,
+            "description": "Audio length in seconds."
+          },
+          "mimetype": {
+            "type": "string",
+            "example": "audio/mp3",
+            "description": "MIME type of the audio, like `audio/mpeg`."
+          }
         },
         "required": ["url", "duration", "mimetype"]
       },
@@ -8606,11 +9289,24 @@
         "properties": {
           "url": {
             "type": "string",
-            "example": "https://storage.repliz.com/file.pdf"
+            "example": "https://storage.repliz.com/file.pdf",
+            "description": "Public URL of the file."
           },
-          "name": { "type": "string", "example": "file.pdf" },
-          "size": { "type": "number", "example": 5242880 },
-          "mimetype": { "type": "string", "example": "application/pdf" }
+          "name": {
+            "type": "string",
+            "example": "file.pdf",
+            "description": "File name shown in the chat, like `repliz-guide.pdf`. On Telegram, its extension decides the file type."
+          },
+          "size": {
+            "type": "number",
+            "example": 5242880,
+            "description": "File size in kilobytes (bytes ÷ 1000), greater than `0`. For example, a 245,760-byte file is `245.76`."
+          },
+          "mimetype": {
+            "type": "string",
+            "example": "application/pdf",
+            "description": "MIME type of the file, like `application/pdf`."
+          }
         },
         "required": ["url", "name", "size", "mimetype"]
       },
@@ -8620,22 +9316,40 @@
           "type": {
             "type": "string",
             "example": "web_url",
-            "enum": ["web_url"]
+            "enum": ["web_url"],
+            "description": "Always `web_url`."
           },
-          "title": { "type": "string", "example": "Hello there" },
-          "url": { "type": "string", "example": "https://repliz.com" }
+          "title": {
+            "type": "string",
+            "example": "Hello there",
+            "description": "Button label, up to 20 characters, like `Visit Repliz`."
+          },
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "The link opened when the button is tapped."
+          }
         },
         "required": ["type", "title", "url"]
       },
       "ObjectButton": {
         "type": "object",
         "properties": {
-          "text": { "type": "string", "example": "Hello there" },
+          "text": {
+            "type": "string",
+            "example": "Hello there",
+            "description": "Text above the buttons, up to 640 characters. With `image`, it is the card title, so keep it to 80 characters."
+          },
           "image": {
             "type": "string",
-            "example": "https://storage.repliz.com/image.png"
+            "example": "https://storage.repliz.com/image.png",
+            "description": "Public URL of an image. Turns the message into a card with this image on top."
           },
-          "buttons": { "$ref": "#/components/schemas/Button" }
+          "buttons": {
+            "description": "1 to 3 link buttons.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Button" }
+          }
         },
         "required": ["text", "buttons"]
       },
@@ -8645,14 +9359,34 @@
           "type": {
             "type": "string",
             "example": "text",
-            "enum": ["text", "image", "video", "audio", "document", "button"]
+            "enum": ["text", "image", "video", "audio", "document", "button"],
+            "description": "Message type: `text`, `image`, `video`, `audio`, `document`, or `button`. It decides which of the other fields is read."
           },
-          "text": { "type": "string", "example": "Hello" },
-          "image": { "$ref": "#/components/schemas/ObjectImage" },
-          "video": { "$ref": "#/components/schemas/ObjectVideo" },
-          "audio": { "$ref": "#/components/schemas/ObjectAudio" },
-          "document": { "$ref": "#/components/schemas/ObjectDocument" },
-          "button": { "$ref": "#/components/schemas/ObjectButton" }
+          "text": {
+            "type": "string",
+            "example": "Hello",
+            "description": "Message text, required for `text`. With `image`, `video`, or `document`, Telegram sends it as the caption."
+          },
+          "image": {
+            "description": "The image to send, required for `image`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
+          },
+          "video": {
+            "description": "The video to send, required for `video`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectVideo" }]
+          },
+          "audio": {
+            "description": "The audio file to send, required for `audio`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectAudio" }]
+          },
+          "document": {
+            "description": "The file to send, required for `document`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectDocument" }]
+          },
+          "button": {
+            "description": "The text and its link buttons, required for `button`. The text goes in `button.text`, not in `text`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectButton" }]
+          }
         },
         "required": ["type"]
       },
@@ -8661,17 +9395,23 @@
         "properties": {
           "accountId": {
             "type": "string",
-            "example": "680affa5ce12f2f72916f67e"
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the connected account the post belongs to, the `_id` from Get Account. The comment is posted as this account."
           },
           "text": {
             "type": "string",
-            "example": "Hello there, this is comment from Repliz"
+            "example": "Hello there, this is comment from Repliz",
+            "description": "Text of the comment. Required, even when an `image` is attached."
           },
           "image": {
-            "description": "Optional image sent along with the comment text. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter)",
+            "description": "An image posted together with `text`. Supported on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
             "allOf": [{ "$ref": "#/components/schemas/ObjectImage" }]
           },
-          "commentId": { "type": "string", "example": "18083576267346315" }
+          "commentId": {
+            "type": "string",
+            "example": "18083576267346315",
+            "description": "ID of a comment on the platform to reply to, the `id` from Get Comment of the post. Leave it out to comment on the post itself."
+          }
         },
         "required": ["accountId", "text"]
       },
@@ -8680,25 +9420,51 @@
         "properties": {
           "accountId": {
             "type": "string",
-            "example": "680affa5ce12f2f72916f67e"
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the connected Facebook or Instagram account that owns the post, the `_id` from Get Account."
           },
-          "commentId": { "type": "string", "example": "18083576267346315" },
+          "commentId": {
+            "type": "string",
+            "example": "18083576267346315",
+            "description": "ID of the comment on the platform, the `id` from Get Comment of the post. The DM goes to the person who wrote it."
+          },
           "text": {
             "type": "string",
-            "example": "Hello there, this is comment from Repliz"
+            "example": "Hello there, this is comment from Repliz",
+            "description": "Text of the DM. Required unless you send `button`."
           },
-          "button": { "$ref": "#/components/schemas/ObjectButton" }
+          "button": {
+            "description": "A message with link buttons instead of plain text, with `text`, an optional `image`, and 1 to 3 `buttons`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectButton" }]
+          }
         },
         "required": ["accountId", "commentId"]
       },
       "ConfigAutomation": {
         "type": "object",
         "properties": {
-          "delete": { "$ref": "#/components/schemas/ConfigAutomationDelete" },
-          "reply": { "$ref": "#/components/schemas/ConfigAutomationReply" },
-          "like": { "$ref": "#/components/schemas/ConfigAutomationLike" },
-          "message": { "$ref": "#/components/schemas/ConfigAutomationMessage" },
-          "story": { "$ref": "#/components/schemas/ConfigAutomationStory" }
+          "delete": {
+            "description": "Deletes matching comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationDelete" }]
+          },
+          "reply": {
+            "description": "Replies to comments in public.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationReply" }]
+          },
+          "like": {
+            "description": "Likes comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationLike" }]
+          },
+          "message": {
+            "description": "Sends a DM to the people who comment.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationMessage" }
+            ]
+          },
+          "story": {
+            "description": "Sends a DM to the people who reply to an Instagram Story.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationStory" }]
+          }
         },
         "required": ["delete", "reply", "like", "message", "story"]
       },
@@ -8707,40 +9473,77 @@
         "properties": {
           "contentId": {
             "type": "string",
-            "example": "113958387982006_942538351814577"
+            "example": "113958387982006_942538351814577",
+            "description": "ID of the post on the platform, the `id` from Get Content, for example `113958387982006_942538351814577` on Facebook. A post has one automation: if it already has one, the request fails with `409`, so use Update Automation to change it."
           },
           "accountId": {
             "type": "string",
-            "example": "680affa5ce12f2f72916f67e"
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the connected account that published the post, the `_id` from Get Account."
           },
-          "config": { "$ref": "#/components/schemas/ConfigAutomation" }
+          "config": {
+            "description": "The automation modules for this post: `delete`, `reply`, `like`, `message`, and `story`. Send every module, with `isActive: false` for the ones you do not use.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomation" }]
+          }
         },
         "required": ["contentId", "accountId", "config"]
       },
       "BodyUpdateAutomationDTO": {
         "type": "object",
         "properties": {
-          "config": { "$ref": "#/components/schemas/ConfigAutomation" }
+          "config": {
+            "description": "The automation modules for this post: `delete`, `reply`, `like`, `message`, and `story`. Send every module, with `isActive: false` for the ones you do not use.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomation" }]
+          }
         },
         "required": ["config"]
       },
       "ConfigAutomationTemplate": {
         "type": "object",
         "properties": {
-          "delete": { "$ref": "#/components/schemas/ConfigAutomationDelete" },
-          "reply": { "$ref": "#/components/schemas/ConfigAutomationReply" },
-          "like": { "$ref": "#/components/schemas/ConfigAutomationLike" },
-          "message": { "$ref": "#/components/schemas/ConfigAutomationMessage" },
-          "chat": { "$ref": "#/components/schemas/ConfigAutomationChat" },
-          "story": { "$ref": "#/components/schemas/ConfigAutomationStory" }
+          "delete": {
+            "description": "Deletes matching comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationDelete" }]
+          },
+          "reply": {
+            "description": "Replies to comments in public.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationReply" }]
+          },
+          "like": {
+            "description": "Likes comments.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationLike" }]
+          },
+          "message": {
+            "description": "Sends a DM to the people who comment.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationMessage" }
+            ]
+          },
+          "chat": {
+            "description": "Answers direct messages sent to the account.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationChat" }]
+          },
+          "story": {
+            "description": "Sends a DM to the people who reply to an Instagram Story.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationStory" }]
+          }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
       },
       "BodyCreateUpdateTemplateDTO": {
         "type": "object",
         "properties": {
-          "name": { "type": "string", "example": "Auto Comment" },
-          "config": { "$ref": "#/components/schemas/ConfigAutomationTemplate" }
+          "name": {
+            "type": "string",
+            "example": "Auto Comment",
+            "description": "Name shown in the template list, for example `Giveaway replies`. Search in Get Template matches it."
+          },
+          "config": {
+            "description": "The automation modules saved in the template: `delete`, `reply`, `like`, `message`, `chat`, and `story`. Send every module, with `isActive: false` for the ones you do not use.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationTemplate" }
+            ]
+          }
         },
         "required": ["name", "config"]
       },
@@ -8749,7 +9552,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
+            "description": "The `access_token` value from the URL fragment of the Facebook redirect (`#access_token=...`)."
           }
         },
         "required": ["code"]
@@ -8757,10 +9561,15 @@
       "BodyConnectAccountFacebookDTO": {
         "type": "object",
         "properties": {
-          "pageId": { "type": "string", "example": "954196197769764" },
+          "pageId": {
+            "type": "string",
+            "example": "954196197769764",
+            "description": "ID of the Facebook Page to connect, from Get Page Facebook. On reconnect it has to be the same Page, or the call returns `400`."
+          },
           "token": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406.2255a73f-8431-4458-abcf-ee7f867952db"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406.2255a73f-8431-4458-abcf-ee7f867952db",
+            "description": "Access token received from Exchange Facebook."
           }
         },
         "required": ["pageId", "token"]
@@ -8770,7 +9579,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
+            "description": "The `code` query parameter from the URL Instagram redirected the user to. It works only once and expires soon, so send it right away. On reconnect the user has to sign in with the same Instagram account, or the call returns `400`."
           }
         },
         "required": ["code"]
@@ -8780,7 +9590,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
+            "description": "The `code` query parameter from the URL Threads redirected the user to. It works only once and expires soon, so send it right away. On reconnect the user has to sign in with the same Threads account, or the call returns `400`."
           }
         },
         "required": ["code"]
@@ -8790,7 +9601,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "8b79cc34202ffd82199faf11b2bc917e24263f99be63415d53f658d017fd9125d73ec016d5e833e395e4f361bfab11b71690a2d05312bdc542df1bef4cac181ad8b55eda84804d82eb38a5d921b79223687ff4a4e2f37240451d9a0d7ddc0368"
+            "example": "8b79cc34202ffd82199faf11b2bc917e24263f99be63415d53f658d017fd9125d73ec016d5e833e395e4f361bfab11b71690a2d05312bdc542df1bef4cac181ad8b55eda84804d82eb38a5d921b79223687ff4a4e2f37240451d9a0d7ddc0368",
+            "description": "The `code` query parameter from the URL Google redirected the user to. It works only once and expires soon, so send it right away."
           }
         },
         "required": ["code"]
@@ -8800,11 +9612,13 @@
         "properties": {
           "channelId": {
             "type": "string",
-            "example": "UC_qu4MO3r0uFfYlqWgBdiaA"
+            "example": "UC_qu4MO3r0uFfYlqWgBdiaA",
+            "description": "ID of the YouTube channel to connect, from Get Channel YouTube. On reconnect it has to be the same channel, or the call returns `400`."
           },
           "token": {
             "type": "string",
-            "example": "ddf88b1e4f60b62e7ab9101e6cb4df5be84f228e571bfd9a970ef03f09436bd8f3a388e8d3beebecae68225c76e2b2bc7538de3d8c529063283542d2e6bf9c0dd05bae57b1c97a987a958eb868d978756eb3ae6cb7868a9eed5f54c0f604b6ce17237adf7026558dda01e858a508aca7f809e1ceba1934982b9ae8bbbb49b868d5d40f85e6827c7f064497d81ab84ec4328b2159bf471d1c3f62206eb1a8a3442f598d381d43c2d10a5bb3ba81ced459d91e363b5133b7d26401f579cc4fb7c2fa0f862035066518b71f02ac6f8fa8893dc4eb0435a34049a908a2b293c0889fa8935b010a613efa00b081fcc11e50712863282fa547b211191a7735123fefee10bf85c739ad4088171a13240badd03594ea49f78c1cff015e63128eb27501baf543a64b29361a31ed68c2f74443166771cced518749055f83c1968572d9f881c5287cc6700bc2cd866ac5ecc7352b83a2a4317a25e58d1e6e6b6522d27f909b18a6febcbb9715b6978410eafdd81999a5c5b11cf0a451a311720bc401ed82eb.3b5091e8-fe55-4f1c-a729-86d80c152381"
+            "example": "ddf88b1e4f60b62e7ab9101e6cb4df5be84f228e571bfd9a970ef03f09436bd8f3a388e8d3beebecae68225c76e2b2bc7538de3d8c529063283542d2e6bf9c0dd05bae57b1c97a987a958eb868d978756eb3ae6cb7868a9eed5f54c0f604b6ce17237adf7026558dda01e858a508aca7f809e1ceba1934982b9ae8bbbb49b868d5d40f85e6827c7f064497d81ab84ec4328b2159bf471d1c3f62206eb1a8a3442f598d381d43c2d10a5bb3ba81ced459d91e363b5133b7d26401f579cc4fb7c2fa0f862035066518b71f02ac6f8fa8893dc4eb0435a34049a908a2b293c0889fa8935b010a613efa00b081fcc11e50712863282fa547b211191a7735123fefee10bf85c739ad4088171a13240badd03594ea49f78c1cff015e63128eb27501baf543a64b29361a31ed68c2f74443166771cced518749055f83c1968572d9f881c5287cc6700bc2cd866ac5ecc7352b83a2a4317a25e58d1e6e6b6522d27f909b18a6febcbb9715b6978410eafdd81999a5c5b11cf0a451a311720bc401ed82eb.3b5091e8-fe55-4f1c-a729-86d80c152381",
+            "description": "Access token received from Exchange YouTube."
           }
         },
         "required": ["channelId", "token"]
@@ -8814,7 +9628,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "11e299dff731a5528322dbe47bf67f387d796b14178b0f8332aca76161c1c266574372381c7abe1ade31adaf6214942fd8889eacfa56e3e4beba8f0620f36d32b62fd9fe7afa24214d4da9ee026c8db8bda5aeb48dc8c2ba50bbcd56821e900e8332a34ceae0c9ea4543cec428b8dfc87eb72a0735f220f8812737dbb13aab302c7e8d07e91d75f80ab41e9e8bbd35a1a41d43dcaac322739dd0c165cf0661ef6a78c94467b2f3e528c4baed1b7cdfaa04dd51678839d90ba4f5bbb4a4d68952034ae9fb6527466778f0e2cb2e672ec947669d71ed997749083a08786d3b9c2f1fae21b8cfc00f2e51d04362d03de354"
+            "example": "11e299dff731a5528322dbe47bf67f387d796b14178b0f8332aca76161c1c266574372381c7abe1ade31adaf6214942fd8889eacfa56e3e4beba8f0620f36d32b62fd9fe7afa24214d4da9ee026c8db8bda5aeb48dc8c2ba50bbcd56821e900e8332a34ceae0c9ea4543cec428b8dfc87eb72a0735f220f8812737dbb13aab302c7e8d07e91d75f80ab41e9e8bbd35a1a41d43dcaac322739dd0c165cf0661ef6a78c94467b2f3e528c4baed1b7cdfaa04dd51678839d90ba4f5bbb4a4d68952034ae9fb6527466778f0e2cb2e672ec947669d71ed997749083a08786d3b9c2f1fae21b8cfc00f2e51d04362d03de354",
+            "description": "The `code` query parameter from the URL LinkedIn redirected the user to. It works only once and expires soon, so send it right away."
           }
         },
         "required": ["code"]
@@ -8824,11 +9639,13 @@
         "properties": {
           "organizationId": {
             "type": "string",
-            "example": "urn:li:organization:107470012"
+            "example": "urn:li:organization:107470012",
+            "description": "The `id` from Get Organization LinkedIn: `urn:li:organization:...` for an organization, or `urn:li:person:...` for a personal account. On reconnect it has to be the same one, or the call returns `400`."
           },
           "token": {
             "type": "string",
-            "example": "775576f02bebcc13b176c6cc217946a0f4e566e7cd2564ebb7003999d9ccd017f24acd8df14035d0f67f394909f7790fe30ed0be2889d67c67105f278cc26eed7065de54db7980cb07fe64af576e0f350972f1648a69568f7eea18792f6394b7b32277012d365a90e8c7d2ad34f0e23e52de15f1750ad6cf7a99405313f9beeb580b452f57dd9278ee592ad3f9879407fd11ba8d0ea95a770da93e3c81ac407fd310946d541bf94e025c556e189e60f49e10297d2720ef66393ec705319ad38bdd15028b9e5890d4c5db2c6d19659d5240b4581fe4a552b86d099f561d71e7fa45d33ef44fe066a2230c13223eff3a79276756dd2f6672f6a4aa7669f50f671e6b2c7027c4fb9424a5d679c7d2228964689907fd80ad2a433216580be40e7a84943c2eeddd045f29cacfe48a32f4a3557327aea196e38da1ad7c491e73698238c60a4642b320b31087954a2fdfd0b224f81720adfc07e0128c198e31d20b1674b1f7cb7251700e0dac416a6fdb6faebec272efceff7cf09b365d5be84ca9c58c5d891ea328092ab71328669080a08f12b518e6bf539dddd90c6b5f24bf2176a06301293a0ad0406b427e34ab25e91eddf7048693947ec6c2f42dc268be32bba5db9c15278b2b7d6bb2768eb1865a65575b20e6598b923aa4317161bc9a9e85c9ee6b1fa3dbdda22c28f6109f98be7f505f4da24d801cf987d1ef2d02755edcd752d062a612fbb84d01cf99f84b4a291f3626df2b909c5bd6793c7f729c4960f68b3c68265ca1bd865cac8ade52226ab4fa14fdea77703968838243440c6c02bad5aa32f4c3900cc9190cbad896bdcbd157979ccf568f196dbd2f9938b80adb1df21efec6563766eca23a748452e911e77e7fe5ef8476c58f489609f9899de0f2da0e9cbd3b95c00fe73ded734a2a10b7884c476bc7e13db0404bbb40fc78a75342c6d817be9240d2011ef4983d020da15c60ce41a928aa11e026b4392fad8d7995405b3141e26883260dca2a509f1c21e432db67f164582b19921b8198c861c2.d54e218b-e463-443f-8e44-bf89c66ccc64"
+            "example": "775576f02bebcc13b176c6cc217946a0f4e566e7cd2564ebb7003999d9ccd017f24acd8df14035d0f67f394909f7790fe30ed0be2889d67c67105f278cc26eed7065de54db7980cb07fe64af576e0f350972f1648a69568f7eea18792f6394b7b32277012d365a90e8c7d2ad34f0e23e52de15f1750ad6cf7a99405313f9beeb580b452f57dd9278ee592ad3f9879407fd11ba8d0ea95a770da93e3c81ac407fd310946d541bf94e025c556e189e60f49e10297d2720ef66393ec705319ad38bdd15028b9e5890d4c5db2c6d19659d5240b4581fe4a552b86d099f561d71e7fa45d33ef44fe066a2230c13223eff3a79276756dd2f6672f6a4aa7669f50f671e6b2c7027c4fb9424a5d679c7d2228964689907fd80ad2a433216580be40e7a84943c2eeddd045f29cacfe48a32f4a3557327aea196e38da1ad7c491e73698238c60a4642b320b31087954a2fdfd0b224f81720adfc07e0128c198e31d20b1674b1f7cb7251700e0dac416a6fdb6faebec272efceff7cf09b365d5be84ca9c58c5d891ea328092ab71328669080a08f12b518e6bf539dddd90c6b5f24bf2176a06301293a0ad0406b427e34ab25e91eddf7048693947ec6c2f42dc268be32bba5db9c15278b2b7d6bb2768eb1865a65575b20e6598b923aa4317161bc9a9e85c9ee6b1fa3dbdda22c28f6109f98be7f505f4da24d801cf987d1ef2d02755edcd752d062a612fbb84d01cf99f84b4a291f3626df2b909c5bd6793c7f729c4960f68b3c68265ca1bd865cac8ade52226ab4fa14fdea77703968838243440c6c02bad5aa32f4c3900cc9190cbad896bdcbd157979ccf568f196dbd2f9938b80adb1df21efec6563766eca23a748452e911e77e7fe5ef8476c58f489609f9899de0f2da0e9cbd3b95c00fe73ded734a2a10b7884c476bc7e13db0404bbb40fc78a75342c6d817be9240d2011ef4983d020da15c60ce41a928aa11e026b4392fad8d7995405b3141e26883260dca2a509f1c21e432db67f164582b19921b8198c861c2.d54e218b-e463-443f-8e44-bf89c66ccc64",
+            "description": "Access token received from Exchange LinkedIn."
           }
         },
         "required": ["organizationId", "token"]
@@ -8838,7 +9655,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
+            "description": "The `code` query parameter from the URL TikTok redirected the user to. It works only once and expires soon, so send it right away. On reconnect the user has to sign in with the same TikTok account, or the call returns `400`."
           }
         },
         "required": ["code"]
@@ -8848,7 +9666,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "2ce01100f5a4d84fa5c8767060055c1b59a7d617ad1ef343fbded36317e15971d6d749ff333c9fc4f961e421b9559d7531ff3cd62d2c3f27163405aabfdf263b"
+            "example": "2ce01100f5a4d84fa5c8767060055c1b59a7d617ad1ef343fbded36317e15971d6d749ff333c9fc4f961e421b9559d7531ff3cd62d2c3f27163405aabfdf263b",
+            "description": "The `code` and `shop_id` from the Shopee redirect, joined with an underscore: `{code}_{shop_id}`. On reconnect the user has to sign in with the same shop, or the call returns `400`."
           }
         },
         "required": ["code"]
@@ -8858,7 +9677,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
+            "description": "The `code` query parameter from the URL X redirected the user to. It works only once and expires soon, so send it right away. On reconnect the user has to sign in with the same X account, or the call returns `400`."
           }
         },
         "required": ["code"]
@@ -8868,7 +9688,8 @@
         "properties": {
           "token": {
             "type": "string",
-            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
+            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
+            "description": "Session token returned by Create Session WhatsApp, after Get Session WhatsApp reports `isConnected: true`. On reconnect the same number has to scan the QR code, or the call returns `400`."
           }
         },
         "required": ["token"]
@@ -8878,9 +9699,14 @@
         "properties": {
           "token": {
             "type": "string",
-            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
+            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
+            "description": "Session token returned by Create Session Telegram."
           },
-          "password": { "type": "string", "example": "my-cloud-password" }
+          "password": {
+            "type": "string",
+            "example": "my-cloud-password",
+            "description": "The Two-Step Verification password of the Telegram account."
+          }
         },
         "required": ["token", "password"]
       },
@@ -8889,7 +9715,8 @@
         "properties": {
           "token": {
             "type": "string",
-            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e"
+            "example": "19637cf488eac689cba2a0291021a07bc5793e843476401e651b18ea9f661ea11e9f5d48098df4b8a3498d22b20443a8dec7aa50c97eaf93bd83c7f975084ba110323d9ba9459e05c28b00e7e6d7a48e",
+            "description": "Session token returned by Create Session Telegram, after Get Session Telegram reports `isConnected: true`. On reconnect the same Telegram account has to scan the QR code, or the call returns `400`."
           }
         },
         "required": ["token"]
@@ -8899,7 +9726,8 @@
         "properties": {
           "code": {
             "type": "string",
-            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f34"
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f34",
+            "description": "The `code` query parameter from the URL Pinterest redirected the user to. It works only once and expires soon, so send it right away. On reconnect the user has to sign in with the same Pinterest account, or the call returns `400`."
           }
         },
         "required": ["code"]
@@ -8907,9 +9735,21 @@
       "BodyInitFileDTO": {
         "type": "object",
         "properties": {
-          "filename": { "type": "string", "example": "filename.mp4" },
-          "size": { "type": "number", "example": 102400 },
-          "mimetype": { "type": "string", "example": "video/mp4" }
+          "filename": {
+            "type": "string",
+            "example": "filename.mp4",
+            "description": "Name of the file, with its extension, for example `repliz-demo.mp4`. It becomes the last part of the file URL and is what Get File searches."
+          },
+          "size": {
+            "type": "number",
+            "example": 102400,
+            "description": "Size of the file in bytes. It has to fit in the free space from Get Statistic, or the call returns `402`. The real size is read again by Complete File."
+          },
+          "mimetype": {
+            "type": "string",
+            "example": "video/mp4",
+            "description": "MIME type of the file, for example `video/mp4` or `image/png`. Send the same value as the `Content-Type` header of the upload."
+          }
         },
         "required": ["filename", "size", "mimetype"]
       }
