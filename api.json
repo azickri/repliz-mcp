@@ -1981,6 +1981,7 @@
                               "url": "https://storage.repliz.com/video.mp4"
                             }
                           ],
+                          "delay": 100,
                           "status": "pending"
                         }
                       ],
@@ -3022,6 +3023,7 @@
                           "url": "https://storage.repliz.com/video.mp4"
                         }
                       ],
+                      "delay": 100,
                       "status": "pending"
                     }
                   ],
@@ -9063,7 +9065,7 @@
             "description": "Pinterest. The page the pin opens when someone taps it, for example `https://repliz.com`."
           },
           "textAttachment": {
-            "description": "Threads `text`. A long text attached under the post, read like an article. Only the main post gets it, not `replies`.",
+            "description": "Threads `text`. A long text attached under the post, read like an article. Each reply of a thread can have its own in `replies[].textAttachment`.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ScheduleAdditionalInfoTextAttachment"
@@ -9100,6 +9102,21 @@
             "description": "Media objects, with the same rules as the main post. Send `[]` for `text`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleMedia" }
+          },
+          "textAttachment": {
+            "description": "Threads `text` replies. A long text attached under the reply, read like an article, with the same rules as `additionalInfo.textAttachment` of the main post. Other types and X (Twitter) ignore it.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ScheduleAdditionalInfoTextAttachment"
+              }
+            ]
+          },
+          "delay": {
+            "type": "number",
+            "example": 100,
+            "minimum": 0,
+            "maximum": 1440,
+            "description": "Minutes to wait after the post before it (the main post for the first reply) is published. `0` or left out posts it right away. It can't be less than the `delay` of the reply before it, and all `delay` values together can't exceed `1440` (24 hours)."
           }
         },
         "required": ["description", "type", "medias"]

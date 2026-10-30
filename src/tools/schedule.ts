@@ -90,6 +90,19 @@ const channelSchema = z
     "WhatsApp and Telegram: the channel or group to post to, an item from repliz_whatsapp_channels or repliz_telegram_channels; omit to post to the account's WhatsApp Status or Telegram story. Pinterest (required): the board to pin to, an item from repliz_pinterest_boards.",
   );
 
+const textAttachmentSchema = z.object({
+  text: z
+    .string()
+    .max(10000)
+    .describe(
+      'The attached text, up to 10,000 characters, posted as plain text. Empty for no attachment.',
+    ),
+  link: z
+    .string()
+    .default('')
+    .describe('Optional link shown at the end of the attachment.'),
+});
+
 const additionalInfoSchema = z
   .object({
     isAiGenerated: z.boolean().default(false),
@@ -130,22 +143,10 @@ const additionalInfoSchema = z
       .string()
       .optional()
       .describe('Pinterest only: the destination URL the pin opens when tapped.'),
-    textAttachment: z
-      .object({
-        text: z
-          .string()
-          .max(10000)
-          .describe(
-            'The attached text, up to 10,000 characters, posted as plain text. Empty for no attachment.',
-          ),
-        link: z
-          .string()
-          .default('')
-          .describe('Optional link shown at the end of the attachment.'),
-      })
+    textAttachment: textAttachmentSchema
       .optional()
       .describe(
-        "Threads only, type 'text': a long text attached under the post that opens like an article. Main post only, not replies. A post can have at most 5 links, counting the description and this link.",
+        "Threads only, type 'text': a long text attached under the post that opens like an article. Each text reply can have its own in replies[].textAttachment. A post can have at most 5 links, counting the description and this link.",
       ),
   })
   .describe(
@@ -158,6 +159,20 @@ const replySchema = z.object({
   topic: z.string().default(''),
   type: z.enum(POST_TYPE),
   medias: z.array(mediaSchema).default([]),
+  textAttachment: textAttachmentSchema
+    .optional()
+    .describe(
+      "Threads 'text' replies only: a long text attached under the reply that opens like an article, with the same rules as additionalInfo.textAttachment.",
+    ),
+  delay: z
+    .number()
+    .int()
+    .min(0)
+    .max(1440)
+    .optional()
+    .describe(
+      'Minutes to wait after the post before it (the main post for the first reply) is published. 0 or omitted posts it right away. Not less than the delay of the reply before it, and all delays together at most 1440 (24 hours).',
+    ),
 });
 
 // Default values matching the API's required (but often empty) sub-objects.
@@ -313,7 +328,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         'For media posts, attach `medias`. For threaded/multi-part posts, attach `replies`. ' +
         "A WhatsApp post goes to the account's Status, and a Telegram post to its story, unless `additionalInfo.channel` names a channel or group from repliz_whatsapp_channels or repliz_telegram_channels; create one schedule per target. " +
         'A Pinterest pin must name a board from repliz_pinterest_boards in `additionalInfo.channel` (one schedule per board); `title` (max 100) is the pin title, `description` max 800, `additionalInfo.link` the destination URL and medias[0].alt the alt text. ' +
-        'A Threads text post can carry a long article-like text (up to 10,000 characters) in `additionalInfo.textAttachment`, beyond the 500-character `description`. ' +
+        'A Threads text post can carry a long article-like text (up to 10,000 characters) in `additionalInfo.textAttachment`, beyond the 500-character `description`, and each text reply in `replies[].textAttachment`. ' +
         '`scheduleAt` must be a future ISO 8601 timestamp (UTC).',
       inputSchema: {
         accountId: z.string().describe('The target account id to publish to.'),
@@ -347,7 +362,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
           .array(replySchema)
           .optional()
           .describe(
-            'Follow-up posts in a thread/chain (e.g. nested Threads posts).',
+            'Follow-up posts in a thread/chain (Threads or X only), in order. Each can wait its own delay in minutes after the post before it.',
           ),
         templateId: z
           .string()
@@ -401,7 +416,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
       title: 'Retry Scheduled Post',
       effect: 'additive',
       description:
-        "Retry publishing a scheduled post that previously failed (status 'error').",
+        "Retry publishing a scheduled post that previously failed (status 'error'). For a thread whose main post is published but a reply failed, only that reply and the ones after it are posted again. Fails while a reply is still waiting for its delay.",
       inputSchema: {
         scheduleId: z.string().describe('The schedule id to retry.'),
       },
