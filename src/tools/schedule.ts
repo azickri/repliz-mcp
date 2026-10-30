@@ -105,7 +105,12 @@ const textAttachmentSchema = z.object({
 
 const additionalInfoSchema = z
   .object({
-    isAiGenerated: z.boolean().default(false),
+    isAiGenerated: z
+      .boolean()
+      .default(false)
+      .describe(
+        'Label the post as made or changed with AI, with each platform own label. Used by TikTok video, YouTube video, Facebook reel, Pinterest and Threads (the post and every reply of the thread).',
+      ),
     isDraft: z.boolean().default(false),
     isAutoAddMusic: z.boolean().default(false),
     isShareToFeed: z

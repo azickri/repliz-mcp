@@ -8980,7 +8980,7 @@
           "isAiGenerated": {
             "type": "boolean",
             "example": false,
-            "description": "TikTok `video`, YouTube `video`, Facebook `reel`, and Pinterest. Declares that the post was made or changed with AI, with each platform own label. Default `false`."
+            "description": "TikTok `video`, YouTube `video`, Facebook `reel`, Pinterest, and Threads. Declares that the post was made or changed with AI, with each platform own label. On Threads it labels the post and every reply of the thread. Default `false`."
           },
           "isDraft": {
             "type": "boolean",
