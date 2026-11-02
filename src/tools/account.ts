@@ -25,7 +25,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "List Accounts",
       effect: "read",
       description:
-        "List the social accounts connected to your Repliz workspace. Returns each account's id, platform, username, picture, and status. Supports pagination and filtering by platform type or search term.",
+        "List the social accounts connected to your Repliz workspace. Returns each account's id, platform, username, picture, and status. Supports pagination and filtering by platform type, search term, or connection status.",
       inputSchema: {
         page: z.number().int().min(1).default(1).describe("Page number (1-based)."),
         limit: z.number().int().min(1).max(100).default(20).describe("Items per page."),
@@ -34,6 +34,12 @@ export function registerAccountTools(ctx: ToolContext): void {
           .optional()
           .describe("Filter by platform(s), e.g. [\"facebook\", \"instagram\"]."),
         search: z.string().optional().describe("Search by account name or username."),
+        status: z
+          .enum(["connected", "disconnected"])
+          .optional()
+          .describe(
+            "Only connected accounts, or only disconnected ones that have to be reconnected first. Every account when omitted."
+          ),
       },
     },
     async (args) =>
@@ -42,6 +48,7 @@ export function registerAccountTools(ctx: ToolContext): void {
         limit: args.limit,
         types: args.types,
         search: args.search,
+        status: args.status,
       })
   );
 
@@ -79,7 +86,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "Get Account Statistics",
       effect: "read",
       description:
-        "Retrieve aggregated statistics and activity metrics for a specific connected account, including platform-specific overview metrics. Available for Instagram, Threads, TikTok and Pinterest.",
+        "Retrieve aggregated statistics and activity metrics for a specific connected account, including platform-specific overview metrics. Available for Instagram, Threads, TikTok, Pinterest and YouTube. YouTube returns the channel's lifetime subscribers, views and videos, plus the last 28 days of YouTube Analytics (views, watch time in minutes, average view duration in seconds, subscribers gained and lost, likes, dislikes, comments, shares) as a summary and per day.",
       inputSchema: {
         accountId: z.string().describe("The Repliz account id (e.g. 680affa5ce12f2f72916f67e)."),
       },

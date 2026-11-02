@@ -28,7 +28,7 @@
     },
     "/public/account": {
       "get": {
-        "description": "\nRetrieve a list of accounts associated with your workspace.\n\nThis endpoint returns all connected accounts including their platform, username, and current status.\n\nResponse:\n- Returns an array of account objects\n- Each account includes id, platform, username, and status\n",
+        "description": "\nRetrieve a list of accounts associated with your workspace.\n\nThis endpoint returns all connected accounts including their platform, username, and current status.\n\nFilter with status to get only the connected or only the disconnected accounts.\n\nResponse:\n- Returns an array of account objects\n- Each account includes id, platform, username, and status\n",
         "operationId": "AccountController_getAccount",
         "parameters": [
           {
@@ -82,6 +82,17 @@
             "in": "query",
             "description": "Matches the account name or username, case-insensitive.",
             "schema": { "example": "Azickri", "type": "string" }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "`connected` (Repliz can use the account) or `disconnected` (it has to be reconnected first). Every account when left out.",
+            "schema": {
+              "example": "connected",
+              "type": "string",
+              "enum": ["connected", "disconnected"]
+            }
           }
         ],
         "responses": {
@@ -258,7 +269,7 @@
     },
     "/public/account/{accountId}/statistic": {
       "get": {
-        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok and Pinterest.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\n",
+        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok, Pinterest and YouTube.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\nYouTube returns the channel's lifetime subscribers, views and videos, the summary of the last 28 days and its daily metrics from YouTube Analytics (the most recent days come in later). estimatedMinutesWatched is in minutes and averageViewDuration in seconds. summary is null and metrics is empty when YouTube Analytics returns no data for the channel.\n",
         "operationId": "AccountController_getStatisticAccount",
         "parameters": [
           {
@@ -787,6 +798,51 @@
                           "save": 8,
                           "pinClick": 15,
                           "outboundClick": 4
+                        }
+                      ]
+                    }
+                  },
+                  "youtube": {
+                    "summary": "YouTube",
+                    "value": {
+                      "subscribersCount": 12400,
+                      "viewsCount": 1843200,
+                      "videosCount": 186,
+                      "summary": {
+                        "views": 52310,
+                        "estimatedMinutesWatched": 128940,
+                        "averageViewDuration": 148,
+                        "subscribersGained": 420,
+                        "subscribersLost": 37,
+                        "likes": 3120,
+                        "dislikes": 41,
+                        "comments": 386,
+                        "shares": 512
+                      },
+                      "metrics": [
+                        {
+                          "date": "2026-10-25",
+                          "views": 1840,
+                          "estimatedMinutesWatched": 4520,
+                          "averageViewDuration": 147,
+                          "subscribersGained": 15,
+                          "subscribersLost": 1,
+                          "likes": 112,
+                          "dislikes": 2,
+                          "comments": 14,
+                          "shares": 18
+                        },
+                        {
+                          "date": "2026-10-26",
+                          "views": 2015,
+                          "estimatedMinutesWatched": 4980,
+                          "averageViewDuration": 148,
+                          "subscribersGained": 18,
+                          "subscribersLost": 2,
+                          "likes": 126,
+                          "dislikes": 1,
+                          "comments": 17,
+                          "shares": 21
                         }
                       ]
                     }
