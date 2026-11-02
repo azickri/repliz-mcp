@@ -128,7 +128,8 @@ export function registerContentTools(ctx: ToolContext): void {
     {
       title: "Get Content Statistics",
       effect: "read",
-      description: "Get engagement statistics/insights for a piece of content.",
+      description:
+        "Get engagement statistics/insights for a piece of content. For a YouTube video, `insight` adds YouTube Analytics: watch time in minutes, average view duration in seconds, average percentage viewed, subscribers gained and lost and shares since upload, daily views and watch time of the last 28 days, and views per traffic source (e.g. YT_SEARCH, RELATED_VIDEO, SHORTS). New videos can show 0 there for 2-3 days.",
       inputSchema: {
         contentId: z.string().describe("The content id."),
         accountId: z.string().describe("The account id that owns the content."),

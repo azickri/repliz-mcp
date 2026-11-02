@@ -269,7 +269,7 @@
     },
     "/public/account/{accountId}/statistic": {
       "get": {
-        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok, Pinterest and YouTube.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\nYouTube returns the channel's lifetime subscribers, views and videos, the summary of the last 28 days and its daily metrics from YouTube Analytics (the most recent days come in later). estimatedMinutesWatched is in minutes and averageViewDuration in seconds. summary is null and metrics is empty when YouTube Analytics returns no data for the channel.\n",
+        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok, Pinterest and YouTube.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\nYouTube returns the channel's lifetime subscribers, views, videos and likes, the summary of the last 28 days and its daily metrics from YouTube Analytics (the most recent days come in later). estimatedMinutesWatched is in minutes and averageViewDuration in seconds. When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
         "operationId": "AccountController_getStatisticAccount",
         "parameters": [
           {
@@ -808,6 +808,7 @@
                       "subscribersCount": 12400,
                       "viewsCount": 1843200,
                       "videosCount": 186,
+                      "likesCount": 41260,
                       "summary": {
                         "views": 52310,
                         "estimatedMinutesWatched": 128940,
@@ -4233,7 +4234,7 @@
     },
     "/public/content/{contentId}/statistic": {
       "get": {
-        "description": "\nRetrieve engagement statistics for a specific content directly from the platform.\n\nThis endpoint is used to fetch insight metrics such as likes, comments, shares, views, and other platform-specific engagement data.\nThe returned fields may vary depending on the platform (e.g. Instagram, TikTok, YouTube, etc).\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns a statistic object based on the platform\n- Includes engagement metrics such as like, comment, share, views, and other platform-specific fields\n",
+        "description": "\nRetrieve engagement statistics for a specific content directly from the platform.\n\nThis endpoint is used to fetch insight metrics such as likes, comments, shares, views, and other platform-specific engagement data.\nThe returned fields may vary depending on the platform (e.g. Instagram, TikTok, YouTube, etc).\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns a statistic object based on the platform\n- Includes engagement metrics such as like, comment, share, views, and other platform-specific fields\n\nYouTube also returns insight from YouTube Analytics: the video's lifetime watch time (estimatedMinutesWatched, in minutes), average view duration (averageViewDuration, in seconds), average percentage viewed, subscribers gained and lost and shares, its daily views and watch time of the last 28 days (metrics), and its views per traffic source (trafficSources, such as YT_SEARCH, SHORTS or RELATED_VIDEO). When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
         "operationId": "ContentController_getStatistic",
         "parameters": [
           {
@@ -4306,11 +4307,36 @@
                   "youtube": {
                     "summary": "YouTube",
                     "value": {
-                      "like": 10,
-                      "dislike": 10,
-                      "comment": 10,
-                      "views": 10,
-                      "favourite": 10
+                      "like": 186,
+                      "dislike": 3,
+                      "comment": 24,
+                      "views": 1780,
+                      "favourite": 0,
+                      "insight": {
+                        "estimatedMinutesWatched": 2840,
+                        "averageViewDuration": 96,
+                        "averageViewPercentage": 42.7,
+                        "subscribersGained": 18,
+                        "subscribersLost": 2,
+                        "shares": 24,
+                        "metrics": [
+                          {
+                            "date": "2026-10-25",
+                            "views": 120,
+                            "estimatedMinutesWatched": 190
+                          },
+                          {
+                            "date": "2026-10-26",
+                            "views": 98,
+                            "estimatedMinutesWatched": 154
+                          }
+                        ],
+                        "trafficSources": [
+                          { "source": "SHORTS", "views": 1240 },
+                          { "source": "YT_SEARCH", "views": 310 },
+                          { "source": "SUBSCRIBER", "views": 85 }
+                        ]
+                      }
                     }
                   },
                   "linkedin": {
