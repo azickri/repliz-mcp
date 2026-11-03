@@ -269,7 +269,7 @@
     },
     "/public/account/{accountId}/statistic": {
       "get": {
-        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok, Pinterest and YouTube.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\nYouTube returns the channel's lifetime subscribers, views, videos and likes, the summary of the last 28 days and its daily metrics from YouTube Analytics (the most recent days come in later). estimatedMinutesWatched is in minutes and averageViewDuration in seconds. When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
+        "description": "\nRetrieve account statistics.\n\nThis endpoint is used to get aggregated statistics for all connected social media accounts.\nIt provides an overview of account activity and platform-specific metrics available within your workspace.\n\nResponse:\n- Returns an object containing account statistics\n- Includes metrics aggregated across connected platforms\n\nSupported platforms: Instagram, Threads, TikTok, Pinterest and YouTube.\nInstagram returns the profile's followers, following and posts, the totals of the last 30 days (reach, views, interactions, follows and unfollows, and more), the daily reach of those days (metrics) and the followers' age, gender, country and city as a 0-1 share of the followers Instagram reports (audienceAges, audienceGenders, audienceCountries, audienceCities). Instagram only returns follows, unfollows and the follower demographics for accounts with at least 100 followers; below that they are 0 and empty.\nThreads returns the followers, the totals of the last 30 days, the daily views and the clicks per link, and for profiles with at least 100 followers the followers' age, gender, country and city as a 0-1 share (audienceAges, audienceGenders, audienceCountries, audienceCities; empty below 100 followers).\nTikTok returns the profile counts, the daily metrics of the last 30 days (up to yesterday) and the audience's age, gender, country and city.\nPinterest returns the profile counts, the summary of the last 30 days and its daily metrics (only the days Pinterest has finished counting).\nYouTube returns the channel's lifetime subscribers, views, videos and likes, the summary of the last 28 days and its daily metrics from YouTube Analytics (the most recent days come in later). estimatedMinutesWatched is in minutes and averageViewDuration in seconds. The YouTube Analytics part is cached for 6 hours. When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
         "operationId": "AccountController_getStatisticAccount",
         "parameters": [
           {
@@ -292,17 +292,41 @@
                   "instagram": {
                     "summary": "Instagram",
                     "value": {
-                      "accountsEngaged": 0,
-                      "comments": 0,
-                      "likes": 0,
-                      "profileLinksTaps": 0,
-                      "reach": 0,
-                      "replies": 0,
-                      "reposts": 0,
-                      "saves": 0,
-                      "shares": 0,
-                      "totalInteractions": 0,
-                      "views": 0
+                      "followersCount": 1520,
+                      "followingCount": 310,
+                      "mediaCount": 128,
+                      "accountsEngaged": 214,
+                      "comments": 46,
+                      "likes": 812,
+                      "profileLinksTaps": 18,
+                      "reach": 5230,
+                      "replies": 7,
+                      "reposts": 4,
+                      "saves": 63,
+                      "shares": 29,
+                      "totalInteractions": 950,
+                      "views": 14820,
+                      "newFollows": 42,
+                      "unfollows": 9,
+                      "metrics": [
+                        { "date": "2026-10-05T07:00:00+0000", "reach": 180 },
+                        { "date": "2026-10-06T07:00:00+0000", "reach": 214 }
+                      ],
+                      "audienceAges": [
+                        { "age": "18-24", "percentage": 0.41 },
+                        { "age": "25-34", "percentage": 0.37 }
+                      ],
+                      "audienceCities": [
+                        { "cityName": "Jakarta, Jakarta", "percentage": 0.22 }
+                      ],
+                      "audienceCountries": [
+                        { "country": "ID", "percentage": 0.86 }
+                      ],
+                      "audienceGenders": [
+                        { "gender": "Female", "percentage": 0.58 },
+                        { "gender": "Male", "percentage": 0.4 },
+                        { "gender": "Other", "percentage": 0.02 }
+                      ]
                     }
                   },
                   "threads": {
@@ -359,7 +383,17 @@
                             "value": 0
                           }
                         ]
-                      }
+                      },
+                      "audienceAges": [{ "age": "25-34", "percentage": 0.44 }],
+                      "audienceCities": [
+                        { "cityName": "Jakarta, Jakarta", "percentage": 0.18 }
+                      ],
+                      "audienceCountries": [
+                        { "country": "ID", "percentage": 0.81 }
+                      ],
+                      "audienceGenders": [
+                        { "gender": "Male", "percentage": 0.55 }
+                      ]
                     }
                   },
                   "tiktok": {
@@ -4234,7 +4268,7 @@
     },
     "/public/content/{contentId}/statistic": {
       "get": {
-        "description": "\nRetrieve engagement statistics for a specific content directly from the platform.\n\nThis endpoint is used to fetch insight metrics such as likes, comments, shares, views, and other platform-specific engagement data.\nThe returned fields may vary depending on the platform (e.g. Instagram, TikTok, YouTube, etc).\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns a statistic object based on the platform\n- Includes engagement metrics such as like, comment, share, views, and other platform-specific fields\n\nYouTube also returns insight from YouTube Analytics: the video's lifetime watch time (estimatedMinutesWatched, in minutes), average view duration (averageViewDuration, in seconds), average percentage viewed, subscribers gained and lost and shares, its daily views and watch time of the last 28 days (metrics), and its views per traffic source (trafficSources, such as YT_SEARCH, SHORTS or RELATED_VIDEO). When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
+        "description": "\nRetrieve engagement statistics for a specific content directly from the platform.\n\nThis endpoint is used to fetch insight metrics such as likes, comments, shares, views, and other platform-specific engagement data.\nThe returned fields may vary depending on the platform (e.g. Instagram, TikTok, YouTube, etc).\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns a statistic object based on the platform\n- Includes engagement metrics such as like, comment, share, views, and other platform-specific fields\n\nInstagram returns mediaProductType (FEED, REELS or STORY) and the metrics Instagram has for that type: FEED adds follows, profileVisits and profileActivity; REELS adds averageWatchTime and watchTime (in seconds) and skipRate (the percentage of views skipped in the first 3 seconds); STORY adds follows, profileVisits, profileActivity, replies and navigation, and has no like, comment or saved (always 0).\n\nYouTube also returns insight from YouTube Analytics: the video's lifetime watch time (estimatedMinutesWatched, in minutes), average view duration (averageViewDuration, in seconds), average percentage viewed, subscribers gained and lost and shares, its daily views and watch time of the last 28 days (metrics), and its views per traffic source (trafficSources, such as YT_SEARCH, SHORTS or RELATED_VIDEO). The insight is cached for 6 hours. When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
         "operationId": "ContentController_getStatistic",
         "parameters": [
           {
@@ -4269,15 +4303,53 @@
                     "value": { "like": 10, "comment": 10, "share": 10 }
                   },
                   "instagram": {
-                    "summary": "Instagram",
+                    "summary": "Instagram (Feed)",
                     "value": {
+                      "mediaProductType": "FEED",
                       "like": 10,
                       "comment": 10,
                       "share": 10,
                       "reach": 10,
                       "saved": 10,
                       "views": 10,
-                      "interaction": 10
+                      "interaction": 10,
+                      "follows": 10,
+                      "profileVisits": 10,
+                      "profileActivity": 10
+                    }
+                  },
+                  "instagramReels": {
+                    "summary": "Instagram (Reels)",
+                    "value": {
+                      "mediaProductType": "REELS",
+                      "like": 10,
+                      "comment": 10,
+                      "share": 10,
+                      "reach": 10,
+                      "saved": 10,
+                      "views": 10,
+                      "interaction": 10,
+                      "averageWatchTime": 6.7,
+                      "watchTime": 67,
+                      "skipRate": 35.2
+                    }
+                  },
+                  "instagramStory": {
+                    "summary": "Instagram (Story)",
+                    "value": {
+                      "mediaProductType": "STORY",
+                      "like": 0,
+                      "comment": 0,
+                      "share": 10,
+                      "reach": 10,
+                      "saved": 0,
+                      "views": 10,
+                      "interaction": 10,
+                      "follows": 10,
+                      "profileVisits": 10,
+                      "profileActivity": 10,
+                      "replies": 10,
+                      "navigation": 10
                     }
                   },
                   "threads": {
