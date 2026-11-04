@@ -58,12 +58,15 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
     {
       title: "Get Facebook Pages",
       effect: "read",
-      description: "List Facebook pages accessible with the provided token.",
+      description:
+        "List Facebook pages accessible with the provided token. Uses cursor pagination via `nextToken`: when the response has a non-empty `nextToken`, call again with it to get the next pages.",
       inputSchema: {
         token: z.string().describe("Facebook access token."),
+        nextToken: z.string().optional().describe("Pagination cursor from a previous response."),
       },
     },
-    async (args) => ctx.client.get("/public/account/facebook/page", { token: args.token })
+    async (args) =>
+      ctx.client.get("/public/account/facebook/page", { token: args.token, nextToken: args.nextToken })
   );
 
   registerTool(
