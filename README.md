@@ -1,7 +1,7 @@
 # Repliz MCP Server
 
 A hosted [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Repliz Public API**. It gives an AI assistant 105 tools for managing a Repliz
+**Repliz Public API**. It gives an AI assistant 115 tools for managing a Repliz
 workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads, managing
 automations and templates, and more.
@@ -231,7 +231,7 @@ thing to plan for. Measured:
 | 100           | ~270 MB     |
 
 That is roughly **1.8 MB per live session** on top of a ~93 MB baseline, most of
-it the 105 tool schemas, which are instantiated per session so that credentials
+it the 115 tool schemas, which are instantiated per session so that credentials
 stay isolated. A 1 GB VPS comfortably holds the default cap of 300; use ~1000 on
 2 GB. Sessions are only live while a client is connected and idle ones are
 reclaimed after 30 minutes, so the steady-state number is far below the total
@@ -313,13 +313,14 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 
 ## Tools
 
-105 tools across the Repliz Public API:
+115 tools across the Repliz Public API:
 
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
 | **Accounts**        | 6     | list, count, get, statistics, update automation, delete                                     |
 | **Account Connect** | 42    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X, Pinterest; QR session / connect / reconnect for WhatsApp; QR session / two-step password / connect / reconnect for Telegram |
 | **Comments**        | 5     | list, get, reply, update status, delete                                                     |
+| **Contacts**        | 10    | list, count, list tags, get, get by comment, get by chat, update, set follow-up, remove follow-up, delete |
 | **Schedule**        | 7     | list, get, create, update, retry, delete, bulk delete                                       |
 | **Chat**            | 5     | list, get, list messages, send message, mark read                                           |
 | **Content**         | 9     | list, get, list comments, comment, statistics, DM commenter, like comment, delete comment, delete content |
@@ -333,9 +334,9 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 Tool availability follows the caller's Repliz plan; calling one above your tier
 returns a clear error.
 
-Every tool declares what it does, as MCP tool annotations: 48 only read
-(`readOnlyHint`), 42 create or send something without touching what exists
-(`destructiveHint: false`), and 15 change or delete (`destructiveHint: true`).
+Every tool declares what it does, as MCP tool annotations: 52 only read
+(`readOnlyHint`), 44 create or send something without touching what exists
+(`destructiveHint: false`), and 19 change or delete (`destructiveHint: true`).
 Clients use these to decide what to confirm first; ChatGPT asks before any tool
 not marked read-only. A new tool must state its `effect` to compile.
 

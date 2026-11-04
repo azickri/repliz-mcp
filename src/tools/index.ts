@@ -3,6 +3,7 @@
 import type { ToolContext } from './helpers.js';
 import { registerAccountTools } from './account.js';
 import { registerCommentTools } from './comment.js';
+import { registerContactTools } from './contact.js';
 import { registerScheduleTools } from './schedule.js';
 import { registerChatTools } from './chat.js';
 import { registerContentTools } from './content.js';
@@ -17,6 +18,7 @@ import { registerAccountConnectTools } from './account_connect.js';
 export function registerAllTools(ctx: ToolContext): void {
   registerAccountTools(ctx);
   registerCommentTools(ctx);
+  registerContactTools(ctx);
   registerScheduleTools(ctx);
   registerChatTools(ctx);
   registerContentTools(ctx);

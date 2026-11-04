@@ -1296,6 +1296,570 @@
         "tags": ["API Comment (Standard+)"]
       }
     },
+    "/public/contact": {
+      "get": {
+        "description": "\nRetrieve a paginated list of contacts.\n\nEveryone who comments on or sends a message to a connected account becomes a contact automatically, and the contact is updated with every new comment or message. Use it as a light CRM: move contacts through the funnel stages, tag them and plan follow-ups.\n\nResponse:\n- Returns paginated contact objects, newest interaction first\n- With `followUp` set, contacts are sorted by the nearest follow-up instead\n",
+        "operationId": "ContactController_getContact",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "description": "Page to return, starting from `1`. Contacts are sorted by the latest interaction, or by the nearest follow-up when `followUp` is set.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "description": "Items per page, from `1` to `100`, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "stage",
+            "required": false,
+            "in": "query",
+            "description": "Funnel stage: `new`, `contacted`, `interested`, `won`, or `lost`. Every stage when left out.",
+            "schema": {
+              "example": "interested",
+              "type": "string",
+              "enum": ["new", "contacted", "interested", "won", "lost"]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Matches the contact name or note, case-insensitive.",
+            "schema": { "example": "Azickri", "type": "string" }
+          },
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Only contacts that have this tag, exactly as listed by Get Contact Tag. Every tag when left out.",
+            "schema": { "example": "reseller", "type": "string" }
+          },
+          {
+            "name": "followUp",
+            "required": false,
+            "in": "query",
+            "description": "`scheduled` for contacts with a follow-up, `due` for follow-ups whose time has passed. Every contact when left out.",
+            "schema": {
+              "example": "due",
+              "type": "string",
+              "enum": ["scheduled", "due"]
+            }
+          },
+          {
+            "name": "accountIds",
+            "required": false,
+            "in": "query",
+            "description": "Only contacts of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`, which is what Axios does with an array. All accounts when left out.",
+            "schema": {
+              "example": ["680affa5ce12f2f72916f67e"],
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "_id": "690a1f3ce12f2f72916f67e1",
+                      "externalId": "6793729447315239",
+                      "name": "Shika",
+                      "picture": "https://example.com/picture.jpg",
+                      "sources": ["comment"],
+                      "stage": "interested",
+                      "tags": ["reseller"],
+                      "note": "Asked for the reseller price list.",
+                      "followUp": {
+                        "at": "2026-11-05T09:00:00.000Z",
+                        "note": "Send the new catalog.",
+                        "message": "Halo kak, ini katalog terbaru kami."
+                      },
+                      "lastText": "Harga reseller berapa kak?",
+                      "lastSource": "comment",
+                      "lastCommentId": "690a1f3ce12f2f72916f67d0",
+                      "lastInteractionAt": "2026-11-04T08:12:00.000Z",
+                      "lastChatAt": "2026-11-04T08:12:00.000Z",
+                      "accountId": "69686c4c41ec8ac5117c8929",
+                      "userId": "6879b98097fc8c8a78d1d4c1",
+                      "createdAt": "2026-11-04T08:12:00.000Z",
+                      "updatedAt": "2026-11-04T08:20:00.000Z",
+                      "account": {
+                        "_id": "69686c4c41ec8ac5117c8929",
+                        "name": "Halaman ke 3",
+                        "username": "Cafe",
+                        "picture": "https://example.com/account.jpg",
+                        "type": "facebook",
+                        "isConnected": true
+                      }
+                    }
+                  ],
+                  "totalDocs": 1,
+                  "limit": 20,
+                  "totalPages": 1,
+                  "page": 1,
+                  "pagingCounter": 1,
+                  "hasPrevPage": false,
+                  "hasNextPage": false,
+                  "prevPage": null,
+                  "nextPage": null
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Contact",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/contact/count": {
+      "get": {
+        "description": "\nCount contacts per funnel stage.\n\nUses the same filters as Get Contact, so the numbers match the list. `due` is how many of those contacts have a follow-up whose time has passed.\n",
+        "operationId": "ContactController_countContact",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Matches the contact name or note, case-insensitive.",
+            "schema": { "example": "Azickri", "type": "string" }
+          },
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Only contacts that have this tag, exactly as listed by Get Contact Tag. Every tag when left out.",
+            "schema": { "example": "reseller", "type": "string" }
+          },
+          {
+            "name": "followUp",
+            "required": false,
+            "in": "query",
+            "description": "`scheduled` for contacts with a follow-up, `due` for follow-ups whose time has passed. Every contact when left out.",
+            "schema": {
+              "example": "due",
+              "type": "string",
+              "enum": ["scheduled", "due"]
+            }
+          },
+          {
+            "name": "accountIds",
+            "required": false,
+            "in": "query",
+            "description": "Only contacts of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`, which is what Axios does with an array. All accounts when left out.",
+            "schema": {
+              "example": ["680affa5ce12f2f72916f67e"],
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "all": 12,
+                  "new": 6,
+                  "contacted": 3,
+                  "interested": 2,
+                  "won": 1,
+                  "lost": 0,
+                  "due": 2
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Count Contact",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/contact/tag": {
+      "get": {
+        "description": "\nRetrieve every tag used on your contacts, sorted by name.\n\nTags are free text set with Update Contact; a tag disappears from this list once no contact uses it.\n",
+        "operationId": "ContactController_getContactTag",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": { "example": ["jakarta", "reseller"] }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Contact Tag",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/contact/comment/{commentId}": {
+      "put": {
+        "description": "\nRetrieve the contact of the person who wrote a stored comment.\n\nThe contact is created from the comment when it came in before contacts existed. An existing contact is returned unchanged.\n\nParameters:\n- commentId (string) — The `_id` from Get Comment\n",
+        "operationId": "ContactController_getContactByComment",
+        "parameters": [
+          {
+            "name": "commentId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the comment in Repliz, the `_id` from Get Comment. This isn't the platform's comment ID.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "690a1f3ce12f2f72916f67e1",
+                  "externalId": "6793729447315239",
+                  "name": "Shika",
+                  "picture": "https://example.com/picture.jpg",
+                  "sources": ["comment"],
+                  "stage": "interested",
+                  "tags": ["reseller"],
+                  "note": "Asked for the reseller price list.",
+                  "followUp": {
+                    "at": "2026-11-05T09:00:00.000Z",
+                    "note": "Send the new catalog.",
+                    "message": "Halo kak, ini katalog terbaru kami."
+                  },
+                  "lastText": "Harga reseller berapa kak?",
+                  "lastSource": "comment",
+                  "lastCommentId": "690a1f3ce12f2f72916f67d0",
+                  "lastInteractionAt": "2026-11-04T08:12:00.000Z",
+                  "lastChatAt": "2026-11-04T08:12:00.000Z",
+                  "accountId": "69686c4c41ec8ac5117c8929",
+                  "userId": "6879b98097fc8c8a78d1d4c1",
+                  "createdAt": "2026-11-04T08:12:00.000Z",
+                  "updatedAt": "2026-11-04T08:20:00.000Z",
+                  "account": {
+                    "_id": "69686c4c41ec8ac5117c8929",
+                    "name": "Halaman ke 3",
+                    "username": "Cafe",
+                    "picture": "https://example.com/account.jpg",
+                    "type": "facebook",
+                    "isConnected": true
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "comment not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Contact By Comment",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/contact/chat/{chatId}": {
+      "put": {
+        "description": "\nRetrieve the contact of the person in a chat.\n\nThe contact is created from the chat when the chat started before contacts existed. An existing contact is returned unchanged, apart from linking the chat to it.\n\nParameters:\n- chatId (string) — The `_id` from Get Chat\n",
+        "operationId": "ContactController_getContactByChat",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the chat in Repliz, the `_id` from Get Chat. This isn't the platform's conversation ID.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "690a1f3ce12f2f72916f67e1",
+                  "externalId": "6793729447315239",
+                  "name": "Shika",
+                  "picture": "https://example.com/picture.jpg",
+                  "sources": ["comment"],
+                  "stage": "interested",
+                  "tags": ["reseller"],
+                  "note": "Asked for the reseller price list.",
+                  "followUp": {
+                    "at": "2026-11-05T09:00:00.000Z",
+                    "note": "Send the new catalog.",
+                    "message": "Halo kak, ini katalog terbaru kami."
+                  },
+                  "lastText": "Harga reseller berapa kak?",
+                  "lastSource": "comment",
+                  "lastCommentId": "690a1f3ce12f2f72916f67d0",
+                  "lastInteractionAt": "2026-11-04T08:12:00.000Z",
+                  "lastChatAt": "2026-11-04T08:12:00.000Z",
+                  "accountId": "69686c4c41ec8ac5117c8929",
+                  "userId": "6879b98097fc8c8a78d1d4c1",
+                  "createdAt": "2026-11-04T08:12:00.000Z",
+                  "updatedAt": "2026-11-04T08:20:00.000Z",
+                  "account": {
+                    "_id": "69686c4c41ec8ac5117c8929",
+                    "name": "Halaman ke 3",
+                    "username": "Cafe",
+                    "picture": "https://example.com/account.jpg",
+                    "type": "facebook",
+                    "isConnected": true
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "comment not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Contact By Chat",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/contact/{contactId}": {
+      "get": {
+        "description": "\nRetrieve a single contact with its stage, tags, note, follow-up and last interaction.\n\nParameters:\n- contactId (string) — The `_id` from Get Contact\n",
+        "operationId": "ContactController_getOneContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the contact, the `_id` from Get Contact.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "690a1f3ce12f2f72916f67e1",
+                  "externalId": "6793729447315239",
+                  "name": "Shika",
+                  "picture": "https://example.com/picture.jpg",
+                  "sources": ["comment"],
+                  "stage": "interested",
+                  "tags": ["reseller"],
+                  "note": "Asked for the reseller price list.",
+                  "followUp": {
+                    "at": "2026-11-05T09:00:00.000Z",
+                    "note": "Send the new catalog.",
+                    "message": "Halo kak, ini katalog terbaru kami."
+                  },
+                  "lastText": "Harga reseller berapa kak?",
+                  "lastSource": "comment",
+                  "lastCommentId": "690a1f3ce12f2f72916f67d0",
+                  "lastInteractionAt": "2026-11-04T08:12:00.000Z",
+                  "lastChatAt": "2026-11-04T08:12:00.000Z",
+                  "accountId": "69686c4c41ec8ac5117c8929",
+                  "userId": "6879b98097fc8c8a78d1d4c1",
+                  "createdAt": "2026-11-04T08:12:00.000Z",
+                  "updatedAt": "2026-11-04T08:20:00.000Z",
+                  "account": {
+                    "_id": "69686c4c41ec8ac5117c8929",
+                    "name": "Halaman ke 3",
+                    "username": "Cafe",
+                    "picture": "https://example.com/account.jpg",
+                    "type": "facebook",
+                    "isConnected": true
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "contact not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get One Contact",
+        "tags": ["API Contact (Standard+)"]
+      },
+      "put": {
+        "description": "\nSet the funnel stage, tags and note of a contact.\n\nEvery field is required and replaces the current value, so send the current tags and note along when you only change the stage.\n",
+        "operationId": "ContactController_updateContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the contact, the `_id` from Get Contact.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyUpdateContactDTO" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "contact not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Update Contact",
+        "tags": ["API Contact (Standard+)"]
+      },
+      "delete": {
+        "description": "\nDelete a contact with its stage, tags, note and follow-up.\n\nA new comment or message from the same person creates the contact again, starting from the `new` stage.\n",
+        "operationId": "ContactController_removeContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the contact, the `_id` from Get Contact.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "contact not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Remove Contact",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/contact/{contactId}/follow-up": {
+      "put": {
+        "description": "\nPlan a follow-up with a contact.\n\nA contact has one follow-up at a time; setting it again replaces the current one. It is a reminder only and does not send anything to the contact. Due follow-ups are counted in `due` of Count Contact.\n",
+        "operationId": "ContactController_setFollowUpContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the contact, the `_id` from Get Contact.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyFollowUpContactDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "contact not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Set Contact Follow-up",
+        "tags": ["API Contact (Standard+)"]
+      },
+      "delete": {
+        "description": "\nClear the follow-up of a contact, once it is done or no longer needed.\n",
+        "operationId": "ContactController_removeFollowUpContact",
+        "parameters": [
+          {
+            "name": "contactId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the contact, the `_id` from Get Contact.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "contact not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Remove Contact Follow-up",
+        "tags": ["API Contact (Standard+)"]
+      }
+    },
     "/public/addon/tiktok/music": {
       "get": {
         "description": "\nRetrieve a list of currently music from TikTok platforms.\n\nThis endpoint is used to get popular or trending audio that can be used for content creation, especially on platforms like Instagram or other short-video services.\nIt helps users discover music that is currently gaining engagement.\n\nResponse:\n- Returns an array of music objects\n- Each item includes id, title, artist, and usage metadata\n",
@@ -8935,6 +9499,50 @@
           }
         },
         "required": ["status"]
+      },
+      "BodyUpdateContactDTO": {
+        "type": "object",
+        "properties": {
+          "stage": {
+            "type": "string",
+            "example": "interested",
+            "enum": ["new", "contacted", "interested", "won", "lost"],
+            "description": "Funnel stage: `new`, `contacted`, `interested`, `won`, or `lost`."
+          },
+          "tags": {
+            "example": ["reseller", "jakarta"],
+            "description": "Every tag of the contact, at most 20 of up to 30 characters. Replaces the current tags; duplicates that differ only in case are kept once.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "note": {
+            "type": "string",
+            "example": "Asked for the reseller price list.",
+            "description": "Free note about the contact, up to 2000 characters."
+          }
+        },
+        "required": ["stage", "tags", "note"]
+      },
+      "BodyFollowUpContactDTO": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string",
+            "example": "2026-11-05T09:00:00.000Z",
+            "description": "When to follow up, as an ISO date and time in the future. Replaces the current follow-up."
+          },
+          "note": {
+            "type": "string",
+            "example": "Send the new catalog.",
+            "description": "What to follow up on, up to 500 characters. Can be empty."
+          },
+          "message": {
+            "type": "string",
+            "example": "Halo kak, ini katalog terbaru kami.",
+            "description": "The message to send when following up, written ahead, up to 1000 characters. Repliz never sends it by itself; in the app it is sent with one click as a DM or a reply to the latest comment. Empty when left out."
+          }
+        },
+        "required": ["at", "note"]
       },
       "ScheduleMedia": {
         "type": "object",
