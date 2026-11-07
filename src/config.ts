@@ -69,7 +69,7 @@ export function bearerTokenFromHeaders(headers: HeaderBag): string | null {
 }
 
 // ─── Tunables ───────────────────────────────────────────────────────────────
-// Defaults are sized for a ~1 GB VPS. Each live session costs roughly 1.8 MB,
+// Defaults are sized for a ~1 GB VPS. Each live session costs roughly 0.26 MB,
 // so maxSessions() is the main memory lever.
 
 function intFromEnv(name: string, fallback: number, min: number): number {

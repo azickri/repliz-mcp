@@ -225,15 +225,17 @@ thing to plan for. Measured:
 
 | Live sessions | Process RSS |
 | ------------- | ----------- |
-| 0 (baseline)  | ~93 MB      |
-| 10            | ~108 MB     |
-| 50            | ~173 MB     |
-| 100           | ~270 MB     |
+| 0 (baseline)  | ~96 MB      |
+| 10            | ~103 MB     |
+| 100           | ~122 MB     |
+| 300           | ~173 MB     |
+| 1000          | ~356 MB     |
 
-That is roughly **1.8 MB per live session** on top of a ~93 MB baseline, most of
-it the 115 tool schemas, which are instantiated per session so that credentials
-stay isolated. A 1 GB VPS comfortably holds the default cap of 300; use ~1000 on
-2 GB. Sessions are only live while a client is connected and idle ones are
+That is roughly **0.26 MB per live session** on top of a ~96 MB baseline. The
+115 tool schemas are built once and shared by every session; only the MCP
+server object, the transport and the Repliz client — which holds that user's
+credentials — are per session. The default cap of 300 fits easily on a 1 GB
+VPS. Sessions are only live while a client is connected and idle ones are
 reclaimed after 30 minutes, so the steady-state number is far below the total
 user count.
 

@@ -4,8 +4,32 @@
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
+import { objectFromShape, type AnyObjectSchema } from "@modelcontextprotocol/sdk/server/zod-compat.js";
 import type { ZodRawShape } from "zod";
 import { ReplizApiError, type ReplizClient } from "../client.js";
+
+/**
+ * One input schema per tool name, shared by every session.
+ *
+ * A server is built per session, and each build runs every register function,
+ * which constructs that tool's Zod schemas afresh. Kept per session, those
+ * schemas cost about 1 MB each — the bulk of a session's memory. The schemas
+ * depend on nothing but the code, so the first build's are kept here and every
+ * later session's copies are left for the garbage collector.
+ *
+ * Built with the SDK's own objectFromShape, so tools/list is exactly what the
+ * SDK would have produced from the raw shape.
+ */
+const sharedInputSchemas = new Map<string, AnyObjectSchema>();
+
+function sharedInputSchema(name: string, shape: ZodRawShape): AnyObjectSchema {
+  let schema = sharedInputSchemas.get(name);
+  if (!schema) {
+    schema = objectFromShape(shape);
+    sharedInputSchemas.set(name, schema);
+  }
+  return schema;
+}
 
 /**
  * Appended to the automation config fields. Keywords can answer with an
@@ -98,7 +122,7 @@ export function registerTool<TShape extends ZodRawShape>(
     {
       title: meta.title,
       description: meta.description,
-      inputSchema: meta.inputSchema,
+      inputSchema: sharedInputSchema(name, meta.inputSchema),
       annotations: ANNOTATIONS[meta.effect],
     },
     // The SDK validates args against inputSchema before calling us.
