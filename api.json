@@ -9235,6 +9235,11 @@
             "description": "1 to 10 carousel cards, required when `type` is `element`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ConfigOpeningElement" }
+          },
+          "isTrackLink": {
+            "type": "boolean",
+            "example": false,
+            "description": "Instagram and Facebook only. With `true`, the links in `buttons` and `elements` are sent as `rplz.link` short links, so their clicks show up in the link report. `false` when left out."
           }
         },
         "required": ["text", "buttons"]

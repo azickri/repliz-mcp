@@ -40,6 +40,7 @@ export const KEYWORD_OPENING_NOTE =
   "Keywords in message, story and chat (Instagram and Facebook) can answer with buttons: a keyword.values item " +
   '{ "keyword", "type": "opening", "opening": { postback, additional, webUrl } } instead of { "keyword", "text" }. ' +
   'Send the "id" Repliz returns on such a keyword back unchanged, or the buttons in DMs already sent stop working. ' +
+  'Set opening.webUrl.isTrackLink to true to send the links of an opening as rplz.link short links and count their clicks. ' +
   "Schema: https://docs.repliz.com/api/guides/automation-config#keyword-with-buttons";
 
 export interface ToolContext {
