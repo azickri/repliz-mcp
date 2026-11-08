@@ -2446,7 +2446,7 @@
     },
     "/public/addon/pinterest/board": {
       "get": {
-        "description": "\nRetrieve the boards of a connected Pinterest account.\n\nThis endpoint is used to fetch the boards a pin can be published to. Use an item as additionalInfo.channel when creating a schedule for a Pinterest account (one schedule per board), or its id as channelId when listing content.\n\nParameters:\n- accountId (string) — The unique identifier of the connected Pinterest account\n\nResponse:\n- Returns an array of Pinterest boards\n- Each item includes its identifier, name, cover picture and type (always board)\n",
+        "description": "\nRetrieve the boards of a connected Pinterest account.\n\nThis endpoint is used to fetch the boards a pin can be published to. Use an item as additionalInfo.channel when creating a schedule for a Pinterest account (one schedule per board), or its id as channelId when listing content.\n\nParameters:\n- accountId (string) — The unique identifier of the connected Pinterest account\n\nResponse:\n- Returns an array of Pinterest boards\n- Each item includes its identifier, name, description, cover picture, number of pins and type (always board)\n",
         "operationId": "AddonController_getPinterestBoard",
         "parameters": [
           {
@@ -2470,7 +2470,9 @@
                     {
                       "id": "1006921296753698211",
                       "name": "Social Media Tips",
+                      "description": "Ideas to grow your social media accounts",
                       "picture": "https://i.pinimg.com/400x300/fd/cd/d5/fdcdd5a6d8a80824add0d054125cd957.jpg",
+                      "pinCount": 12,
                       "type": "board"
                     }
                   ]
@@ -2489,6 +2491,149 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Get Pinterest Board",
+        "tags": ["API Addon (Premium+)"]
+      },
+      "post": {
+        "description": "\nCreate a public board on a connected Pinterest account.\n\nThis endpoint is used to add a board to publish pins to, without opening Pinterest. The returned item can be used right away as additionalInfo.channel when creating a schedule.\n\nResponse:\n- Returns the created board with its identifier, name, description, cover picture, number of pins and type (always board)\n",
+        "operationId": "AddonController_createPinterestBoard",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyCreateUpdatePinterestBoardDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "1006921296753698211",
+                  "name": "Social Media Tips",
+                  "description": "Ideas to grow your social media accounts",
+                  "picture": "",
+                  "pinCount": 0,
+                  "type": "board"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 400, "message": "invalid account type" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Create Pinterest Board",
+        "tags": ["API Addon (Premium+)"]
+      }
+    },
+    "/public/addon/pinterest/board/{boardId}": {
+      "put": {
+        "description": "\nRename a board of a connected Pinterest account or change its description.\n\nThis endpoint is used to edit a board. Its pins and the schedules that post to it stay as they are.\n\nParameters:\n- boardId (string) — The unique identifier of the Pinterest board\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AddonController_updatePinterestBoard",
+        "parameters": [
+          {
+            "name": "boardId",
+            "required": true,
+            "in": "path",
+            "description": "ID of a Pinterest board, the `id` from Get Pinterest Board.",
+            "schema": { "example": "1006921296753698211", "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyCreateUpdatePinterestBoardDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 400, "message": "invalid account type" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Update Pinterest Board",
+        "tags": ["API Addon (Premium+)"]
+      },
+      "delete": {
+        "description": "\nDelete a board of a connected Pinterest account.\n\nThis endpoint is used to remove a board that is no longer needed. Pinterest deletes every pin in the board with it, and it cannot be undone. Schedules that still post to the board fail when they run.\n\nParameters:\n- boardId (string) — The unique identifier of the Pinterest board\n- accountId (string) — The unique identifier of the connected Pinterest account\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AddonController_removePinterestBoard",
+        "parameters": [
+          {
+            "name": "boardId",
+            "required": true,
+            "in": "path",
+            "description": "ID of a Pinterest board, the `id` from Get Pinterest Board.",
+            "schema": { "example": "1006921296753698211", "type": "string" }
+          },
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "description": "ID of a connected Pinterest account, the `_id` from Get Account.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 400, "message": "invalid account type" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Remove Pinterest Board",
         "tags": ["API Addon (Premium+)"]
       }
     },
@@ -9559,6 +9704,27 @@
           }
         },
         "required": ["at", "note"]
+      },
+      "BodyCreateUpdatePinterestBoardDTO": {
+        "type": "object",
+        "properties": {
+          "accountId": {
+            "type": "string",
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of a connected Pinterest account, the `_id` from Get Account."
+          },
+          "name": {
+            "type": "string",
+            "example": "Social Media Tips",
+            "description": "Name of the board, up to 100 characters. Pinterest rejects a name already used by another board of the account."
+          },
+          "description": {
+            "type": "string",
+            "example": "Ideas to grow your social media accounts",
+            "description": "Description of the board, up to 800 characters. Left out or empty means no description; on update it clears the current one."
+          }
+        },
+        "required": ["accountId", "name"]
       },
       "ScheduleMedia": {
         "type": "object",
