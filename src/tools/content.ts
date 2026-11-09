@@ -2,18 +2,7 @@
 
 import { z } from "zod";
 import { registerTool, type ToolContext } from "./helpers.js";
-
-const buttonObjectSchema = z
-  .object({
-    text: z.string(),
-    image: z.string().optional(),
-    buttons: z.object({
-      type: z.literal("web_url").default("web_url"),
-      title: z.string(),
-      url: z.string(),
-    }),
-  })
-  .describe("An interactive button payload.");
+import { buttonObjectSchema, carouselObjectSchema, quickReplyObjectSchema } from "./message.js";
 
 const imageObjectSchema = z
   .object({
@@ -148,13 +137,15 @@ export function registerContentTools(ctx: ToolContext): void {
       title: "Send DM to Content Commenter",
       effect: "additive",
       description:
-        "Send a private message (DM) to the author of a comment on your content. Provide `text` and/or a `button` payload.",
+        "Send a private message (DM) to the author of a comment on your content (Facebook and Instagram). Provide `text`, or exactly one of `button`, `carousel` or `quickReply` instead, with the same shape as in repliz_send_message. A tapped postback button reaches the user's webhook as a `postback` event and a tapped quick reply as a `chat` event, both with `message.payload`.",
       inputSchema: {
         contentId: z.string().describe("The content id."),
         accountId: z.string().describe("The account id sending the message."),
         commentId: z.string().describe("The comment id whose author will be messaged."),
         text: z.string().optional().describe("The message text."),
-        button: buttonObjectSchema.optional().describe("Optional interactive button payload."),
+        button: buttonObjectSchema.optional(),
+        carousel: carouselObjectSchema.optional(),
+        quickReply: quickReplyObjectSchema.optional(),
       },
     },
     async (args) =>
@@ -163,6 +154,8 @@ export function registerContentTools(ctx: ToolContext): void {
         commentId: args.commentId,
         ...(args.text !== undefined ? { text: args.text } : {}),
         ...(args.button !== undefined ? { button: args.button } : {}),
+        ...(args.carousel !== undefined ? { carousel: args.carousel } : {}),
+        ...(args.quickReply !== undefined ? { quickReply: args.quickReply } : {}),
       })
   );
 

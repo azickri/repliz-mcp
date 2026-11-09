@@ -4389,6 +4389,80 @@
                       ]
                     }
                   }
+                },
+                "buttonPostback": {
+                  "summary": "Send Button with Postback",
+                  "value": {
+                    "type": "button",
+                    "button": {
+                      "text": "Hello there, this is from Repliz",
+                      "buttons": [
+                        {
+                          "type": "postback",
+                          "title": "Order Now",
+                          "payload": "ORDER_PRODUCT_1"
+                        },
+                        {
+                          "type": "web_url",
+                          "title": "Visit Repliz",
+                          "url": "https://repliz.com"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "carousel": {
+                  "summary": "Send Carousel",
+                  "value": {
+                    "type": "carousel",
+                    "carousel": {
+                      "elements": [
+                        {
+                          "title": "Ebook Content Creator",
+                          "subtitle": "Bangun aset digital!",
+                          "image": "https://storage.repliz.com/image.png",
+                          "url": "https://repliz.com",
+                          "buttons": [
+                            {
+                              "type": "postback",
+                              "title": "Order Now",
+                              "payload": "ORDER_EBOOK"
+                            },
+                            {
+                              "type": "web_url",
+                              "title": "Read More",
+                              "url": "https://repliz.com"
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Kelas Automation",
+                          "subtitle": "Belajar auto reply",
+                          "image": "https://storage.repliz.com/image.png",
+                          "buttons": [
+                            {
+                              "type": "postback",
+                              "title": "Order Now",
+                              "payload": "ORDER_CLASS"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "quickReply": {
+                  "summary": "Send Quick Reply",
+                  "value": {
+                    "type": "quick_reply",
+                    "quickReply": {
+                      "text": "Do you want the catalog?",
+                      "buttons": [
+                        { "title": "Yes", "payload": "CATALOG_YES" },
+                        { "title": "No", "payload": "CATALOG_NO" }
+                      ]
+                    }
+                  }
                 }
               }
             }
@@ -5255,6 +5329,83 @@
                           "title": "Click me to Repliz",
                           "url": "https://repliz.com"
                         }
+                      ]
+                    }
+                  }
+                },
+                "buttonPostback": {
+                  "summary": "Send Button with Postback",
+                  "value": {
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "commentId": "18083576267346315",
+                    "button": {
+                      "text": "Hello there, this is from Repliz",
+                      "buttons": [
+                        {
+                          "type": "postback",
+                          "title": "Order Now",
+                          "payload": "ORDER_PRODUCT_1"
+                        },
+                        {
+                          "type": "web_url",
+                          "title": "Visit Repliz",
+                          "url": "https://repliz.com"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "carousel": {
+                  "summary": "Send Carousel",
+                  "value": {
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "commentId": "18083576267346315",
+                    "carousel": {
+                      "elements": [
+                        {
+                          "title": "Ebook Content Creator",
+                          "subtitle": "Bangun aset digital!",
+                          "image": "https://storage.repliz.com/image.png",
+                          "url": "https://repliz.com",
+                          "buttons": [
+                            {
+                              "type": "postback",
+                              "title": "Order Now",
+                              "payload": "ORDER_EBOOK"
+                            },
+                            {
+                              "type": "web_url",
+                              "title": "Read More",
+                              "url": "https://repliz.com"
+                            }
+                          ]
+                        },
+                        {
+                          "title": "Kelas Automation",
+                          "subtitle": "Belajar auto reply",
+                          "image": "https://storage.repliz.com/image.png",
+                          "buttons": [
+                            {
+                              "type": "postback",
+                              "title": "Order Now",
+                              "payload": "ORDER_CLASS"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "quickReply": {
+                  "summary": "Send Quick Reply",
+                  "value": {
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "commentId": "18083576267346315",
+                    "quickReply": {
+                      "text": "Do you want the catalog?",
+                      "buttons": [
+                        { "title": "Yes", "payload": "CATALOG_YES" },
+                        { "title": "No", "payload": "CATALOG_NO" }
                       ]
                     }
                   }
@@ -10277,8 +10428,8 @@
           "type": {
             "type": "string",
             "example": "web_url",
-            "enum": ["web_url"],
-            "description": "Always `web_url`."
+            "enum": ["web_url", "postback"],
+            "description": "`web_url` opens `url`. `postback` sends `payload` back to your webhook as a `postback` event when tapped."
           },
           "title": {
             "type": "string",
@@ -10288,10 +10439,16 @@
           "url": {
             "type": "string",
             "example": "https://repliz.com",
-            "description": "The link opened when the button is tapped."
+            "description": "The link opened when the button is tapped. Required for `web_url`."
+          },
+          "payload": {
+            "type": "string",
+            "example": "ORDER_PRODUCT_1",
+            "maxLength": 1000,
+            "description": "Your own value, up to 1000 characters, sent back in `message.payload` of the `postback` webhook. Required for `postback`."
           }
         },
-        "required": ["type", "title", "url"]
+        "required": ["type", "title"]
       },
       "ObjectButton": {
         "type": "object",
@@ -10307,9 +10464,84 @@
             "description": "Public URL of an image. Turns the message into a card with this image on top."
           },
           "buttons": {
-            "description": "1 to 3 link buttons.",
+            "description": "1 to 3 buttons, `web_url` or `postback`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/Button" }
+          }
+        },
+        "required": ["text", "buttons"]
+      },
+      "CarouselElement": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Ebook Content Creator",
+            "description": "Card title, cut to 80 characters."
+          },
+          "subtitle": {
+            "type": "string",
+            "example": "Bangun aset digital!",
+            "description": "Text under the title, cut to 80 characters."
+          },
+          "image": {
+            "type": "string",
+            "example": "https://storage.repliz.com/image.png",
+            "description": "Public URL of the card image."
+          },
+          "url": {
+            "type": "string",
+            "example": "https://repliz.com",
+            "description": "The link opened when the card itself is tapped."
+          },
+          "buttons": {
+            "description": "Up to 3 buttons on this card, `web_url` or `postback`.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Button" }
+          }
+        },
+        "required": ["title"]
+      },
+      "ObjectCarousel": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "description": "1 to 10 cards, swiped sideways. Each card needs a `title` and at least one of `subtitle`, `image`, or `buttons`.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CarouselElement" }
+          }
+        },
+        "required": ["elements"]
+      },
+      "QuickReplyButton": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Yes",
+            "description": "Label of the quick reply, up to 20 characters. It is also the text the person sends when tapping it."
+          },
+          "payload": {
+            "type": "string",
+            "example": "ANSWER_YES",
+            "maxLength": 1000,
+            "description": "Your own value, up to 1000 characters, sent back in `message.payload` of the `chat` webhook when tapped."
+          }
+        },
+        "required": ["title", "payload"]
+      },
+      "ObjectQuickReply": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Do you want the catalog?",
+            "description": "Message text shown above the quick replies."
+          },
+          "buttons": {
+            "description": "1 to 13 quick replies. They disappear once the person taps one or sends another message.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/QuickReplyButton" }
           }
         },
         "required": ["text", "buttons"]
@@ -10320,8 +10552,17 @@
           "type": {
             "type": "string",
             "example": "text",
-            "enum": ["text", "image", "video", "audio", "document", "button"],
-            "description": "Message type: `text`, `image`, `video`, `audio`, `document`, or `button`. It decides which of the other fields is read."
+            "enum": [
+              "text",
+              "image",
+              "video",
+              "audio",
+              "document",
+              "button",
+              "carousel",
+              "quick_reply"
+            ],
+            "description": "Message type: `text`, `image`, `video`, `audio`, `document`, `button`, `carousel`, or `quick_reply`. It decides which of the other fields is read. `button`, `carousel`, and `quick_reply` work on Facebook and Instagram only."
           },
           "text": {
             "type": "string",
@@ -10345,8 +10586,16 @@
             "allOf": [{ "$ref": "#/components/schemas/ObjectDocument" }]
           },
           "button": {
-            "description": "The text and its link buttons, required for `button`. The text goes in `button.text`, not in `text`.",
+            "description": "The text and its buttons, required for `button`. The text goes in `button.text`, not in `text`.",
             "allOf": [{ "$ref": "#/components/schemas/ObjectButton" }]
+          },
+          "carousel": {
+            "description": "The cards to send, required for `carousel`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectCarousel" }]
+          },
+          "quickReply": {
+            "description": "The text and its quick replies, required for `quick_reply`. The text goes in `quickReply.text`, not in `text`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectQuickReply" }]
           }
         },
         "required": ["type"]
@@ -10392,11 +10641,19 @@
           "text": {
             "type": "string",
             "example": "Hello there, this is comment from Repliz",
-            "description": "Text of the DM. Required unless you send `button`."
+            "description": "Text of the DM. Required unless you send `button`, `carousel`, or `quickReply`."
           },
           "button": {
-            "description": "A message with link buttons instead of plain text, with `text`, an optional `image`, and 1 to 3 `buttons`.",
+            "description": "A message with buttons instead of plain text, with `text`, an optional `image`, and 1 to 3 `buttons` (`web_url` or `postback`). Send only one of `button`, `carousel`, or `quickReply`.",
             "allOf": [{ "$ref": "#/components/schemas/ObjectButton" }]
+          },
+          "carousel": {
+            "description": "A carousel of 1 to 10 cards instead of plain text. Send only one of `button`, `carousel`, or `quickReply`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectCarousel" }]
+          },
+          "quickReply": {
+            "description": "A text with 1 to 13 quick replies instead of plain text. Send only one of `button`, `carousel`, or `quickReply`.",
+            "allOf": [{ "$ref": "#/components/schemas/ObjectQuickReply" }]
           }
         },
         "required": ["accountId", "commentId"]

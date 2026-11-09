@@ -2,23 +2,19 @@
 
 import { z } from "zod";
 import { registerTool, type ToolContext } from "./helpers.js";
+import { buttonObjectSchema, carouselObjectSchema, quickReplyObjectSchema } from "./message.js";
 
 const CHAT_STATUS = ["unread", "unreplied"] as const;
-const MESSAGE_TYPE = ["text", "image", "video", "audio", "document", "button"] as const;
-
-const buttonObjectSchema = z
-  .object({
-    text: z.string().describe("Body text shown above the button(s)."),
-    image: z.string().optional().describe("Optional image URL."),
-    buttons: z
-      .object({
-        type: z.literal("web_url").default("web_url"),
-        title: z.string().describe("Button label."),
-        url: z.string().describe("URL the button opens."),
-      })
-      .describe("The button definition."),
-  })
-  .describe("An interactive button message.");
+const MESSAGE_TYPE = [
+  "text",
+  "image",
+  "video",
+  "audio",
+  "document",
+  "button",
+  "carousel",
+  "quick_reply",
+] as const;
 
 export function registerChatTools(ctx: ToolContext): void {
   registerTool(
@@ -92,7 +88,10 @@ export function registerChatTools(ctx: ToolContext): void {
         "- video: provide `video` { url, duration, mimetype, thumbnail? }\n" +
         "- audio: provide `audio` { url, duration, mimetype }\n" +
         "- document: provide `document` { url, name, size, mimetype }\n" +
-        "- button: provide `button` { text, buttons:{ title, url }, image? }",
+        "- button: provide `button` { text, image?, buttons: [1-3 of { type: web_url, title, url } or { type: postback, title, payload }] }\n" +
+        "- carousel: provide `carousel` { elements: [1-10 of { title, subtitle?, image?, url?, buttons?: [0-3 buttons] }] }\n" +
+        "- quick_reply: provide `quickReply` { text, buttons: [1-13 of { title, payload }] }\n" +
+        "button, carousel and quick_reply work on Facebook and Instagram only. A tapped postback button reaches the user's webhook as a `postback` event and a tapped quick reply as a `chat` event, both with `message.payload`.",
       inputSchema: {
         chatId: z.string().describe("The chat id to send to."),
         type: z.enum(MESSAGE_TYPE).describe("The message type."),
@@ -128,6 +127,8 @@ export function registerChatTools(ctx: ToolContext): void {
           })
           .optional(),
         button: buttonObjectSchema.optional(),
+        carousel: carouselObjectSchema.optional(),
+        quickReply: quickReplyObjectSchema.optional(),
       },
     },
     async (args) => {
