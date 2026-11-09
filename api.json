@@ -2637,6 +2637,68 @@
         "tags": ["API Addon (Premium+)"]
       }
     },
+    "/public/addon/instagram/profile": {
+      "get": {
+        "description": "\nRetrieve the profile of an Instagram user who has messaged a connected Instagram account.\n\nThis endpoint is used to check whether the user follows the account before replying, for example to only send a link to followers. Use the senderId of a chat from Get Chat. Instagram only returns the profile of a user who has sent a message to the account; any other user fails with the error from Instagram.\n\nParameters:\n- accountId (string) — The unique identifier of the connected Instagram account\n- senderId (string) — The Instagram-scoped ID of the user\n\nResponse:\n- Returns the user's identifier, name, username, profile picture and number of followers\n- isFollower is true when the user follows the account\n- isFollowing is true when the account follows the user\n",
+        "operationId": "AddonController_getInstagramProfile",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "description": "ID of a connected Instagram account, the `_id` from Get Account.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "senderId",
+            "required": true,
+            "in": "query",
+            "description": "Instagram-scoped ID of the user, the `senderId` from Get Chat. Instagram only returns the profile of a user who has sent a message to the account.",
+            "schema": { "example": "6793729447315239", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6793729447315239",
+                  "name": "Repliz",
+                  "username": "repliz.official",
+                  "picture": "https://scontent.cdninstagram.com/v/t51.2885-19/123456789_n.jpg",
+                  "followerCount": 1200,
+                  "isFollower": true,
+                  "isFollowing": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 400, "message": "invalid account type" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Instagram Profile",
+        "tags": ["API Addon (Premium+)"]
+      }
+    },
     "/public/addon/link/metadata": {
       "get": {
         "description": "\nRetrieve metadata information from a given URL.\n\nThis endpoint is used to extract preview data from a link, such as title, description, thumbnail, and other relevant metadata.\nIt is typically used to generate link previews before sharing or posting content.\n\nParameters:\n- url (string) — The target URL to extract metadata from\n\nResponse:\n- Returns metadata object\n- Includes title, description, thumbnail, and additional link information\n",

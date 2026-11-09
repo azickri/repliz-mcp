@@ -1,4 +1,4 @@
-/** Add-on tools: TikTok trending music, Shopee products, WhatsApp and Telegram channels, Pinterest boards (list, create, update, delete), and link metadata. */
+/** Add-on tools: TikTok trending music, Shopee products, WhatsApp and Telegram channels, Pinterest boards (list, create, update, delete), Instagram profile, and link metadata. */
 
 import { z } from "zod";
 import { registerTool, withoutInlinePicture, type ToolContext } from "./helpers.js";
@@ -183,6 +183,29 @@ export function registerAddonTools(ctx: ToolContext): void {
     async (args) =>
       ctx.client.delete(`/public/addon/pinterest/board/${encodeURIComponent(args.boardId)}`, {
         accountId: args.accountId,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_get_instagram_profile",
+    {
+      title: "Get Instagram Profile",
+      effect: "read",
+      description:
+        "Get the profile of an Instagram user who has messaged a connected Instagram account: name, username, picture, follower count, `isFollower` (the user follows the account) and `isFollowing` (the account follows the user). Use it to check whether someone follows before replying. Pass the `senderId` of a chat from repliz_list_chats or repliz_get_chat. Instagram only returns users who have sent a message to the account; anyone else fails with Instagram's error.",
+      inputSchema: {
+        accountId: z.string().describe("The connected Instagram account id."),
+        senderId: z
+          .string()
+          .regex(/^\d+$/)
+          .describe("Instagram-scoped ID of the user, the `senderId` of a chat."),
+      },
+    },
+    async (args) =>
+      ctx.client.get("/public/addon/instagram/profile", {
+        accountId: args.accountId,
+        senderId: args.senderId,
       })
   );
 
