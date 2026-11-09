@@ -61,7 +61,8 @@ export function registerChatTools(ctx: ToolContext): void {
     {
       title: "List Chat Messages",
       effect: "read",
-      description: "List the messages within a conversation, paginated (newest first).",
+      description:
+        "List the messages within a conversation, paginated (newest first). A message that replies to another has `quoted`, a copy of the message it answers (only `messageId` when that message is older than Repliz keeps).",
       inputSchema: {
         chatId: z.string().describe("The chat id."),
         page: z.number().int().min(1).default(1).describe("Page number (1-based)."),
@@ -91,11 +92,18 @@ export function registerChatTools(ctx: ToolContext): void {
         "- button: provide `button` { text, image?, buttons: [1-3 of { type: web_url, title, url } or { type: postback, title, payload }] }\n" +
         "- carousel: provide `carousel` { elements: [1-10 of { title, subtitle?, image?, url?, buttons?: [0-3 buttons] }] }\n" +
         "- quick_reply: provide `quickReply` { text, buttons: [1-13 of { title, payload }] }\n" +
-        "button, carousel and quick_reply work on Facebook and Instagram only. A tapped postback button reaches the user's webhook as a `postback` event and a tapped quick reply as a `chat` event, both with `message.payload`.",
+        "button, carousel and quick_reply work on Facebook and Instagram only. A tapped postback button reaches the user's webhook as a `postback` event and a tapped quick reply as a `chat` event, both with `message.payload`.\n" +
+        "To answer one specific message, set `replyToMessageId` to its `messageId` (not `_id`) from repliz_list_messages; the platform shows it quoted. TikTok replies are text only.",
       inputSchema: {
         chatId: z.string().describe("The chat id to send to."),
         type: z.enum(MESSAGE_TYPE).describe("The message type."),
         text: z.string().optional().describe("Text content (for type 'text')."),
+        replyToMessageId: z
+          .string()
+          .optional()
+          .describe(
+            "messageId of a message in this chat to reply to. Returns 404 when it isn't in the chat."
+          ),
         image: z
           .object({
             url: z.string(),

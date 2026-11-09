@@ -4299,6 +4299,13 @@
                       "status": "unread",
                       "isFromMe": true,
                       "text": "Hello",
+                      "quoted": {
+                        "isFromMe": false,
+                        "type": "text",
+                        "messageId": "m_Nxw6A8mCd-4mNNkdhABNW6DllBn-ZQje_xFEJPRwKTy1oQ3eV_8gXHjUz-BMHBMo0_SEj701uyeU0bGZVPQByA",
+                        "senderId": "6793729447315239",
+                        "text": "This is Me"
+                      },
                       "accountId": "69686c4c41ec8ac5117c8929",
                       "userId": "6879b98097fc8c8a78d1d4c1",
                       "createdAt": "2026-03-27T07:43:00.416Z",
@@ -4367,6 +4374,14 @@
                   "value": {
                     "type": "text",
                     "text": "Hello there, this is from Repliz"
+                  }
+                },
+                "reply": {
+                  "summary": "Reply to a Message",
+                  "value": {
+                    "type": "text",
+                    "text": "Yes, it is still available",
+                    "replyToMessageId": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDA1NDQ3NTk5MTkwOjM0"
                   }
                 },
                 "image": {
@@ -4553,6 +4568,13 @@
                   "account": {
                     "summary": "Account",
                     "value": { "code": 404, "message": "account not found" }
+                  },
+                  "message": {
+                    "summary": "Message to Reply",
+                    "value": {
+                      "code": 404,
+                      "message": "message to reply not found"
+                    }
                   }
                 }
               }
@@ -10630,6 +10652,11 @@
             "type": "string",
             "example": "Hello",
             "description": "Message text, required for `text`. With `image`, `video`, or `document`, Telegram sends it as the caption."
+          },
+          "replyToMessageId": {
+            "type": "string",
+            "example": "aWdfZAG1faXRlbToxOklHTWVzc2FnZAUlEOjE3ODQxNDA1NDQ3NTk5MTkwOjM0",
+            "description": "Send this message as a reply to an earlier message in the same chat: its `messageId` from Get Message. The platform shows that message quoted above this one, and the response of Get Message has it in `quoted`. Works with every type on Facebook, Instagram, and Telegram; TikTok replies are `text` only. Not a reply when left out."
           },
           "image": {
             "description": "The image to send, required for `image`.",
