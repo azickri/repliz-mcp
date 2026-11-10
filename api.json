@@ -28,7 +28,7 @@
     },
     "/public/account": {
       "get": {
-        "description": "\nRetrieve a list of accounts associated with your workspace.\n\nThis endpoint returns all connected accounts including their platform, username, and current status.\n\nFilter with status to get only the connected or only the disconnected accounts.\n\nResponse:\n- Returns an array of account objects\n- Each account includes id, platform, username, and status\n",
+        "description": "\nRetrieve a list of accounts associated with your workspace.\n\nThis endpoint returns all connected accounts including their platform, username, and current status.\n\nFilter with status to get only the connected or only the disconnected accounts, and with tags[] to get the accounts of one brand.\n\nResponse:\n- Returns an array of account objects\n- Each account includes id, platform, username, and status\n",
         "operationId": "AccountController_getAccount",
         "parameters": [
           {
@@ -93,6 +93,17 @@
               "type": "string",
               "enum": ["connected", "disconnected"]
             }
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "in": "query",
+            "description": "Only return accounts with at least one of these tags, case-insensitive. Send each one as `tags[]=Brand%20A`.",
+            "schema": {
+              "example": ["Brand A"],
+              "type": "array",
+              "items": { "type": "string" }
+            }
           }
         ],
         "responses": {
@@ -110,6 +121,7 @@
                       "picture": "https://p16-sign-sg.tiktokcdn.com/tos-alisg-avt-0068/e77d82e1747fb47fdda2395827153a19~tplv-tiktokx-cropcenter:168:168.jpeg?dr=14577&refresh_token=ada7df22&x-expires=1771236000&x-signature=w%2F1c2jMikhIrAuSAgVggmiXfRQs%3D&t=4d5b0474&ps=13740610&shp=a5d48078&shcp=8aecc5ac&idc=maliva",
                       "isConnected": true,
                       "type": "tiktok",
+                      "tags": ["Brand A"],
                       "userId": "6879b98097fc8c8a78d1d4c1",
                       "createdAt": "2026-02-02T02:30:45.329Z",
                       "updatedAt": "2026-03-20T07:00:01.664Z",
@@ -181,6 +193,98 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Count Account",
+        "tags": ["API Account (Standard+)"]
+      }
+    },
+    "/public/account/tag": {
+      "get": {
+        "description": "\nList the tags of your accounts, each with how many accounts have it in total and per platform.\n\nUse a tag to group the accounts of one brand or client, then filter Get Account with tags[] to list them.\n\nResponse:\n- Returns an array sorted by tag name\n- Each item has tag, total, and the count per platform\n- With an operator API key, only the accounts assigned to the operator are counted\n",
+        "operationId": "AccountController_getTagAccount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "tag": "Brand A",
+                    "total": 3,
+                    "facebook": 1,
+                    "youtube": 0,
+                    "instagram": 1,
+                    "threads": 0,
+                    "tiktok": 1,
+                    "linkedin": 0,
+                    "shopee": 0,
+                    "twitter": 0,
+                    "whatsapp": 0,
+                    "telegram": 0,
+                    "pinterest": 0
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Tag Account",
+        "tags": ["API Account (Standard+)"]
+      },
+      "put": {
+        "description": "\nRename a tag on every account that has it.\n\nWhen another tag already has the new name, the two are merged into one.\nWith an operator API key, only the accounts assigned to the operator change.\n\nResponse:\n- No content is returned on success (204 No Content)\n- 404 when no account has the tag\n",
+        "operationId": "AccountController_renameTagAccount",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyRenameTagAccountDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "tag not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Rename Tag Account",
+        "tags": ["API Account (Standard+)"]
+      },
+      "delete": {
+        "description": "\nRemove a tag from every account that has it. The accounts themselves stay.\n\nWith an operator API key, only the accounts assigned to the operator change.\n\nResponse:\n- No content is returned on success (204 No Content)\n- 404 when no account has the tag\n",
+        "operationId": "AccountController_removeTagAccount",
+        "parameters": [
+          {
+            "name": "tag",
+            "required": true,
+            "in": "query",
+            "description": "The tag to remove from every account that has it, case-insensitive.",
+            "schema": { "example": "Brand A", "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "tag not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Remove Tag Account",
         "tags": ["API Account (Standard+)"]
       }
     },
@@ -897,6 +1001,48 @@
         },
         "security": [{ "basic": [] }],
         "summary": "API Get Statistic Account",
+        "tags": ["API Account (Standard+)"]
+      }
+    },
+    "/public/account/{accountId}/tag": {
+      "put": {
+        "description": "\nReplace every tag of one account.\n\nSend all the tags the account should have, at most 10 of up to 30 characters, or an empty array to remove them all.\nTags are case-insensitive: duplicates are kept once, and a tag that another account already has takes its spelling.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AccountController_updateTagAccount",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyUpdateTagAccountDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Update Tag Account",
         "tags": ["API Account (Standard+)"]
       }
     },
@@ -9917,6 +10063,34 @@
           }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
+      },
+      "BodyUpdateTagAccountDTO": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "example": ["Brand A", "Jakarta"],
+            "description": "Every tag of the account, at most 10 of up to 30 characters. Replaces the current tags; send `[]` to remove them all. Duplicates that differ only in case are kept once, and a tag another account already has takes its spelling.",
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["tags"]
+      },
+      "BodyRenameTagAccountDTO": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "example": "Brand A",
+            "description": "The tag to rename, case-insensitive."
+          },
+          "name": {
+            "type": "string",
+            "example": "Brand Alpha",
+            "description": "The new name, up to 30 characters. When another tag already has this name, the two are merged."
+          }
+        },
+        "required": ["tag", "name"]
       },
       "BodyReplyCommentDTO": {
         "type": "object",

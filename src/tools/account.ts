@@ -25,7 +25,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "List Accounts",
       effect: "read",
       description:
-        "List the social accounts connected to your Repliz workspace. Returns each account's id, platform, username, picture, and status. Supports pagination and filtering by platform type, search term, or connection status.",
+        "List the social accounts connected to your Repliz workspace. Returns each account's id, platform, username, picture, status, and tags. Supports pagination and filtering by platform type, search term, connection status, or tag (e.g. the accounts of one brand).",
       inputSchema: {
         page: z.number().int().min(1).default(1).describe("Page number (1-based)."),
         limit: z.number().int().min(1).max(100).default(20).describe("Items per page."),
@@ -40,6 +40,12 @@ export function registerAccountTools(ctx: ToolContext): void {
           .describe(
             "Only connected accounts, or only disconnected ones that have to be reconnected first. Every account when omitted."
           ),
+        tags: z
+          .array(z.string().max(30))
+          .optional()
+          .describe(
+            "Only accounts with at least one of these tags, case-insensitive. Tag names come from repliz_list_account_tags."
+          ),
       },
     },
     async (args) =>
@@ -49,6 +55,7 @@ export function registerAccountTools(ctx: ToolContext): void {
         types: args.types,
         search: args.search,
         status: args.status,
+        tags: args.tags,
       })
   );
 
@@ -128,6 +135,72 @@ export function registerAccountTools(ctx: ToolContext): void {
         story: args.story,
         storyMention: args.storyMention,
       })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_list_account_tags",
+    {
+      title: "List Account Tags",
+      effect: "read",
+      description:
+        "List the tags used to group accounts (for example per brand or client), sorted by name. Each item has `tag`, `total` (accounts with the tag), and the count per platform. With an operator's API key, only the accounts assigned to that operator are counted.",
+      inputSchema: {},
+    },
+    async () => ctx.client.get("/public/account/tag")
+  );
+
+  registerTool(
+    ctx,
+    "repliz_update_account_tags",
+    {
+      title: "Update Account Tags",
+      effect: "destructive",
+      description:
+        "Replace every tag of one account. Send the full list: tags left out are removed, and [] removes them all. At most 10 tags of up to 30 characters; tags are case-insensitive, and a tag another account already has takes that spelling.",
+      inputSchema: {
+        accountId: z.string().describe("The Repliz account id."),
+        tags: z
+          .array(z.string().max(30))
+          .max(10)
+          .describe("Every tag the account should have, e.g. [\"Brand A\"]."),
+      },
+    },
+    async (args) =>
+      ctx.client.put(`/public/account/${encodeURIComponent(args.accountId)}/tag`, {
+        tags: args.tags,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_rename_account_tag",
+    {
+      title: "Rename Account Tag",
+      effect: "destructive",
+      description:
+        "Rename a tag on every account that has it, e.g. when a brand changes its name. If another tag already has the new name, the two are merged. Fails with 404 when no account has the tag.",
+      inputSchema: {
+        tag: z.string().max(30).describe("The tag to rename, case-insensitive."),
+        name: z.string().max(30).describe("The new name, up to 30 characters."),
+      },
+    },
+    async (args) => ctx.client.put("/public/account/tag", { tag: args.tag, name: args.name })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_delete_account_tag",
+    {
+      title: "Delete Account Tag",
+      effect: "destructive",
+      description:
+        "Remove a tag from every account that has it. The accounts stay connected; only the tag goes. Fails with 404 when no account has the tag.",
+      inputSchema: {
+        tag: z.string().max(30).describe("The tag to remove, case-insensitive."),
+      },
+    },
+    async (args) => ctx.client.delete("/public/account/tag", { tag: args.tag })
   );
 
   registerTool(

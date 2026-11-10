@@ -1,7 +1,7 @@
 # Repliz MCP Server
 
 A hosted [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Repliz Public API**. It gives an AI assistant 119 tools for managing a Repliz
+**Repliz Public API**. It gives an AI assistant 123 tools for managing a Repliz
 workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads, managing
 automations and templates, and more.
@@ -232,7 +232,7 @@ thing to plan for. Measured:
 | 1000          | ~356 MB     |
 
 That is roughly **0.26 MB per live session** on top of a ~96 MB baseline. The
-119 tool schemas are built once and shared by every session; only the MCP
+123 tool schemas are built once and shared by every session; only the MCP
 server object, the transport and the Repliz client — which holds that user's
 credentials — are per session. The default cap of 300 fits easily on a 1 GB
 VPS. Sessions are only live while a client is connected and idle ones are
@@ -315,11 +315,11 @@ to the presigned URL themselves and then call `repliz_complete_file`.
 
 ## Tools
 
-119 tools across the Repliz Public API:
+123 tools across the Repliz Public API:
 
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
-| **Accounts**        | 6     | list, count, get, statistics, update automation, delete                                     |
+| **Accounts**        | 10    | list, count, get, statistics, update automation, list tags, update tags, rename tag, delete tag, delete |
 | **Account Connect** | 42    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X, Pinterest; QR session / connect / reconnect for WhatsApp; QR session / two-step password / connect / reconnect for Telegram |
 | **Comments**        | 5     | list, get, reply, update status, delete                                                     |
 | **Contacts**        | 10    | list, count, list tags, get, get by comment, get by chat, update, set follow-up, remove follow-up, delete |
