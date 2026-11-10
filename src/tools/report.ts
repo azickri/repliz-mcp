@@ -15,7 +15,12 @@ export function registerReportTools(ctx: ToolContext): void {
       inputSchema: {
         page: z.number().int().min(1).default(1).describe("Page number (1-based)."),
         limit: z.number().int().min(1).max(100).default(20).describe("Items per page."),
-        type: z.string().optional().describe("Report type filter."),
+        type: z
+          .string()
+          .optional()
+          .describe(
+            "Automation module filter: delete, reply, like, message, chat, story, or mention (a DM to an Instagram story mention)."
+          ),
         status: z.string().optional().describe("Report status filter."),
         accountIds: z
           .array(z.string())

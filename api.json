@@ -5939,11 +5939,19 @@
             "name": "type",
             "required": false,
             "in": "query",
-            "description": "The automation module that ran: `delete`, `reply`, `like`, `message`, `chat`, or `story`. Every type when left out.",
+            "description": "The automation module that ran: `delete`, `reply`, `like`, `message`, `chat`, `story`, or `mention` (Instagram Story mention). Every type when left out.",
             "schema": {
               "example": "delete",
               "type": "string",
-              "enum": ["delete", "reply", "like", "message", "chat", "story"]
+              "enum": [
+                "delete",
+                "reply",
+                "like",
+                "message",
+                "chat",
+                "story",
+                "mention"
+              ]
             }
           },
           {
@@ -9837,6 +9845,41 @@
           "delay"
         ]
       },
+      "ConfigAutomationStoryMention": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the other fields are saved but not used. Runs on Instagram only."
+          },
+          "type": {
+            "type": "string",
+            "example": "text",
+            "enum": ["ai", "text", "opening"],
+            "description": "What is sent: `text` sends `text`, `ai` lets the AI write it from `prompt`, `opening` sends the button flow in `opening`. A mention has no text, so there is no `keyword` type."
+          },
+          "text": {
+            "type": "string",
+            "example": "Thank you for mentioning us, {name}!",
+            "description": "The DM for `text`. Supports `{name}` and spintax. Send `\"\"` for the other types."
+          },
+          "prompt": {
+            "type": "string",
+            "example": "Thank them warmly for the mention and offer a 10% code: MENTION10.",
+            "description": "Instructions for `ai`. The AI only knows the name of the person who mentioned the account. Send `\"\"` for the other types."
+          },
+          "opening": {
+            "description": "The button flow for `opening`, with the same fields as in the Message module. Send it for every `type`.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpening" }]
+          },
+          "delay": {
+            "description": "Waits before sending.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          }
+        },
+        "required": ["isActive", "type", "text", "prompt", "opening", "delay"]
+      },
       "BodyUpdateAutomationAccountDTO": {
         "type": "object",
         "properties": {
@@ -9865,6 +9908,12 @@
           "story": {
             "description": "Sends a DM to the people who reply to an Instagram Story.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationStory" }]
+          },
+          "storyMention": {
+            "description": "Sends a DM to the people who mention the account in their Instagram Story. When left out, the saved setting is kept.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationStoryMention" }
+            ]
           }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
@@ -10833,6 +10882,12 @@
           "story": {
             "description": "Sends a DM to the people who reply to an Instagram Story.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationStory" }]
+          },
+          "storyMention": {
+            "description": "Sends a DM to the people who mention the account in their Instagram Story. When left out, the saved setting is kept.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationStoryMention" }
+            ]
           }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
@@ -10846,7 +10901,7 @@
             "description": "Name shown in the template list, for example `Giveaway replies`. Search in Get Template matches it."
           },
           "config": {
-            "description": "The automation modules saved in the template: `delete`, `reply`, `like`, `message`, `chat`, and `story`. Send every module, with `isActive: false` for the ones you do not use.",
+            "description": "The automation modules saved in the template: `delete`, `reply`, `like`, `message`, `chat`, `story`, and `storyMention`. Send every module, with `isActive: false` for the ones you do not use. `storyMention` is optional; when left out on update, the saved setting is kept.",
             "allOf": [
               { "$ref": "#/components/schemas/ConfigAutomationTemplate" }
             ]

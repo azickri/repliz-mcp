@@ -101,7 +101,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "Update Account Automation",
       effect: "destructive",
       description:
-        `Update the default automation configurations (delete, reply, like, message, chat, story) for a connected account. ${KEYWORD_OPENING_NOTE}`,
+        `Update the default automation configurations (delete, reply, like, message, chat, story, storyMention) for a connected account. ${KEYWORD_OPENING_NOTE}`,
       inputSchema: {
         accountId: z.string().describe("The Repliz account id."),
         delete: z.record(z.unknown()).describe("Delete automation configuration object."),
@@ -110,6 +110,12 @@ export function registerAccountTools(ctx: ToolContext): void {
         message: z.record(z.unknown()).describe("Message automation configuration object."),
         chat: z.record(z.unknown()).describe("Chat automation configuration object."),
         story: z.record(z.unknown()).describe("Story automation configuration object."),
+        storyMention: z
+          .record(z.unknown())
+          .optional()
+          .describe(
+            "Instagram only: DM people who mention the account in their own story. Same shape as story without keyword and condition: { isActive, type: 'text' | 'ai' | 'opening', text, prompt, opening, delay }. The AI only knows the person's name. Left out, the saved setting is kept."
+          ),
       },
     },
     async (args) =>
@@ -120,6 +126,7 @@ export function registerAccountTools(ctx: ToolContext): void {
         message: args.message,
         chat: args.chat,
         story: args.story,
+        storyMention: args.storyMention,
       })
   );
 
