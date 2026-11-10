@@ -7464,7 +7464,7 @@
             "name": "redirect",
             "required": true,
             "in": "query",
-            "description": "The full URL of your page that Facebook sends the user back to after they approve, for example `https://app.example.com/oauth/facebook`. The access token is added to its URL fragment (`#access_token=...`). URL-encode it in the query string.",
+            "description": "The full URL of your page that the user is sent back to after they approve on Facebook, for example `https://app.example.com/oauth/facebook`. The `code` is added to it as a query parameter. URL-encode it in the query string.",
             "schema": { "example": "https://repliz.com", "type": "string" }
           }
         ],
@@ -11089,7 +11089,7 @@
           "code": {
             "type": "string",
             "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
-            "description": "The `access_token` value from the URL fragment of the Facebook redirect (`#access_token=...`)."
+            "description": "The `code` query parameter from the URL the user was sent back to after approving on Facebook. Send it as it is."
           }
         },
         "required": ["code"]
@@ -11203,7 +11203,7 @@
           "code": {
             "type": "string",
             "example": "2ce01100f5a4d84fa5c8767060055c1b59a7d617ad1ef343fbded36317e15971d6d749ff333c9fc4f961e421b9559d7531ff3cd62d2c3f27163405aabfdf263b",
-            "description": "The `code` and `shop_id` from the Shopee redirect, joined with an underscore: `{code}_{shop_id}`. On reconnect the user has to sign in with the same shop, or the call returns `400`."
+            "description": "The `code` query parameter from the URL the user was sent back to after approving on Shopee. It already holds the shop ID, so send it as it is. On reconnect the user has to sign in with the same shop, or the call returns `400`."
           }
         },
         "required": ["code"]
