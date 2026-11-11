@@ -7126,6 +7126,248 @@
         "tags": ["API Automation (Gold+)"]
       }
     },
+    "/public/listener": {
+      "get": {
+        "description": "\nRetrieve the comment syncs, newest first.\n\nEach item has the post (`content`), `status` (`active` or `paused`), `cursor.isSwept` (`false` while reading old comments), `cursor.scanned`, `totalSynced`, `syncedAt`, `nextAt`, `errorMessage`, and `heldUntil` with `heldReason` when it waits for a limit.\n",
+        "operationId": "ListenerController_getListener",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "description": "Page to return, starting from `1`. Comment syncs are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "description": "Items per page, for example `20`. The response says how many pages there are in `totalPages`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "accountIds",
+            "required": false,
+            "in": "query",
+            "description": "Only return items of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`. All accounts when left out.",
+            "schema": {
+              "example": ["680affa5ce12f2f72916f67e"],
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Matches the title, caption, or URL of the post, case-insensitive.",
+            "schema": { "example": "Wahuyy", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "_id": "6913a5c2e4b0a1f2c3d4e5f6",
+                      "platform": "instagram",
+                      "contentId": "18082157540400777",
+                      "status": "active",
+                      "content": {
+                        "id": "18082157540400777",
+                        "title": "",
+                        "description": "Episode 13",
+                        "topic": "",
+                        "type": "video",
+                        "owner": {
+                          "id": "17841400537754814",
+                          "name": "Misbahul Munir",
+                          "picture": ""
+                        },
+                        "medias": [],
+                        "url": "https://instagram.com/p/DfmMobMz8kB",
+                        "createdAt": "2026-11-11T08:00:00.000Z"
+                      },
+                      "cursor": { "scanned": 340, "isSwept": false },
+                      "interval": 5,
+                      "nextAt": "2026-11-11T14:05:00.000Z",
+                      "syncedAt": "2026-11-11T14:00:00.000Z",
+                      "totalSynced": 48,
+                      "errorMessage": "",
+                      "heldUntil": null,
+                      "heldReason": "",
+                      "accountId": "680affa5ce12f2f72916f67e",
+                      "account": {
+                        "_id": "680affa5ce12f2f72916f67e",
+                        "name": "Misbahul Munir",
+                        "username": "munir416",
+                        "type": "instagram"
+                      },
+                      "userId": "680aff8bce12f2f72916f67a",
+                      "createdAt": "2026-11-11T14:00:00.000Z",
+                      "updatedAt": "2026-11-11T14:00:00.000Z"
+                    }
+                  ],
+                  "totalDocs": 1,
+                  "limit": 20,
+                  "totalPages": 1,
+                  "page": 1,
+                  "pagingCounter": 1,
+                  "hasPrevPage": false,
+                  "hasNextPage": false,
+                  "prevPage": null,
+                  "nextPage": null
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Get Comment Sync",
+        "tags": ["API Comment Sync (Gold+)"]
+      },
+      "post": {
+        "description": "\nRun the automation on a post's old comments, including the ones from before the account was connected, and on comments the platform never sent.\n\nRepliz reads all old comments first, then keeps checking for missed ones until the sync is removed. Pending inbox comments the automation never ran on are included. Top-level comments only, at least 5 minutes old. Not replied yet: `pending` with automation. Already replied: `resolved` without automation. The automation is paced per platform and waits by itself at a limit (`heldUntil`).\n\nInstagram, Facebook, Threads, TikTok, YouTube, and LinkedIn. One sync per post (409), limited per plan (403).\n\nResponse:\n- Returns the `listenerId`\n",
+        "operationId": "ListenerController_createListener",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyCreateListenerDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "listenerId": "6913a5c2e4b0a1f2c3d4e5f6" }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "comment sync is not available for this platform"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 403,
+                  "message": "comment sync limit reached for your plan"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 409,
+                  "message": "content already has a comment sync (6913a5c2e4b0a1f2c3d4e5f6)"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Create Comment Sync",
+        "tags": ["API Comment Sync (Gold+)"]
+      }
+    },
+    "/public/listener/{listenerId}/status": {
+      "put": {
+        "description": "\nPause or resume a comment sync. A paused sync keeps its progress.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "ListenerController_updateStatusListener",
+        "parameters": [
+          {
+            "name": "listenerId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the comment sync, the `_id` from Get Comment Sync.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyUpdateStatusListenerDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "comment sync not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Update Status Comment Sync",
+        "tags": ["API Comment Sync (Gold+)"]
+      }
+    },
+    "/public/listener/{listenerId}": {
+      "delete": {
+        "description": "\nRemove a comment sync. Synced comments stay in the inbox.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "ListenerController_removeListener",
+        "parameters": [
+          {
+            "name": "listenerId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the comment sync, the `_id` from Get Comment Sync.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "comment sync not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Remove Comment Sync",
+        "tags": ["API Comment Sync (Gold+)"]
+      }
+    },
     "/public/template": {
       "get": {
         "description": "\nRetrieve a list of automation templates.\n\nThis endpoint is used to fetch available templates that can be used to configure content automations.\nIt is useful for browsing and selecting templates before creating or configuring an automation.\n\nResponse:\n- Returns an array of automation template objects\n- Each template includes its basic information and automation configuration\n",
@@ -11512,6 +11754,34 @@
           }
         },
         "required": ["filename", "size", "mimetype"]
+      },
+      "BodyCreateListenerDTO": {
+        "type": "object",
+        "properties": {
+          "contentId": {
+            "type": "string",
+            "example": "18082157540400777",
+            "description": "ID of the post on the platform, the `id` from Get Content. The automation runs on its old and missed top-level comments. A post has one comment sync, a second one fails with `409`."
+          },
+          "accountId": {
+            "type": "string",
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the account that published the post, the `_id` from Get Account. Instagram, Facebook, Threads, TikTok, YouTube, or LinkedIn."
+          }
+        },
+        "required": ["contentId", "accountId"]
+      },
+      "BodyUpdateStatusListenerDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"],
+            "example": "paused",
+            "description": "`paused` stops it and keeps its progress, `active` resumes it."
+          }
+        },
+        "required": ["status"]
       }
     }
   }

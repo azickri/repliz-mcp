@@ -12,6 +12,7 @@ import { registerAddonTools } from './addon.js';
 import { registerStorageTools } from './storage.js';
 import { registerReportTools } from './report.js';
 import { registerAutomationTools } from './automation.js';
+import { registerCommentSyncTools } from './comment_sync.js';
 import { registerTemplateTools } from './template.js';
 import { registerAccountConnectTools } from './account_connect.js';
 
@@ -27,6 +28,7 @@ export function registerAllTools(ctx: ToolContext): void {
   registerStorageTools(ctx);
   registerReportTools(ctx);
   registerAutomationTools(ctx);
+  registerCommentSyncTools(ctx);
   registerTemplateTools(ctx);
   registerAccountConnectTools(ctx);
 }
