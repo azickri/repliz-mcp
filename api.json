@@ -3409,6 +3409,48 @@
                     "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
+                "document": {
+                  "summary": "Post Document (LinkedIn)",
+                  "value": {
+                    "title": "Company Profile 2026",
+                    "description": "Our company profile for 2026, swipe through to see what's new.",
+                    "topic": "",
+                    "type": "document",
+                    "medias": [
+                      {
+                        "alt": "",
+                        "customThumbnail": false,
+                        "type": "document",
+                        "thumbnail": "",
+                        "url": "https://storage.repliz.com/company-profile.pdf"
+                      }
+                    ],
+                    "meta": { "title": "", "description": "", "url": "" },
+                    "additionalInfo": {
+                      "isAiGenerated": false,
+                      "isDraft": false,
+                      "isAutoAddMusic": false,
+                      "isShareToFeed": false,
+                      "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
+                      "collaborators": [],
+                      "music": {
+                        "id": "",
+                        "artist": "",
+                        "name": "",
+                        "thumbnail": "",
+                        "volume": { "video": 50, "music": 100 }
+                      },
+                      "products": [],
+                      "tags": [],
+                      "mentions": [],
+                      "targetCountries": []
+                    },
+                    "replies": [],
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
+                  }
+                },
                 "nested": {
                   "summary": "Post Nested",
                   "value": {
@@ -10260,8 +10302,8 @@
           "type": {
             "type": "string",
             "example": "image",
-            "enum": ["image", "video"],
-            "description": "`image` or `video`."
+            "enum": ["image", "video", "document"],
+            "description": "`image`, `video`, or `document` (a PDF, LinkedIn `document` only)."
           },
           "thumbnail": {
             "type": "string",
@@ -10589,7 +10631,7 @@
           "title": {
             "type": "string",
             "example": "Title of Content",
-            "description": "Title of the post. Read by YouTube (video title, which YouTube needs), Facebook `video`, TikTok `image` and `album` (up to 90 characters), and Pinterest (pin title, cut to 100 characters). Other platforms ignore it, so send `\"\"`."
+            "description": "Title of the post. Read by YouTube (video title, which YouTube needs), Facebook `video`, TikTok `image` and `album` (up to 90 characters), Pinterest (pin title, cut to 100 characters), and LinkedIn `document` (the document title shown on the post, required). Other platforms ignore it, so send `\"\"`."
           },
           "description": {
             "type": "string",
@@ -10611,12 +10653,13 @@
               "reel",
               "album",
               "link",
-              "story"
+              "story",
+              "document"
             ],
-            "description": "The kind of post: `text`, `image`, `video`, `reel`, `album`, `link`, or `story`. It decides which `medias` are needed."
+            "description": "The kind of post: `text`, `image`, `video`, `reel`, `album`, `link`, `story`, or `document`. It decides which `medias` are needed. `document` is LinkedIn only."
           },
           "medias": {
-            "description": "The images and videos of the post. `text` needs none, so send `[]`. `image` and `link` need 1 image, `video` and `reel` 1 video, `album` 2 or more, and `story` 1 image or video.",
+            "description": "The images, videos, or document of the post. `text` needs none, so send `[]`. `image` and `link` need 1 image, `video` and `reel` 1 video, `album` 2 or more, `story` 1 image or video, and `document` 1 PDF with `type` `document`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleMedia" }
           },
@@ -10658,7 +10701,7 @@
           "title": {
             "type": "string",
             "example": "Title of Content",
-            "description": "Title of the post. Read by YouTube (video title, which YouTube needs), Facebook `video`, TikTok `image` and `album` (up to 90 characters), and Pinterest (pin title, cut to 100 characters). Other platforms ignore it, so send `\"\"`."
+            "description": "Title of the post. Read by YouTube (video title, which YouTube needs), Facebook `video`, TikTok `image` and `album` (up to 90 characters), Pinterest (pin title, cut to 100 characters), and LinkedIn `document` (the document title shown on the post, required). Other platforms ignore it, so send `\"\"`."
           },
           "description": {
             "type": "string",
@@ -10680,12 +10723,13 @@
               "reel",
               "album",
               "link",
-              "story"
+              "story",
+              "document"
             ],
-            "description": "The kind of post: `text`, `image`, `video`, `reel`, `album`, `link`, or `story`. It decides which `medias` are needed."
+            "description": "The kind of post: `text`, `image`, `video`, `reel`, `album`, `link`, `story`, or `document`. It decides which `medias` are needed. `document` is LinkedIn only."
           },
           "medias": {
-            "description": "The images and videos of the post. `text` needs none, so send `[]`. `image` and `link` need 1 image, `video` and `reel` 1 video, `album` 2 or more, and `story` 1 image or video.",
+            "description": "The images, videos, or document of the post. `text` needs none, so send `[]`. `image` and `link` need 1 image, `video` and `reel` 1 video, `album` 2 or more, `story` 1 image or video, and `document` 1 PDF with `type` `document`.",
             "type": "array",
             "items": { "$ref": "#/components/schemas/ScheduleMedia" }
           },

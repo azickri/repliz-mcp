@@ -11,12 +11,24 @@ const POST_TYPE = [
   'album',
   'link',
   'story',
+  'document',
+] as const;
+const REPLY_TYPE = [
+  'text',
+  'image',
+  'video',
+  'reel',
+  'album',
+  'link',
+  'story',
 ] as const;
 const SCHEDULE_STATUS = ['pending', 'process', 'error', 'success'] as const;
 
 const mediaSchema = z
   .object({
-    type: z.enum(['image', 'video']).describe('Media type.'),
+    type: z
+      .enum(['image', 'video', 'document'])
+      .describe('Media type: image, video, or document (a PDF, for a LinkedIn document post).'),
     url: z.string().describe('Public URL of the media file.'),
     thumbnail: z
       .string()
@@ -162,7 +174,7 @@ const replySchema = z.object({
   title: z.string().default(''),
   description: z.string().default(''),
   topic: z.string().default(''),
-  type: z.enum(POST_TYPE),
+  type: z.enum(REPLY_TYPE),
   medias: z.array(mediaSchema).default([]),
   textAttachment: textAttachmentSchema
     .optional()
@@ -329,7 +341,8 @@ export function registerScheduleTools(ctx: ToolContext): void {
         '- reel: Facebook\n' +
         '- album: Facebook, Instagram, Threads, TikTok, LinkedIn, Pinterest (carousel of 2-5 images)\n' +
         '- link: Facebook (provide `meta` for the link preview)\n' +
-        '- story: Facebook, Instagram\n\n' +
+        '- story: Facebook, Instagram\n' +
+        '- document: LinkedIn (one PDF in `medias` with type document, up to 100 MB and 300 pages; `title` is required and shown on the document)\n\n' +
         'For media posts, attach `medias`. For threaded/multi-part posts, attach `replies`. ' +
         "A WhatsApp post goes to the account's Status, and a Telegram post to its story, unless `additionalInfo.channel` names a channel or group from repliz_whatsapp_channels or repliz_telegram_channels; create one schedule per target. " +
         'A Pinterest pin must name a board from repliz_pinterest_boards in `additionalInfo.channel` (one schedule per board); `title` (max 100) is the pin title, `description` max 800, `additionalInfo.link` the destination URL and medias[0].alt the alt text. ' +
@@ -349,12 +362,14 @@ export function registerScheduleTools(ctx: ToolContext): void {
         title: z
           .string()
           .optional()
-          .describe('Post title (used by some platforms, e.g. YouTube and Pinterest).'),
+          .describe(
+            'Post title (used by some platforms, e.g. YouTube, Pinterest, and a LinkedIn document, where it is required).',
+          ),
         topic: z.string().optional().describe('Optional internal topic/label.'),
         medias: z
           .array(mediaSchema)
           .optional()
-          .describe('Media items for image/video/reel/album/story/link posts.'),
+          .describe('Media items for image/video/reel/album/story/link/document posts.'),
         meta: metaSchema
           .optional()
           .describe("Link preview metadata (for 'link' posts)."),
