@@ -4764,6 +4764,66 @@
         "tags": ["API Chat (Gold+)"]
       }
     },
+    "/public/chat/{chatId}/action": {
+      "post": {
+        "description": "\nShow or hide the typing indicator, or mark the messages of a chat as seen.\n\nThis endpoint sends a sender action to the platform of the chat, so the person sees that you are typing, or sees their messages as seen.\n`mark_seen` also clears the unread count of the chat in Repliz.\n\nParameters:\n- chatId (string) — The unique identifier of the chat\n- action (string) — `typing_on`, `typing_off`, or `mark_seen`\n\nPlatforms:\n- Facebook and Instagram: all three actions. The typing indicator goes away after about 20 seconds or when you send a message.\n- TikTok: `typing_on` (shown for 5 seconds) and `mark_seen`\n- Telegram: all three actions. The typing indicator shows for 5 seconds.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "ChatController_senderAction",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodySenderActionDTO" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "typing_off is not supported on tiktok"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "chat": {
+                    "summary": "Chat",
+                    "value": { "code": 404, "message": "chat not found" }
+                  },
+                  "account": {
+                    "summary": "Account",
+                    "value": { "code": 404, "message": "account not found" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }],
+        "summary": "API Sender Action",
+        "tags": ["API Chat (Gold+)"]
+      }
+    },
     "/public/content": {
       "get": {
         "description": "\nRetrieve a list of content directly from connected platforms such as YouTube, Instagram, Facebook, TikTok, Threads and LinkedIn.\n\nThis endpoint is used to fetch available content (e.g. posts, videos, media) along with basic information such as title, caption, and publish date.\nIt is typically used for displaying content lists or selecting content for further operations.\n\nResponse:\n- Returns an array of content objects\n- Each content includes id, platform, title/caption, and publish timestamp\n",
@@ -10911,6 +10971,18 @@
           }
         },
         "required": ["type"]
+      },
+      "BodySenderActionDTO": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "example": "typing_on",
+            "enum": ["typing_on", "typing_off", "mark_seen"],
+            "description": "`typing_on` shows the typing indicator, `typing_off` hides it, and `mark_seen` marks the messages of the person as seen and clears the unread count. `typing_off` is not available on TikTok."
+          }
+        },
+        "required": ["action"]
       },
       "BodyCreateCommentDTO": {
         "type": "object",

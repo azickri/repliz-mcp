@@ -5,6 +5,7 @@ import { registerTool, type ToolContext } from "./helpers.js";
 import { buttonObjectSchema, carouselObjectSchema, quickReplyObjectSchema } from "./message.js";
 
 const CHAT_STATUS = ["unread", "unreplied"] as const;
+const SENDER_ACTION = ["typing_on", "typing_off", "mark_seen"] as const;
 const MESSAGE_TYPE = [
   "text",
   "image",
@@ -155,5 +156,22 @@ export function registerChatTools(ctx: ToolContext): void {
       inputSchema: { chatId: z.string().describe("The chat id to mark read.") },
     },
     async (args) => ctx.client.post(`/public/chat/${encodeURIComponent(args.chatId)}/read`)
+  );
+
+  registerTool(
+    ctx,
+    "repliz_send_chat_action",
+    {
+      title: "Send Chat Action",
+      effect: "additive",
+      description:
+        "Send a sender action to a conversation on Facebook, Instagram, TikTok, or Telegram. typing_on shows the person a typing indicator (about 20 seconds on Facebook/Instagram, 5 seconds on TikTok/Telegram, or until a message is sent), typing_off hides it (not on TikTok), and mark_seen shows the person their messages as seen and clears the chat's unread count in Repliz. Use repliz_read_chat instead to clear the unread count without the person seeing it.",
+      inputSchema: {
+        chatId: z.string().describe("The chat id."),
+        action: z.enum(SENDER_ACTION).describe("typing_on, typing_off, or mark_seen."),
+      },
+    },
+    async (args) =>
+      ctx.client.post(`/public/chat/${encodeURIComponent(args.chatId)}/action`, { action: args.action })
   );
 }

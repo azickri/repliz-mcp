@@ -317,7 +317,7 @@ check(res.status === 404, "an unknown session id returns 404 so clients re-initi
 
 console.log("\nTool surface");
 const { tools } = await a.client.listTools();
-check(tools.length === 123, `all 123 tools are registered`, `got ${tools.length}`);
+check(tools.length === 124, `all 124 tools are registered`, `got ${tools.length}`);
 const annotated = (name) => tools.find((t) => t.name === name)?.annotations ?? {};
 check(tools.every((t) => typeof t.annotations?.readOnlyHint === "boolean"), "every tool says whether it only reads");
 check(annotated("repliz_list_accounts").readOnlyHint === true, "listing accounts is read-only");
