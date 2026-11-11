@@ -3810,6 +3810,94 @@
                     "scheduleAt": "2026-10-28T06:06:24.150Z"
                   }
                 },
+                "additionalInfoFirstComment": {
+                  "summary": "Post with First Comment",
+                  "value": {
+                    "title": "",
+                    "description": "Hola! This is example for post with a first comment",
+                    "topic": "",
+                    "type": "image",
+                    "medias": [
+                      {
+                        "alt": "",
+                        "customThumbnail": false,
+                        "type": "image",
+                        "thumbnail": "https://storage.repliz.com/image.png",
+                        "url": "https://storage.repliz.com/image.png"
+                      }
+                    ],
+                    "meta": { "title": "", "description": "", "url": "" },
+                    "additionalInfo": {
+                      "isAiGenerated": false,
+                      "isDraft": false,
+                      "isAutoAddMusic": false,
+                      "firstComment": "Full price list in the link in our bio 👆",
+                      "isShareToFeed": false,
+                      "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
+                      "collaborators": [],
+                      "music": {
+                        "id": "",
+                        "artist": "",
+                        "name": "",
+                        "thumbnail": "",
+                        "volume": { "video": 50, "music": 100 }
+                      },
+                      "products": [],
+                      "tags": [],
+                      "mentions": [],
+                      "targetCountries": []
+                    },
+                    "replies": [],
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
+                  }
+                },
+                "additionalInfoTikTokInteraction": {
+                  "summary": "Post with Comments, Duet, and Stitch Turned Off (TikTok)",
+                  "value": {
+                    "title": "",
+                    "description": "Hola! This is example for post TikTok video without comments, duet, and stitch",
+                    "topic": "",
+                    "type": "video",
+                    "medias": [
+                      {
+                        "alt": "",
+                        "customThumbnail": false,
+                        "type": "video",
+                        "thumbnail": "https://storage.repliz.com/thumbnail.png",
+                        "url": "https://storage.repliz.com/video.mp4"
+                      }
+                    ],
+                    "meta": { "title": "", "description": "", "url": "" },
+                    "additionalInfo": {
+                      "isAiGenerated": false,
+                      "isDraft": false,
+                      "isAutoAddMusic": false,
+                      "isCommentDisabled": true,
+                      "isDuetDisabled": true,
+                      "isStitchDisabled": true,
+                      "isShareToFeed": false,
+                      "privacy": "public",
+                      "trialParams": { "graduationStrategy": "" },
+                      "collaborators": [],
+                      "music": {
+                        "id": "",
+                        "artist": "",
+                        "name": "",
+                        "thumbnail": "",
+                        "volume": { "video": 50, "music": 100 }
+                      },
+                      "products": [],
+                      "tags": [],
+                      "mentions": [],
+                      "targetCountries": []
+                    },
+                    "replies": [],
+                    "accountId": "680affa5ce12f2f72916f67e",
+                    "scheduleAt": "2026-10-28T06:06:24.150Z"
+                  }
+                },
                 "additionalInfoMention": {
                   "summary": "Post with Additional Info Mentions",
                   "value": {
@@ -10495,6 +10583,26 @@
             "type": "boolean",
             "example": false,
             "description": "TikTok `image` and `album`. `true` lets TikTok add a recommended track to the photo post. Ignored when `music.id` is set. Default `false`."
+          },
+          "isCommentDisabled": {
+            "type": "boolean",
+            "example": false,
+            "description": "TikTok `video`, `image`, and `album`. `true` turns off comments on the post. Ignored for a draft. Default `false`."
+          },
+          "isDuetDisabled": {
+            "type": "boolean",
+            "example": false,
+            "description": "TikTok `video`. `true` turns off Duet for the video. Ignored for a draft. Default `false`."
+          },
+          "isStitchDisabled": {
+            "type": "boolean",
+            "example": false,
+            "description": "TikTok `video`. `true` turns off Stitch for the video. Ignored for a draft. Default `false`."
+          },
+          "firstComment": {
+            "type": "string",
+            "example": "Full price list in the link in our bio 👆",
+            "description": "A comment the account posts on its own post right after it is published. Facebook, Instagram, LinkedIn, YouTube, and TikTok, not on a `story` or a TikTok draft. TikTok takes up to 150 characters, LinkedIn 1,250, and Instagram 2,200. Empty or left out posts no comment."
           },
           "isShareToFeed": {
             "type": "boolean",

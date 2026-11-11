@@ -125,6 +125,25 @@ const additionalInfoSchema = z
       ),
     isDraft: z.boolean().default(false),
     isAutoAddMusic: z.boolean().default(false),
+    isCommentDisabled: z
+      .boolean()
+      .default(false)
+      .describe('TikTok video, image, or album: turn off comments on the post. Ignored for a draft.'),
+    isDuetDisabled: z
+      .boolean()
+      .default(false)
+      .describe('TikTok video: turn off Duet. Ignored for a draft.'),
+    isStitchDisabled: z
+      .boolean()
+      .default(false)
+      .describe('TikTok video: turn off Stitch. Ignored for a draft.'),
+    firstComment: z
+      .string()
+      .max(10000)
+      .default('')
+      .describe(
+        'A comment the account posts on its own post right after it is published: Facebook, Instagram, LinkedIn, YouTube, and TikTok, not on a story or a TikTok draft. TikTok takes up to 150 characters, LinkedIn 1,250, Instagram 2,200. Empty posts no comment. The result shows on the schedule as firstCommentId or firstCommentErrorMessage.',
+      ),
     isShareToFeed: z
       .boolean()
       .default(false)
@@ -167,7 +186,7 @@ const additionalInfoSchema = z
       ),
   })
   .describe(
-    'Optional extras: collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text).',
+    'Optional extras: firstComment (Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text).',
   );
 
 const replySchema = z.object({
@@ -198,6 +217,10 @@ const DEFAULT_ADDITIONAL_INFO = {
   isAiGenerated: false,
   isDraft: false,
   isAutoAddMusic: false,
+  isCommentDisabled: false,
+  isDuetDisabled: false,
+  isStitchDisabled: false,
+  firstComment: '',
   isShareToFeed: false,
   privacy: 'public',
   trialParams: { graduationStrategy: '' },
@@ -376,7 +399,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link).',
+            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link).',
           ),
         replies: z
           .array(replySchema)
