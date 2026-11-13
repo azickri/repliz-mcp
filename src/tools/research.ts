@@ -1,4 +1,4 @@
-/** Research tools: search Threads content and users. */
+/** Research tools: search Threads and TikTok content and users. */
 
 import { z } from 'zod';
 import { registerTool, type ToolContext } from './helpers.js';
@@ -115,6 +115,166 @@ export function registerResearchTools(ctx: ToolContext): void {
       ctx.client.get('/public/research/threads/user', {
         accountId: args.accountId,
         username: args.username,
+      }),
+  );
+
+  const tikwm =
+    'Runs through TikWM with the TikWM API key saved in Repliz (Setting → TikWM key); without one it fails with 400 `invalid tikwm key`, and a 403 carries TikWM\'s own error, for example when the key is out of quota.';
+
+  registerTool(
+    ctx,
+    'repliz_search_tiktok_hashtag',
+    {
+      title: 'Search TikTok Hashtags',
+      effect: 'read',
+      description: `Search TikTok hashtags by keyword. Returns up to 30 per page with id, name, users, and views. Uses cursor pagination via \`nextToken\`. ${tikwm}`,
+      inputSchema: {
+        keywords: z.string().describe('Hashtag keyword to search for.'),
+        nextToken: z
+          .string()
+          .optional()
+          .describe('Pagination cursor from a previous response.'),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/tiktok/hashtag/search', {
+        keywords: args.keywords,
+        nextToken: args.nextToken,
+      }),
+  );
+
+  registerTool(
+    ctx,
+    'repliz_search_tiktok_video',
+    {
+      title: 'Search TikTok Videos',
+      effect: 'read',
+      description: `Search public TikTok videos by keyword, optionally only recent ones and sorted. Returns up to 30 per page with description, owner, media, url, publish time, and play/like/comment/share/download counts. Uses cursor pagination via \`nextToken\`. ${tikwm}`,
+      inputSchema: {
+        keywords: z.string().describe('Keyword to search videos for.'),
+        publishTime: z
+          .union([
+            z.literal(0),
+            z.literal(1),
+            z.literal(7),
+            z.literal(30),
+            z.literal(90),
+            z.literal(180),
+          ])
+          .optional()
+          .describe(
+            'Only videos published within this many days: 0 (any time), 1, 7, 30, 90, or 180.',
+          ),
+        sortType: z
+          .union([z.literal(0), z.literal(1), z.literal(3)])
+          .optional()
+          .describe('0 relevance, 1 most liked, or 3 newest.'),
+        nextToken: z
+          .string()
+          .optional()
+          .describe('Pagination cursor from a previous response.'),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/tiktok/content/video', {
+        keywords: args.keywords,
+        publishTime: args.publishTime,
+        sortType: args.sortType,
+        nextToken: args.nextToken,
+      }),
+  );
+
+  registerTool(
+    ctx,
+    'repliz_search_tiktok_photo',
+    {
+      title: 'Search TikTok Photo Posts',
+      effect: 'read',
+      description: `Search public TikTok photo posts by keyword. Returns up to 30 per page with description, owner, images, url, publish time, and counts. Uses cursor pagination via \`nextToken\`. ${tikwm}`,
+      inputSchema: {
+        keywords: z.string().describe('Keyword to search photo posts for.'),
+        nextToken: z
+          .string()
+          .optional()
+          .describe('Pagination cursor from a previous response.'),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/tiktok/content/photo', {
+        keywords: args.keywords,
+        nextToken: args.nextToken,
+      }),
+  );
+
+  registerTool(
+    ctx,
+    'repliz_search_tiktok_user_content',
+    {
+      title: 'Get TikTok User Content',
+      effect: 'read',
+      description: `List the public posts (videos and photo posts) of a TikTok user by username. Returns up to 30 per page with description, media, url, publish time, and counts. Uses cursor pagination via \`nextToken\`. ${tikwm}`,
+      inputSchema: {
+        uniqueId: z
+          .string()
+          .describe('The TikTok username whose posts to list, without @.'),
+        nextToken: z
+          .string()
+          .optional()
+          .describe('Pagination cursor from a previous response.'),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/tiktok/content/user', {
+        uniqueId: args.uniqueId,
+        nextToken: args.nextToken,
+      }),
+  );
+
+  registerTool(
+    ctx,
+    'repliz_list_tiktok_comments',
+    {
+      title: 'List TikTok Post Comments',
+      effect: 'read',
+      description: `List the comments of any public TikTok post by its id (the \`id\` from the TikTok search tools). Returns up to 50 per page with text, images, owner, publish time, like and reply counts, \`hasReplies\`, and \`total\`. Uses cursor pagination via \`nextToken\`. ${tikwm}`,
+      inputSchema: {
+        videoId: z.string().describe('ID of the TikTok post.'),
+        nextToken: z
+          .string()
+          .optional()
+          .describe('Pagination cursor from a previous response.'),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/tiktok/comment', {
+        videoId: args.videoId,
+        nextToken: args.nextToken,
+      }),
+  );
+
+  registerTool(
+    ctx,
+    'repliz_list_tiktok_comment_replies',
+    {
+      title: 'List TikTok Comment Replies',
+      effect: 'read',
+      description: `List the replies to a comment on a public TikTok post. Returns up to 50 per page with text, images, owner, publish time, and like count. Uses cursor pagination via \`nextToken\`. ${tikwm}`,
+      inputSchema: {
+        videoId: z.string().describe('ID of the TikTok post.'),
+        commentId: z
+          .string()
+          .describe('ID of the comment whose replies to list.'),
+        nextToken: z
+          .string()
+          .optional()
+          .describe('Pagination cursor from a previous response.'),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/tiktok/comment/reply', {
+        videoId: args.videoId,
+        commentId: args.commentId,
+        nextToken: args.nextToken,
       }),
   );
 }
