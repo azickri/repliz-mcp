@@ -178,21 +178,30 @@ export function registerStorageTools(ctx: ToolContext): void {
         );
       }
 
+      // Send no x-amz-* headers. The presigned URL is signed for `host` only
+      // (X-Amz-SignedHeaders=host); its checksum parameters already live in the
+      // signed query string. An x-amz-* header the URL did not sign makes R2
+      // reject the PUT with 403 SignatureDoesNotMatch. Content-Type is not
+      // signed either, it only sets the stored object's type, the same headers
+      // the Repliz web app sends to these URLs.
       const response = await fetch(target, {
         method: "PUT",
         headers: {
           "Content-Type": args.mimetype,
           "Content-Length": String(body.byteLength),
-          // Required by the Cloudflare R2 presigned URL (matches x-amz-checksum-crc32 in it).
-          "x-amz-checksum-crc32": "AAAAAA==",
-          "x-amz-sdk-checksum-algorithm": "CRC32",
         },
         body,
       });
 
       if (!response.ok) {
         const text = await response.text();
-        throw new Error(`Upload failed with HTTP ${response.status}: ${text}`);
+        const hint =
+          response.status === 403
+            ? " The presigned URL is valid for 10 minutes and must be passed exactly as " +
+              "`repliz_init_file` returned it. If it has expired or was altered, call " +
+              "`repliz_init_file` again and use the new `upload` URL."
+            : "";
+        throw new Error(`Upload failed with HTTP ${response.status}: ${text}${hint}`);
       }
 
       return {
