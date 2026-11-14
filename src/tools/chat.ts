@@ -50,7 +50,8 @@ export function registerChatTools(ctx: ToolContext): void {
     {
       title: "Get Chat",
       effect: "read",
-      description: "Get the details of a single conversation by its chat id.",
+      description:
+        "Get the details of a single conversation by its chat id. pausedUntil is set when the DM automation of the chat is or was paused; it is paused while pausedUntil is in the future.",
       inputSchema: { chatId: z.string().describe("The chat id.") },
     },
     async (args) => ctx.client.get(`/public/chat/${encodeURIComponent(args.chatId)}`)
@@ -173,5 +174,38 @@ export function registerChatTools(ctx: ToolContext): void {
     },
     async (args) =>
       ctx.client.post(`/public/chat/${encodeURIComponent(args.chatId)}/action`, { action: args.action })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_pause_chat",
+    {
+      title: "Pause Chat Automation",
+      effect: "destructive",
+      description:
+        "Pause the DM automation (Reply DM, Reply Story, Reply Story Mention) of one conversation, so a person can take over. Messages you send still go out. " +
+        "Pausing again replaces the current pause. Returns pausedUntil; 9999-12-31T00:00:00.000Z means until resumed. " +
+        "repliz_get_chat shows pausedUntil while a chat is or was paused; it is paused while pausedUntil is in the future.",
+      inputSchema: {
+        chatId: z.string().describe("The chat id."),
+        value: z
+          .union([z.literal(0), z.literal(1800), z.literal(3600), z.literal(21600), z.literal(86400)])
+          .describe("Seconds to pause: 1800 (30 min), 3600 (1 h), 21600 (6 h), 86400 (24 h), or 0 until resumed."),
+      },
+    },
+    async (args) =>
+      ctx.client.post(`/public/chat/${encodeURIComponent(args.chatId)}/pause`, { value: args.value })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_resume_chat",
+    {
+      title: "Resume Chat Automation",
+      effect: "destructive",
+      description: "Resume the DM automation of a paused conversation right away. Returns pausedUntil: null.",
+      inputSchema: { chatId: z.string().describe("The chat id.") },
+    },
+    async (args) => ctx.client.post(`/public/chat/${encodeURIComponent(args.chatId)}/resume`)
   );
 }

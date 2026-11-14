@@ -115,6 +115,17 @@ const textAttachmentSchema = z.object({
     .describe('Optional link shown at the end of the attachment.'),
 });
 
+const quotePostSchema = z
+  .object({
+    id: z
+      .string()
+      .regex(/^\d+$/)
+      .describe(
+        'The id of a Threads post from repliz_search_threads_content or repliz_search_threads_user_content. The only field needed: Repliz reads the post on Threads when the schedule is saved and fills url, username, text, picture and thumbnail.',
+      ),
+  })
+  .passthrough();
+
 const additionalInfoSchema = z
   .object({
     isAiGenerated: z
@@ -184,9 +195,14 @@ const additionalInfoSchema = z
       .describe(
         "Threads only, type 'text': a long text attached under the post that opens like an article. Each text reply can have its own in replies[].textAttachment. A post can have at most 5 links, counting the description and this link.",
       ),
+    quotePost: quotePostSchema
+      .optional()
+      .describe(
+        'Threads only, any type: quote another public Threads post, shown under this post. Only the main post of a thread quotes, not its replies. A post the account cannot read is refused with 400.',
+      ),
   })
   .describe(
-    'Optional extras: firstComment (Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text).',
+    'Optional extras: firstComment (Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text), quotePost (Threads quote of a post from Threads research).',
   );
 
 const replySchema = z.object({
@@ -399,7 +415,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link).',
+            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link), quotePost (Threads: { id } of a post from repliz_search_threads_content or repliz_search_threads_user_content to quote).',
           ),
         replies: z
           .array(replySchema)
@@ -426,7 +442,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
       effect: 'destructive',
       description:
         'Update an existing scheduled post. The account cannot be changed; provide the new content fields. `scheduleAt` must be a future ISO 8601 timestamp. ' +
-        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`. A YouTube video without `additionalInfo.privacy` goes back to public, an Instagram trial reel without `additionalInfo.trialParams` becomes a regular reel, and a Threads post without `additionalInfo.textAttachment` loses its text attachment.',
+        '`additionalInfo` is replaced as a whole, so repeat `additionalInfo.channel` when updating a WhatsApp or Telegram channel or group post, or it moves to Status or story, and always for a Pinterest pin (its board) together with `additionalInfo.link`. A YouTube video without `additionalInfo.privacy` goes back to public, an Instagram trial reel without `additionalInfo.trialParams` becomes a regular reel, a Threads post without `additionalInfo.textAttachment` loses its text attachment, and one without `additionalInfo.quotePost` stops quoting.',
       inputSchema: {
         scheduleId: z.string().describe('The schedule id to update.'),
         type: z.enum(POST_TYPE).describe('The kind of post.'),

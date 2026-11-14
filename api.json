@@ -1,6 +1,35 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/public/me": {
+      "get": {
+        "description": "\nRetrieve the profile of the authenticated user.\n\nThis endpoint is used by apps that sign users in with \"Login with Repliz\" to know who signed in. It works on every plan, including Free, and needs only the `profile` scope.\n\nResponse:\n- id — Stable ID of the user (or of the operator when an operator signed in)\n- type — `owner` or `operator`\n- name, email — Name and email of who signed in\n- isEmailVerified — Whether Repliz verified the email. Always false for an operator, whose email is set by the main account, so do not link accounts by an unverified email\n- picture — Profile picture URL, or null\n- plan — `free`, `standard`, `premium`, or `gold` (an operator gets the plan of the main account)\n- expiredAt — When the plan ends, or null\n",
+        "operationId": "MeController_getMe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "6879b98097fc8c8a78d1d4c1",
+                  "type": "owner",
+                  "name": "Azickri",
+                  "email": "user@example.com",
+                  "isEmailVerified": true,
+                  "picture": "https://lh3.googleusercontent.com/a/ACg8ocJ",
+                  "plan": "gold",
+                  "expiredAt": "2026-12-31T00:00:00.000Z"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Me",
+        "tags": ["API Me (Standard+)"]
+      }
+    },
     "/public/me/addon": {
       "get": {
         "description": "\nRetrieve addon information for the authenticated account.\n\nThis endpoint is used to get the current addon allocation associated with your account.\nIt returns the available addon quantities such as additional accounts, operators, storage, and Twitter/X addon.\n\nResponse:\n- Returns the current addon allocation\n- Includes account, operator, storage, and Twitter/X addon quantities\n",
@@ -21,7 +50,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Addon",
         "tags": ["API Me (Standard+)"]
       }
@@ -143,7 +172,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -191,7 +220,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Count Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -227,7 +256,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Tag Account",
         "tags": ["API Account (Standard+)"]
       },
@@ -256,7 +285,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Rename Tag Account",
         "tags": ["API Account (Standard+)"]
       },
@@ -283,7 +312,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Tag Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -336,7 +365,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Account",
         "tags": ["API Account (Standard+)"]
       },
@@ -366,7 +395,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -1089,7 +1118,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Statistic Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -1131,7 +1160,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Tag Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -1173,7 +1202,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Automation Account",
         "tags": ["API Account (Standard+)"]
       }
@@ -1313,7 +1342,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Comment",
         "tags": ["API Comment (Standard+)"]
       }
@@ -1410,7 +1439,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Comment",
         "tags": ["API Comment (Standard+)"]
       },
@@ -1455,7 +1484,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reply Comment",
         "tags": ["API Comment (Standard+)"]
       },
@@ -1485,7 +1514,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Comment",
         "tags": ["API Comment (Standard+)"]
       }
@@ -1527,7 +1556,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Status Comment",
         "tags": ["API Comment (Standard+)"]
       }
@@ -1658,7 +1687,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Contact",
         "tags": ["API Contact (Standard+)"]
       }
@@ -1723,7 +1752,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Count Contact",
         "tags": ["API Contact (Standard+)"]
       }
@@ -1741,7 +1770,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Contact Tag",
         "tags": ["API Contact (Standard+)"]
       }
@@ -1811,7 +1840,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Contact By Comment",
         "tags": ["API Contact (Standard+)"]
       }
@@ -1881,7 +1910,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Contact By Chat",
         "tags": ["API Contact (Standard+)"]
       }
@@ -1951,7 +1980,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Contact",
         "tags": ["API Contact (Standard+)"]
       },
@@ -1989,7 +2018,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Contact",
         "tags": ["API Contact (Standard+)"]
       },
@@ -2019,7 +2048,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Contact",
         "tags": ["API Contact (Standard+)"]
       }
@@ -2061,7 +2090,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Set Contact Follow-up",
         "tags": ["API Contact (Standard+)"]
       },
@@ -2091,9 +2120,865 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Contact Follow-up",
         "tags": ["API Contact (Standard+)"]
+      }
+    },
+    "/public/knowledge": {
+      "get": {
+        "description": "\nRetrieve every knowledge of the account owner, newest first.\n\nA knowledge is information about your business, such as products, prices, shipping or FAQs, that the AI reads before it answers. Set it up once and pick it in the AI replies of any account, post automation or template with `knowledgeIds`.\n\nResponse:\n- `docs` — The knowledge, each with `chars` (characters of its ready sources) and `sourceCount`\n",
+        "operationId": "KnowledgeController_getKnowledge",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "_id": "680affa5ce12f2f72916f67e",
+                      "name": "Product catalog",
+                      "description": "Prices, stock and shipping",
+                      "chars": 18250,
+                      "sourceCount": 3,
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:00:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Knowledge",
+        "tags": ["API Knowledge (Standard+)"]
+      },
+      "post": {
+        "description": "\nCreate an empty knowledge, then add its sources with Create Knowledge Source.\n\nAn account can have up to 100 knowledge.\n\nResponse:\n- The new knowledge\n",
+        "operationId": "KnowledgeController_createKnowledge",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyCreateUpdateKnowledgeDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "680affa5ce12f2f72916f67e",
+                  "name": "Product catalog",
+                  "description": "Prices, stock and shipping",
+                  "chars": 18250,
+                  "sourceCount": 3,
+                  "userId": "680affa5ce12f2f72916f600",
+                  "createdAt": "2026-11-14T03:00:00.000Z",
+                  "updatedAt": "2026-11-14T03:05:00.000Z"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "count": {
+                    "summary": "Knowledge limit",
+                    "value": {
+                      "code": 403,
+                      "message": "you can have up to 100 knowledge"
+                    }
+                  },
+                  "sources": {
+                    "summary": "Source limit",
+                    "value": {
+                      "code": 403,
+                      "message": "a knowledge can hold up to 100 sources"
+                    }
+                  },
+                  "chars": {
+                    "summary": "Character limit",
+                    "value": {
+                      "code": 403,
+                      "message": "all knowledge together can hold up to 5000000 characters"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Create Knowledge",
+        "tags": ["API Knowledge (Standard+)"]
+      }
+    },
+    "/public/knowledge/{knowledgeId}": {
+      "get": {
+        "description": "\nRetrieve a knowledge with its sources and where it is used.\n\nResponse:\n- `knowledge` — The knowledge\n- `sources` — Its sources, newest first, without their full text\n- `usage` — How many accounts, post automations and templates use it in an AI reply\n",
+        "operationId": "KnowledgeController_getOneKnowledge",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "knowledge": {
+                    "_id": "680affa5ce12f2f72916f67e",
+                    "name": "Product catalog",
+                    "description": "Prices, stock and shipping",
+                    "chars": 18250,
+                    "sourceCount": 3,
+                    "userId": "680affa5ce12f2f72916f600",
+                    "createdAt": "2026-11-14T03:00:00.000Z",
+                    "updatedAt": "2026-11-14T03:05:00.000Z"
+                  },
+                  "sources": [
+                    {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "url",
+                      "name": "Shipping",
+                      "url": "https://example.com/shipping",
+                      "status": "ready",
+                      "chars": 4200,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z"
+                    }
+                  ],
+                  "usage": { "accounts": 2, "automations": 1, "templates": 0 }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "knowledge not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get One Knowledge",
+        "tags": ["API Knowledge (Standard+)"]
+      },
+      "put": {
+        "description": "\nChange the name and description of a knowledge.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "KnowledgeController_updateKnowledge",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyCreateUpdateKnowledgeDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "knowledge not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Update Knowledge",
+        "tags": ["API Knowledge (Standard+)"]
+      },
+      "delete": {
+        "description": "\nRemove a knowledge and its sources.\n\nIt is taken out of every account, post automation and template that uses it. Files picked from Repliz storage stay in storage.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "KnowledgeController_removeKnowledge",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "knowledge not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Remove Knowledge",
+        "tags": ["API Knowledge (Standard+)"]
+      }
+    },
+    "/public/knowledge/{knowledgeId}/source": {
+      "post": {
+        "description": "\nAdd a source to a knowledge: a text, questions and answers, one page of a website, or a file from Repliz storage.\n\nThe source is read in the background. It starts with `status` `process`, then turns `ready` with its `chars`, or `error` with `errorMessage`. Check it with Get One Knowledge Source.\n\nLimits:\n- Up to 100 sources per knowledge\n- All knowledge together hold up to 5,000,000 characters\n- A file is a PDF, DOCX, TXT or MD of up to 10 MB; upload it first with Init File and Complete File\n- A website page is read once, without its links, up to 2 MB\n\nResponse:\n- The new source, with `status` `process`\n",
+        "operationId": "KnowledgeController_createKnowledgeSource",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyCreateKnowledgeSourceDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url": {
+                    "summary": "Website",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "url",
+                      "name": "Shipping",
+                      "url": "https://example.com/shipping",
+                      "status": "process",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z"
+                    }
+                  },
+                  "file": {
+                    "summary": "File",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f681",
+                      "type": "file",
+                      "name": "catalog.pdf",
+                      "status": "process",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z",
+                      "file": {
+                        "url": "https://storage.repliz.com/uploads/680affa5ce12f2f72916f600/0b6f2c84-5d1e-4c37-9a3e-1f0d8c2a7b55.pdf",
+                        "name": "catalog.pdf",
+                        "mimetype": "application/pdf",
+                        "size": 102400
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url": {
+                    "summary": "Website",
+                    "value": {
+                      "code": 400,
+                      "message": "url points to a private or reserved address"
+                    }
+                  },
+                  "file": {
+                    "summary": "File type",
+                    "value": {
+                      "code": 400,
+                      "message": "file must be a PDF, DOCX, TXT, or MD"
+                    }
+                  },
+                  "process": {
+                    "summary": "Still processing",
+                    "value": {
+                      "code": 400,
+                      "message": "knowledge source is still being processed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "count": {
+                    "summary": "Knowledge limit",
+                    "value": {
+                      "code": 403,
+                      "message": "you can have up to 100 knowledge"
+                    }
+                  },
+                  "sources": {
+                    "summary": "Source limit",
+                    "value": {
+                      "code": 403,
+                      "message": "a knowledge can hold up to 100 sources"
+                    }
+                  },
+                  "chars": {
+                    "summary": "Character limit",
+                    "value": {
+                      "code": 403,
+                      "message": "all knowledge together can hold up to 5000000 characters"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "knowledge": {
+                    "summary": "Knowledge",
+                    "value": { "code": 404, "message": "knowledge not found" }
+                  },
+                  "file": {
+                    "summary": "File",
+                    "value": { "code": 404, "message": "file not found" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Create Knowledge Source",
+        "tags": ["API Knowledge (Standard+)"]
+      }
+    },
+    "/public/knowledge/{knowledgeId}/source/{sourceId}": {
+      "get": {
+        "description": "\nRetrieve a source with its full `text` or `faqs`, and its `status`.\n\nResponse:\n- The source. `status` is `process`, `ready` or `error`\n",
+        "operationId": "KnowledgeController_getOneKnowledgeSource",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the source in the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67f",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "text": {
+                    "summary": "Text",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "text",
+                      "name": "Shipping",
+                      "status": "ready",
+                      "chars": 62,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z",
+                      "text": "We ship every weekday. Orders before 2 PM go out the same day."
+                    }
+                  },
+                  "faq": {
+                    "summary": "FAQ",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "faq",
+                      "name": "FAQ",
+                      "status": "ready",
+                      "chars": 48,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z",
+                      "faqs": [
+                        {
+                          "question": "Do you ship abroad?",
+                          "answer": "Yes, to most countries."
+                        }
+                      ]
+                    }
+                  },
+                  "error": {
+                    "summary": "Error",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "url",
+                      "name": "Shipping",
+                      "url": "https://example.com/shipping",
+                      "status": "error",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z",
+                      "errorMessage": "website answered with status 404"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "knowledge": {
+                    "summary": "Knowledge",
+                    "value": { "code": 404, "message": "knowledge not found" }
+                  },
+                  "source": {
+                    "summary": "Source",
+                    "value": {
+                      "code": 404,
+                      "message": "knowledge source not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get One Knowledge Source",
+        "tags": ["API Knowledge (Standard+)"]
+      },
+      "put": {
+        "description": "\nRename a source, or change the text of a `text` source or the questions and answers of a `faq` source.\n\nA new `text` or `faqs` is read again in the background, so the source goes back to `process`. A source still in `process` can't be changed.\n\nResponse:\n- The source\n",
+        "operationId": "KnowledgeController_updateKnowledgeSource",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the source in the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67f",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyUpdateKnowledgeSourceDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url": {
+                    "summary": "Website",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "url",
+                      "name": "Shipping",
+                      "url": "https://example.com/shipping",
+                      "status": "process",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z"
+                    }
+                  },
+                  "file": {
+                    "summary": "File",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f681",
+                      "type": "file",
+                      "name": "catalog.pdf",
+                      "status": "process",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z",
+                      "file": {
+                        "url": "https://storage.repliz.com/uploads/680affa5ce12f2f72916f600/0b6f2c84-5d1e-4c37-9a3e-1f0d8c2a7b55.pdf",
+                        "name": "catalog.pdf",
+                        "mimetype": "application/pdf",
+                        "size": 102400
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url": {
+                    "summary": "Website",
+                    "value": {
+                      "code": 400,
+                      "message": "url points to a private or reserved address"
+                    }
+                  },
+                  "file": {
+                    "summary": "File type",
+                    "value": {
+                      "code": 400,
+                      "message": "file must be a PDF, DOCX, TXT, or MD"
+                    }
+                  },
+                  "process": {
+                    "summary": "Still processing",
+                    "value": {
+                      "code": 400,
+                      "message": "knowledge source is still being processed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "count": {
+                    "summary": "Knowledge limit",
+                    "value": {
+                      "code": 403,
+                      "message": "you can have up to 100 knowledge"
+                    }
+                  },
+                  "sources": {
+                    "summary": "Source limit",
+                    "value": {
+                      "code": 403,
+                      "message": "a knowledge can hold up to 100 sources"
+                    }
+                  },
+                  "chars": {
+                    "summary": "Character limit",
+                    "value": {
+                      "code": 403,
+                      "message": "all knowledge together can hold up to 5000000 characters"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "knowledge": {
+                    "summary": "Knowledge",
+                    "value": { "code": 404, "message": "knowledge not found" }
+                  },
+                  "source": {
+                    "summary": "Source",
+                    "value": {
+                      "code": 404,
+                      "message": "knowledge source not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Update Knowledge Source",
+        "tags": ["API Knowledge (Standard+)"]
+      },
+      "delete": {
+        "description": "\nRemove a source from a knowledge.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "KnowledgeController_removeKnowledgeSource",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the source in the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67f",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "knowledge": {
+                    "summary": "Knowledge",
+                    "value": { "code": 404, "message": "knowledge not found" }
+                  },
+                  "source": {
+                    "summary": "Source",
+                    "value": {
+                      "code": 404,
+                      "message": "knowledge source not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Remove Knowledge Source",
+        "tags": ["API Knowledge (Standard+)"]
+      }
+    },
+    "/public/knowledge/{knowledgeId}/source/{sourceId}/refresh": {
+      "post": {
+        "description": "\nRead a website (`url`) source again, for example after the page changed.\n\nThe source goes back to `process` until it is read.\n\nResponse:\n- The source, with `status` `process`\n",
+        "operationId": "KnowledgeController_refreshKnowledgeSource",
+        "parameters": [
+          {
+            "name": "knowledgeId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sourceId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the source in the knowledge.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67f",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url": {
+                    "summary": "Website",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f67f",
+                      "type": "url",
+                      "name": "Shipping",
+                      "url": "https://example.com/shipping",
+                      "status": "process",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z"
+                    }
+                  },
+                  "file": {
+                    "summary": "File",
+                    "value": {
+                      "_id": "680affa5ce12f2f72916f681",
+                      "type": "file",
+                      "name": "catalog.pdf",
+                      "status": "process",
+                      "chars": 0,
+                      "processedAt": "2026-11-14T03:05:00.000Z",
+                      "knowledgeId": "680affa5ce12f2f72916f67e",
+                      "userId": "680affa5ce12f2f72916f600",
+                      "createdAt": "2026-11-14T03:04:00.000Z",
+                      "updatedAt": "2026-11-14T03:05:00.000Z",
+                      "file": {
+                        "url": "https://storage.repliz.com/uploads/680affa5ce12f2f72916f600/0b6f2c84-5d1e-4c37-9a3e-1f0d8c2a7b55.pdf",
+                        "name": "catalog.pdf",
+                        "mimetype": "application/pdf",
+                        "size": 102400
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "url": {
+                    "summary": "Website",
+                    "value": {
+                      "code": 400,
+                      "message": "url points to a private or reserved address"
+                    }
+                  },
+                  "file": {
+                    "summary": "File type",
+                    "value": {
+                      "code": 400,
+                      "message": "file must be a PDF, DOCX, TXT, or MD"
+                    }
+                  },
+                  "process": {
+                    "summary": "Still processing",
+                    "value": {
+                      "code": 400,
+                      "message": "knowledge source is still being processed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "knowledge": {
+                    "summary": "Knowledge",
+                    "value": { "code": 404, "message": "knowledge not found" }
+                  },
+                  "source": {
+                    "summary": "Source",
+                    "value": {
+                      "code": 404,
+                      "message": "knowledge source not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Refresh Knowledge Source",
+        "tags": ["API Knowledge (Standard+)"]
       }
     },
     "/public/addon/tiktok/music": {
@@ -2522,7 +3407,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get TikTok Music",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2583,7 +3468,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Shopee Product",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2629,7 +3514,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get WhatsApp Channel",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2675,7 +3560,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Telegram Channel",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2725,7 +3610,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Pinterest Board",
         "tags": ["API Addon (Premium+)"]
       },
@@ -2776,7 +3661,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Pinterest Board",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2823,7 +3708,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Pinterest Board",
         "tags": ["API Addon (Premium+)"]
       },
@@ -2868,7 +3753,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Pinterest Board",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2930,7 +3815,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Instagram Profile",
         "tags": ["API Addon (Premium+)"]
       }
@@ -2963,7 +3848,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Link Metadata",
         "tags": ["API Addon (Premium+)"]
       }
@@ -3187,7 +4072,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Schedule",
         "tags": ["API Schedule (Premium+)"]
       },
@@ -4190,7 +5075,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Schedule",
         "tags": ["API Schedule (Premium+)"]
       }
@@ -4288,7 +5173,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Schedule",
         "tags": ["API Schedule (Premium+)"]
       },
@@ -4328,7 +5213,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Schedule",
         "tags": ["API Schedule (Premium+)"]
       },
@@ -4358,7 +5243,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Schedule",
         "tags": ["API Schedule (Premium+)"]
       }
@@ -4390,7 +5275,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Retry Schedule",
         "tags": ["API Schedule (Premium+)"]
       }
@@ -4416,7 +5301,7 @@
           }
         ],
         "responses": { "204": { "description": "" } },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Schedules",
         "tags": ["API Schedule (Premium+)"]
       }
@@ -4534,7 +5419,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Chat",
         "tags": ["API Chat (Gold+)"]
       }
@@ -4580,6 +5465,7 @@
                   "senderName": "Shika",
                   "senderPicture": "https://platform-lookaside.fbsbx.com/platform/profilepic/?eai=Aa1fFfAbP-gTCYqCAEnj-EMk2dt76NYtz9bLpqe4jaKoJyYgSJIz08-E7krpo9hwKfygFqZbc_QQPQ&psid=6793729447315239&width=1024&ext=1777186001&hash=AT9loBEu8MvnNdB1BLinqkSV",
                   "unreadCount": 1,
+                  "pausedUntil": "2026-03-27T07:46:41.631Z",
                   "updatedAt": "2026-03-27T06:46:41.631Z",
                   "account": {
                     "_id": "69686c4c41ec8ac5117c8929",
@@ -4609,7 +5495,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Chat",
         "tags": ["API Chat (Gold+)"]
       }
@@ -4710,7 +5596,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Message",
         "tags": ["API Chat (Gold+)"]
       },
@@ -4947,7 +5833,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Send Message",
         "tags": ["API Chat (Gold+)"]
       }
@@ -4979,8 +5865,92 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Read Chat",
+        "tags": ["API Chat (Gold+)"]
+      }
+    },
+    "/public/chat/{chatId}/pause": {
+      "post": {
+        "description": "\nPause the DM automation of a chat for a while, or until it is resumed.\n\nWhile a chat is paused, Reply DM, Reply Story and Reply Story Mention don't answer the person, so you can talk to them yourself. Messages you send still go out. Pausing again replaces the current pause.\n\nWhen the account has `pause` turned on in Update Automation Account, a chat is also paused by itself when you reply to it by hand, from Repliz or from the platform's own app.\n\nParameters:\n- chatId (string) — The unique identifier of the chat\n- value (number) — Seconds to pause: `1800`, `3600`, `21600`, `86400`, or `0` until resumed\n\nResponse:\n- `pausedUntil` — When the pause ends. `9999-12-31T00:00:00.000Z` means until resumed.\n",
+        "operationId": "ChatController_pauseChat",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyPauseChatDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "pausedUntil": "2026-11-14T04:00:00.000Z" }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "chat not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Pause Chat",
+        "tags": ["API Chat (Gold+)"]
+      }
+    },
+    "/public/chat/{chatId}/resume": {
+      "post": {
+        "description": "\nResume the DM automation of a paused chat right away.\n\nParameters:\n- chatId (string) — The unique identifier of the chat\n\nResponse:\n- `pausedUntil` — Always `null`\n",
+        "operationId": "ChatController_resumeChat",
+        "parameters": [
+          {
+            "name": "chatId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the chat, the `_id` from Get Chat.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": { "example": { "pausedUntil": null } }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "chat not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Resume Chat",
         "tags": ["API Chat (Gold+)"]
       }
     },
@@ -5039,7 +6009,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Sender Action",
         "tags": ["API Chat (Gold+)"]
       }
@@ -5217,7 +6187,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Content",
         "tags": ["API Content (Gold+)"]
       }
@@ -5296,7 +6266,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Content",
         "tags": ["API Content (Gold+)"]
       },
@@ -5345,7 +6315,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Content",
         "tags": ["API Content (Gold+)"]
       }
@@ -5466,7 +6436,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Comment",
         "tags": ["API Content (Gold+)"]
       },
@@ -5554,7 +6524,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Comment",
         "tags": ["API Content (Gold+)"]
       }
@@ -5838,7 +6808,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Statistic",
         "tags": ["API Content (Gold+)"]
       }
@@ -6020,7 +6990,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Message Comment",
         "tags": ["API Content (Gold+)"]
       }
@@ -6078,7 +7048,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Like Comment",
         "tags": ["API Content (Gold+)"]
       }
@@ -6136,7 +7106,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Comment",
         "tags": ["API Content (Gold+)"]
       }
@@ -6204,7 +7174,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search Hashtag TikTok",
         "tags": ["API Research (Gold+)"]
       }
@@ -6310,7 +7280,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search Content Video TikTok",
         "tags": ["API Research (Gold+)"]
       }
@@ -6478,7 +7448,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search Content Photo TikTok",
         "tags": ["API Research (Gold+)"]
       }
@@ -6672,7 +7642,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search Content User TikTok",
         "tags": ["API Research (Gold+)"]
       }
@@ -6750,7 +7720,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API List Comment TikTok",
         "tags": ["API Research (Gold+)"]
       }
@@ -6835,7 +7805,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API List Comment Reply TikTok",
         "tags": ["API Research (Gold+)"]
       }
@@ -6963,7 +7933,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search Content Threads",
         "tags": ["API Research (Gold+)"]
       }
@@ -7039,7 +8009,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search Content User Threads",
         "tags": ["API Research (Gold+)"]
       }
@@ -7098,7 +8068,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Search  User Threads",
         "tags": ["API Research (Gold+)"]
       }
@@ -7248,7 +8218,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Report",
         "tags": ["API Report (Gold+)"]
       }
@@ -7336,7 +8306,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Report",
         "tags": ["API Report (Gold+)"]
       }
@@ -7368,7 +8338,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Retry Report",
         "tags": ["API Report (Gold+)"]
       }
@@ -7629,7 +8599,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Automation",
         "tags": ["API Automation (Gold+)"]
       },
@@ -7678,7 +8648,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Automation",
         "tags": ["API Automation (Gold+)"]
       }
@@ -7907,7 +8877,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Automation",
         "tags": ["API Automation (Gold+)"]
       },
@@ -7947,7 +8917,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Automation",
         "tags": ["API Automation (Gold+)"]
       },
@@ -7977,7 +8947,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Automation",
         "tags": ["API Automation (Gold+)"]
       }
@@ -8086,7 +9056,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Comment Sync",
         "tags": ["API Comment Sync (Gold+)"]
       },
@@ -8145,7 +9115,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Comment Sync",
         "tags": ["API Comment Sync (Gold+)"]
       }
@@ -8187,7 +9157,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Status Comment Sync",
         "tags": ["API Comment Sync (Gold+)"]
       }
@@ -8219,7 +9189,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Comment Sync",
         "tags": ["API Comment Sync (Gold+)"]
       }
@@ -8432,7 +9402,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Template",
         "tags": ["API Template Automation (Gold+)"]
       },
@@ -8466,7 +9436,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Template",
         "tags": ["API Template Automation (Gold+)"]
       }
@@ -8658,7 +9628,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One Template",
         "tags": ["API Template Automation (Gold+)"]
       },
@@ -8703,7 +9673,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Update Template",
         "tags": ["API Template Automation (Gold+)"]
       },
@@ -8738,7 +9708,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Template",
         "tags": ["API Template Automation (Gold+)"]
       }
@@ -8768,7 +9738,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize Facebook",
         "tags": ["API Account Facebook (Gold+)"]
       }
@@ -8820,7 +9790,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Page Facebook",
         "tags": ["API Account Facebook (Gold+)"]
       }
@@ -8852,7 +9822,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Exchange Facebook",
         "tags": ["API Account Facebook (Gold+)"]
       }
@@ -8882,7 +9852,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Facebook",
         "tags": ["API Account Facebook (Gold+)"]
       }
@@ -8935,7 +9905,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Facebook",
         "tags": ["API Account Facebook (Gold+)"]
       }
@@ -8965,7 +9935,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize Instagram",
         "tags": ["API Account Instagram (Gold+)"]
       }
@@ -8995,7 +9965,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Instagram",
         "tags": ["API Account Instagram (Gold+)"]
       }
@@ -9048,7 +10018,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Instagram",
         "tags": ["API Account Instagram (Gold+)"]
       }
@@ -9078,7 +10048,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize Threads",
         "tags": ["API Account Threads (Gold+)"]
       }
@@ -9106,7 +10076,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Threads",
         "tags": ["API Account Threads (Gold+)"]
       }
@@ -9157,7 +10127,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Threads",
         "tags": ["API Account Threads (Gold+)"]
       }
@@ -9187,7 +10157,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize YouTube",
         "tags": ["API Account YouTube (Gold+)"]
       }
@@ -9228,7 +10198,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Channel YouTube",
         "tags": ["API Account YouTube (Gold+)"]
       }
@@ -9260,7 +10230,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Exchange YouTube",
         "tags": ["API Account YouTube (Gold+)"]
       }
@@ -9290,7 +10260,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect YouTube",
         "tags": ["API Account YouTube (Gold+)"]
       }
@@ -9343,7 +10313,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect YouTube",
         "tags": ["API Account YouTube (Gold+)"]
       }
@@ -9373,7 +10343,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize LinkedIn",
         "tags": ["API Account LinkedIn (Gold+)"]
       }
@@ -9414,7 +10384,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Organization LinkedIn",
         "tags": ["API Account LinkedIn (Gold+)"]
       }
@@ -9446,7 +10416,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Exchange LinkedIn",
         "tags": ["API Account LinkedIn (Gold+)"]
       }
@@ -9476,7 +10446,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect LinkedIn",
         "tags": ["API Account LinkedIn (Gold+)"]
       }
@@ -9529,7 +10499,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect LinkedIn",
         "tags": ["API Account LinkedIn (Gold+)"]
       }
@@ -9559,7 +10529,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize TikTok",
         "tags": ["API Account TikTok (Gold+)"]
       }
@@ -9587,7 +10557,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect TikTok",
         "tags": ["API Account TikTok (Gold+)"]
       }
@@ -9638,7 +10608,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect TikTok",
         "tags": ["API Account TikTok (Gold+)"]
       }
@@ -9668,7 +10638,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize Shopee",
         "tags": ["API Account Shopee (Gold+)"]
       }
@@ -9696,7 +10666,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Shopee",
         "tags": ["API Account Shopee (Gold+)"]
       }
@@ -9747,7 +10717,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Shopee",
         "tags": ["API Account Shopee (Gold+)"]
       }
@@ -9777,7 +10747,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize Twitter",
         "tags": ["API Account Twitter (Gold+)"]
       }
@@ -9805,7 +10775,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Twitter",
         "tags": ["API Account Twitter (Gold+)"]
       }
@@ -9856,7 +10826,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Twitter",
         "tags": ["API Account Twitter (Gold+)"]
       }
@@ -9902,7 +10872,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Session WhatsApp",
         "tags": ["API Account WhatsApp (Gold+)"]
       },
@@ -9922,7 +10892,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Session WhatsApp",
         "tags": ["API Account WhatsApp (Gold+)"]
       }
@@ -9960,7 +10930,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect WhatsApp",
         "tags": ["API Account WhatsApp (Gold+)"]
       }
@@ -10010,7 +10980,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect WhatsApp",
         "tags": ["API Account WhatsApp (Gold+)"]
       }
@@ -10061,7 +11031,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Session Telegram",
         "tags": ["API Account Telegram (Gold+)"]
       },
@@ -10081,7 +11051,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Create Session Telegram",
         "tags": ["API Account Telegram (Gold+)"]
       }
@@ -10120,7 +11090,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Password Session Telegram",
         "tags": ["API Account Telegram (Gold+)"]
       }
@@ -10158,7 +11128,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Telegram",
         "tags": ["API Account Telegram (Gold+)"]
       }
@@ -10208,7 +11178,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Telegram",
         "tags": ["API Account Telegram (Gold+)"]
       }
@@ -10238,7 +11208,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Authorize Pinterest",
         "tags": ["API Account Pinterest (Gold+)"]
       }
@@ -10268,7 +11238,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Connect Pinterest",
         "tags": ["API Account Pinterest (Gold+)"]
       }
@@ -10321,7 +11291,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Reconnect Pinterest",
         "tags": ["API Account Pinterest (Gold+)"]
       }
@@ -10348,7 +11318,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get Statistic Storage",
         "tags": ["API Storage (Storage+)"]
       }
@@ -10435,7 +11405,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get File Storage",
         "tags": ["API Storage (Storage+)"]
       }
@@ -10487,7 +11457,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Get One File Storage",
         "tags": ["API Storage (Storage+)"]
       },
@@ -10517,7 +11487,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove File Storage",
         "tags": ["API Storage (Storage+)"]
       }
@@ -10561,7 +11531,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Init File Storage",
         "tags": ["API Storage (Storage+)"]
       }
@@ -10596,7 +11566,7 @@
             }
           }
         },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Complete File Storage",
         "tags": ["API Storage (Storage+)"]
       }
@@ -10622,15 +11592,124 @@
           }
         ],
         "responses": { "204": { "description": "" } },
-        "security": [{ "basic": [] }],
+        "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Remove Files Storage",
         "tags": ["API Storage (Storage+)"]
+      }
+    },
+    "/public/oauth/token": {
+      "post": {
+        "description": "\nExchange an authorization code for tokens, or refresh an access token.\n\nThis endpoint is used by apps that sign users in with \"Login with Repliz\". The body can be form-urlencoded or JSON, and the client is authenticated with `client_id` and `client_secret` in the body or with a Basic `Authorization` header.\n\nGrant types:\n- authorization_code — send `code`, `redirect_uri`, and `code_verifier` (PKCE S256)\n- refresh_token — send `refresh_token`; a new refresh token is returned and the old one stops working\n\nResponse:\n- `access_token` is a JWT for `Authorization: Bearer`, valid for 1 hour\n- `refresh_token` is valid for 30 days after its last use\n- `scope` lists the scopes the user granted, separated by spaces\n\nErrors follow RFC 6749: `{ \"error\": \"invalid_grant\", \"error_description\": \"...\" }`.\n",
+        "operationId": "OAuthController_token",
+        "parameters": [
+          {
+            "name": "authorization",
+            "required": true,
+            "in": "header",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/BodyTokenDTO" }
+            },
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyTokenDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6ImF0K2p3dCJ9.eyJpc3MiOiJyZXBsaXoiLCJhdWQiOiJyZXBsaXotcHVibGljLWFwaSJ9.c2lnbmF0dXJl",
+                  "token_type": "Bearer",
+                  "expires_in": 3600,
+                  "refresh_token": "rplz_rt_Vb1k3nQ8sXo2yZ7pL4mR9tA6cE0wF5hJ8uI2oP3qS1d",
+                  "scope": "profile schedule:write"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "invalid_grant",
+                  "error_description": "invalid or expired code"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "invalid_client",
+                  "error_description": "invalid client_secret"
+                }
+              }
+            }
+          }
+        },
+        "summary": "API OAuth Token",
+        "tags": ["API OAuth (Login with Repliz)"]
+      }
+    },
+    "/public/oauth/revoke": {
+      "post": {
+        "description": "\nRevoke a refresh token or access token.\n\nThis endpoint is used when a user signs out of your app or disconnects Repliz. Revoking either token ends the whole authorization: the refresh token stops working and access tokens are rejected at once.\n\nResponse:\n- Always 200 with an empty JSON object, also when the token was already invalid (RFC 7009)\n",
+        "operationId": "OAuthController_revoke",
+        "parameters": [
+          {
+            "name": "authorization",
+            "required": true,
+            "in": "header",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/BodyRevokeDTO" }
+            },
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyRevokeDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": { "application/json": { "example": {} } }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "error": "invalid_client",
+                  "error_description": "invalid client_secret"
+                }
+              }
+            }
+          }
+        },
+        "summary": "API OAuth Revoke",
+        "tags": ["API OAuth (Login with Repliz)"]
       }
     }
   },
   "info": {
     "title": "Repliz API",
-    "description": "Repliz Public API allows developers to securely access and integrate core features such as comment management, automation, analytics, and AI-powered interactions into their own applications.\nThis API is designed for external usage, enabling seamless communication with Repliz services in a scalable and efficient way.\n\nAuthentication\nAll requests to the Public API must be authenticated using HTTP Basic Auth.\n\n- Access Key is used as the username\n- Secret Key is used as the password\n\nExample:\nAuthorization: Basic base64(accessKey:secretKey).\n\nMake sure to keep your credentials secure and do not expose them in client-side applications. All endpoints require authentication unless stated otherwise.",
+    "description": "Repliz Public API allows developers to securely access and integrate core features such as comment management, automation, analytics, and AI-powered interactions into their own applications.\nThis API is designed for external usage, enabling seamless communication with Repliz services in a scalable and efficient way.\n\nAuthentication\nRequests to the Public API are authenticated in one of two ways.\n\nHTTP Basic Auth, with your own keys and full access:\n- Access Key is used as the username\n- Secret Key is used as the password\n\nExample:\nAuthorization: Basic base64(accessKey:secretKey).\n\nBearer token, for apps that use Login with Repliz:\n- The access token from POST /public/oauth/token, valid for 1 hour\n- Only the scopes the user granted, for example schedule:write\n\nExample:\nAuthorization: Bearer accessToken.\n\nMake sure to keep your credentials secure and do not expose them in client-side applications. All endpoints require authentication unless stated otherwise.",
     "version": "1.0.0",
     "contact": {
       "name": "Azickri",
@@ -10641,8 +11720,39 @@
   "tags": [],
   "servers": [],
   "components": {
-    "securitySchemes": { "basic": { "type": "http", "scheme": "basic" } },
+    "securitySchemes": {
+      "basic": { "type": "http", "scheme": "basic" },
+      "bearer": { "scheme": "bearer", "bearerFormat": "JWT", "type": "http" }
+    },
     "schemas": {
+      "BodyRenameTagAccountDTO": {
+        "type": "object",
+        "properties": {
+          "tag": {
+            "type": "string",
+            "example": "Brand A",
+            "description": "The tag to rename, case-insensitive."
+          },
+          "name": {
+            "type": "string",
+            "example": "Brand Alpha",
+            "description": "The new name, up to 30 characters. When another tag already has this name, the two are merged."
+          }
+        },
+        "required": ["tag", "name"]
+      },
+      "BodyUpdateTagAccountDTO": {
+        "type": "object",
+        "properties": {
+          "tags": {
+            "example": ["Brand A", "Jakarta"],
+            "description": "Every tag of the account, at most 10 of up to 30 characters. Replaces the current tags; send `[]` to remove them all. Duplicates that differ only in case are kept once, and a tag another account already has takes its spelling.",
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["tags"]
+      },
       "ConfigAutomationDelete": {
         "type": "object",
         "properties": {
@@ -10791,6 +11901,23 @@
         },
         "required": ["isActive", "value", "type"]
       },
+      "ConfigLimit": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the limit on."
+          },
+          "value": {
+            "type": "number",
+            "example": 86400,
+            "enum": [3600, 21600, 86400, 604800, 2592000],
+            "description": "How long, in seconds, before the same person can be answered again: 1 hour, 6 hours, 24 hours, 7 days, or 30 days."
+          }
+        },
+        "required": ["isActive", "value"]
+      },
       "ConfigAutomationReply": {
         "type": "object",
         "properties": {
@@ -10844,6 +11971,15 @@
           "delay": {
             "description": "Waits before replying, so replies do not arrive the same second as the comment.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          },
+          "limit": {
+            "description": "Answers each person only once in a while: per post for comments, per account for DMs. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigLimit" }]
+          },
+          "knowledgeIds": {
+            "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": [
@@ -11179,6 +12315,15 @@
           "delay": {
             "description": "Waits before sending. Keep it short for Instagram Live comments.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          },
+          "limit": {
+            "description": "Answers each person only once in a while: per post for comments, per account for DMs. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigLimit" }]
+          },
+          "knowledgeIds": {
+            "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": [
@@ -11223,6 +12368,15 @@
           "delay": {
             "description": "Waits before answering.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          },
+          "limit": {
+            "description": "Answers each person only once in a while: per post for comments, per account for DMs. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigLimit" }]
+          },
+          "knowledgeIds": {
+            "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": ["isActive", "type", "text", "prompt", "keyword", "delay"]
@@ -11266,6 +12420,15 @@
           "delay": {
             "description": "Waits before sending.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          },
+          "limit": {
+            "description": "Answers each person only once in a while: per post for comments, per account for DMs. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigLimit" }]
+          },
+          "knowledgeIds": {
+            "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": [
@@ -11310,9 +12473,35 @@
           "delay": {
             "description": "Waits before sending.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigDelay" }]
+          },
+          "limit": {
+            "description": "Answers each person only once in a while: per post for comments, per account for DMs. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigLimit" }]
+          },
+          "knowledgeIds": {
+            "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": ["isActive", "type", "text", "prompt", "opening", "delay"]
+      },
+      "ConfigAutomationPause": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Pauses the DM automation of a chat when the account replies to it by hand."
+          },
+          "value": {
+            "type": "number",
+            "example": 3600,
+            "enum": [0, 1800, 3600, 21600, 86400],
+            "description": "How long the chat stays paused, in seconds. `0` keeps it paused until it is resumed."
+          }
+        },
+        "required": ["isActive", "value"]
       },
       "BodyUpdateAutomationAccountDTO": {
         "type": "object",
@@ -11348,37 +12537,13 @@
             "allOf": [
               { "$ref": "#/components/schemas/ConfigAutomationStoryMention" }
             ]
+          },
+          "pause": {
+            "description": "Pauses the DM automation of a chat when the account replies by hand. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationPause" }]
           }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
-      },
-      "BodyUpdateTagAccountDTO": {
-        "type": "object",
-        "properties": {
-          "tags": {
-            "example": ["Brand A", "Jakarta"],
-            "description": "Every tag of the account, at most 10 of up to 30 characters. Replaces the current tags; send `[]` to remove them all. Duplicates that differ only in case are kept once, and a tag another account already has takes its spelling.",
-            "type": "array",
-            "items": { "type": "string" }
-          }
-        },
-        "required": ["tags"]
-      },
-      "BodyRenameTagAccountDTO": {
-        "type": "object",
-        "properties": {
-          "tag": {
-            "type": "string",
-            "example": "Brand A",
-            "description": "The tag to rename, case-insensitive."
-          },
-          "name": {
-            "type": "string",
-            "example": "Brand Alpha",
-            "description": "The new name, up to 30 characters. When another tag already has this name, the two are merged."
-          }
-        },
-        "required": ["tag", "name"]
       },
       "BodyReplyCommentDTO": {
         "type": "object",
@@ -11450,6 +12615,94 @@
           }
         },
         "required": ["at", "note"]
+      },
+      "BodyCreateUpdateKnowledgeDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Product catalog",
+            "description": "Name of the knowledge, up to 100 characters."
+          },
+          "description": {
+            "type": "string",
+            "example": "Prices, stock and shipping",
+            "description": "What the knowledge is about, up to 500 characters."
+          }
+        },
+        "required": ["name"]
+      },
+      "KnowledgeFaqDTO": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string",
+            "example": "Do you ship abroad?",
+            "description": "The question, up to 500 characters."
+          },
+          "answer": {
+            "type": "string",
+            "example": "Yes, to most countries.",
+            "description": "The answer, up to 5000 characters."
+          }
+        },
+        "required": ["question", "answer"]
+      },
+      "BodyCreateKnowledgeSourceDTO": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["file", "text", "faq", "url"],
+            "example": "url",
+            "description": "`file` (a PDF, DOCX, TXT or MD file from Repliz storage), `text`, `faq` (questions and answers) or `url` (one page of a website)."
+          },
+          "name": {
+            "type": "string",
+            "example": "Shipping page",
+            "description": "Name of the source, cut to 60 characters. When left out: the first line of a `text`, `FAQ`, the file name, or the title of the page."
+          },
+          "text": {
+            "type": "string",
+            "example": "We ship every weekday. Orders before 2 PM go out the same day.",
+            "description": "The text, up to 200,000 characters. Required for `text`."
+          },
+          "faqs": {
+            "description": "Questions and answers, 1 to 300. Required for `faq`.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KnowledgeFaqDTO" }
+          },
+          "url": {
+            "type": "string",
+            "example": "https://example.com/shipping",
+            "description": "A public `http` or `https` page, read once without following its links. Required for `url`."
+          },
+          "fileId": {
+            "type": "string",
+            "example": "680affa5ce12f2f72916f680",
+            "description": "ID of an uploaded file in Repliz storage, the `id` from Init File after Complete File. A PDF, DOCX, TXT or MD of up to 10 MB. Required for `file`."
+          }
+        },
+        "required": ["type"]
+      },
+      "BodyUpdateKnowledgeSourceDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Shipping",
+            "description": "New name of the source, cut to 60 characters."
+          },
+          "text": {
+            "type": "string",
+            "description": "New text of a `text` source."
+          },
+          "faqs": {
+            "description": "New questions and answers of a `faq` source.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/KnowledgeFaqDTO" }
+          }
+        }
       },
       "BodyCreateUpdatePinterestBoardDTO": {
         "type": "object",
@@ -11664,6 +12917,40 @@
           }
         }
       },
+      "ScheduleAdditionalInfoQuotePost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "18012345678901234",
+            "description": "ID of the Threads post to quote: the `id` of a post from the Research API, such as Search Content Threads or Search Content User Threads. The only required field."
+          },
+          "url": {
+            "type": "string",
+            "example": "https://www.threads.com/@meta/post/DYZ80_hDVCA",
+            "description": "Link to the quoted post, shown in Repliz. Repliz reads it from Threads when the schedule is saved."
+          },
+          "username": {
+            "type": "string",
+            "example": "meta",
+            "description": "Username of the quoted post, shown in Repliz. Repliz reads it from Threads when the schedule is saved."
+          },
+          "text": {
+            "type": "string",
+            "example": "weeds are no match for @aiatmeta",
+            "description": "Text of the quoted post, shown in Repliz. Repliz reads it from Threads when the schedule is saved."
+          },
+          "picture": {
+            "type": "string",
+            "description": "Profile picture of the quoted post author, shown in Repliz. Repliz reads it from Threads when the schedule is saved."
+          },
+          "thumbnail": {
+            "type": "string",
+            "description": "Image or video thumbnail of the quoted post, shown in Repliz. Repliz reads it from Threads when the schedule is saved."
+          }
+        },
+        "required": ["id"]
+      },
       "ScheduleAdditionalInfo": {
         "type": "object",
         "properties": {
@@ -11780,6 +13067,12 @@
               {
                 "$ref": "#/components/schemas/ScheduleAdditionalInfoTextAttachment"
               }
+            ]
+          },
+          "quotePost": {
+            "description": "Threads. Quotes another public Threads post in this post, not in its replies. Only `id` is required, the `id` of a post from the Research API. Repliz checks the post when the schedule is saved and fills the other fields from Threads. Ignored on other platforms.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ScheduleAdditionalInfoQuotePost" }
             ]
           }
         }
@@ -12222,6 +13515,18 @@
         },
         "required": ["type"]
       },
+      "BodyPauseChatDTO": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "number",
+            "example": 3600,
+            "enum": [0, 1800, 3600, 21600, 86400],
+            "description": "How long the DM automation of the chat stays paused, in seconds: `1800` (30 minutes), `3600` (1 hour), `21600` (6 hours), `86400` (24 hours), or `0` to keep it paused until it is resumed."
+          }
+        },
+        "required": ["value"]
+      },
       "BodySenderActionDTO": {
         "type": "object",
         "properties": {
@@ -12349,6 +13654,34 @@
           }
         },
         "required": ["config"]
+      },
+      "BodyCreateListenerDTO": {
+        "type": "object",
+        "properties": {
+          "contentId": {
+            "type": "string",
+            "example": "18082157540400777",
+            "description": "ID of the post on the platform, the `id` from Get Content. The automation runs on its old and missed top-level comments. A post has one comment sync, a second one fails with `409`."
+          },
+          "accountId": {
+            "type": "string",
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the account that published the post, the `_id` from Get Account. Instagram, Facebook, Threads, TikTok, YouTube, or LinkedIn."
+          }
+        },
+        "required": ["contentId", "accountId"]
+      },
+      "BodyUpdateStatusListenerDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"],
+            "example": "paused",
+            "description": "`paused` stops it and keeps its progress, `active` resumes it."
+          }
+        },
+        "required": ["status"]
       },
       "ConfigAutomationTemplate": {
         "type": "object",
@@ -12611,33 +13944,74 @@
         },
         "required": ["filename", "size", "mimetype"]
       },
-      "BodyCreateListenerDTO": {
+      "BodyTokenDTO": {
         "type": "object",
         "properties": {
-          "contentId": {
+          "grant_type": {
             "type": "string",
-            "example": "18082157540400777",
-            "description": "ID of the post on the platform, the `id` from Get Content. The automation runs on its old and missed top-level comments. A post has one comment sync, a second one fails with `409`."
+            "example": "authorization_code",
+            "enum": ["authorization_code", "refresh_token"],
+            "description": "`authorization_code` to exchange the `code` from the redirect, or `refresh_token` to get a new access token."
           },
-          "accountId": {
+          "code": {
             "type": "string",
-            "example": "680affa5ce12f2f72916f67e",
-            "description": "ID of the account that published the post, the `_id` from Get Account. Instagram, Facebook, Threads, TikTok, YouTube, or LinkedIn."
+            "example": "H3k9xQm2...",
+            "description": "The `code` Repliz added to your redirect URI. Valid once, for 5 minutes. Required for `authorization_code`."
+          },
+          "redirect_uri": {
+            "type": "string",
+            "example": "https://example.com/callback",
+            "description": "The same `redirect_uri` sent to the authorize page. Required for `authorization_code`."
+          },
+          "code_verifier": {
+            "type": "string",
+            "example": "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk",
+            "description": "The PKCE verifier whose S256 hash was sent as `code_challenge`. Required for `authorization_code`."
+          },
+          "refresh_token": {
+            "type": "string",
+            "example": "rplz_rt_6Jk1...",
+            "description": "The `refresh_token` from the last token response. Required for `refresh_token`. Each refresh returns a new one and the old one stops working."
+          },
+          "client_id": {
+            "type": "string",
+            "example": "rplz_8f2c1a9b7d3e4f5a6b7c8d9e",
+            "description": "Client ID of your app. Send it here or as the username of a Basic `Authorization` header."
+          },
+          "client_secret": {
+            "type": "string",
+            "example": "rplz_secret_Yx7...",
+            "description": "Client secret of a confidential app. Send it here or as the password of a Basic `Authorization` header. Public apps leave it out."
           }
         },
-        "required": ["contentId", "accountId"]
+        "required": ["grant_type"]
       },
-      "BodyUpdateStatusListenerDTO": {
+      "BodyRevokeDTO": {
         "type": "object",
         "properties": {
-          "status": {
+          "token": {
             "type": "string",
-            "enum": ["active", "paused"],
-            "example": "paused",
-            "description": "`paused` stops it and keeps its progress, `active` resumes it."
+            "example": "rplz_rt_6Jk1...",
+            "description": "The refresh token or access token to revoke. Revoking either one disconnects the whole authorization."
+          },
+          "token_type_hint": {
+            "type": "string",
+            "example": "refresh_token",
+            "enum": ["refresh_token", "access_token"],
+            "description": "Which kind of token `token` is. Optional."
+          },
+          "client_id": {
+            "type": "string",
+            "example": "rplz_8f2c1a9b7d3e4f5a6b7c8d9e",
+            "description": "Client ID of your app. Send it here or as the username of a Basic `Authorization` header."
+          },
+          "client_secret": {
+            "type": "string",
+            "example": "rplz_secret_Yx7...",
+            "description": "Client secret of a confidential app. Send it here or as the password of a Basic `Authorization` header."
           }
         },
-        "required": ["status"]
+        "required": ["token"]
       }
     }
   }

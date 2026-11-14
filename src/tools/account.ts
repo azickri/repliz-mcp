@@ -1,7 +1,7 @@
 /** Account management tools. */
 
 import { z } from "zod";
-import { KEYWORD_OPENING_NOTE, registerTool, type ToolContext } from "./helpers.js";
+import { KEYWORD_OPENING_NOTE, LIMIT_KNOWLEDGE_NOTE, registerTool, type ToolContext } from "./helpers.js";
 
 const PLATFORMS = [
   "facebook",
@@ -108,7 +108,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "Update Account Automation",
       effect: "destructive",
       description:
-        `Update the default automation configurations (delete, reply, like, message, chat, story, storyMention) for a connected account. ${KEYWORD_OPENING_NOTE}`,
+        `Update the default automation configurations (delete, reply, like, message, chat, story, storyMention, pause) for a connected account. ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`,
       inputSchema: {
         accountId: z.string().describe("The Repliz account id."),
         delete: z.record(z.unknown()).describe("Delete automation configuration object."),
@@ -123,6 +123,17 @@ export function registerAccountTools(ctx: ToolContext): void {
           .describe(
             "Instagram only: DM people who mention the account in their own story. Same shape as story without keyword and condition: { isActive, type: 'text' | 'ai' | 'opening', text, prompt, opening, delay }. The AI only knows the person's name. Left out, the saved setting is kept."
           ),
+        pause: z
+          .object({
+            isActive: z.boolean().describe("Pause the DM automation of a chat when the account replies to it by hand."),
+            value: z
+              .union([z.literal(0), z.literal(1800), z.literal(3600), z.literal(21600), z.literal(86400)])
+              .describe("Seconds the chat stays paused: 1800, 3600, 21600, 86400, or 0 until resumed."),
+          })
+          .optional()
+          .describe(
+            "Pauses Reply DM, Reply Story and Reply Story Mention in a chat when the account replies to it by hand, from Repliz or the platform's app. Resume a chat early with repliz_resume_chat. Left out, the saved setting is kept."
+          ),
       },
     },
     async (args) =>
@@ -134,6 +145,7 @@ export function registerAccountTools(ctx: ToolContext): void {
         chat: args.chat,
         story: args.story,
         storyMention: args.storyMention,
+        pause: args.pause,
       })
   );
 

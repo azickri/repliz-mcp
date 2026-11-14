@@ -1,7 +1,7 @@
 /** Automation tools: manage content automations (reply, like, message, story, delete). */
 
 import { z } from "zod";
-import { KEYWORD_OPENING_NOTE, registerTool, type ToolContext } from "./helpers.js";
+import { KEYWORD_OPENING_NOTE, LIMIT_KNOWLEDGE_NOTE, registerTool, type ToolContext } from "./helpers.js";
 
 export function registerAutomationTools(ctx: ToolContext): void {
   registerTool(
@@ -43,7 +43,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
         accountId: z.string().describe("The account id that owns the content."),
         config: z
           .record(z.unknown())
-          .describe(`Automation configuration object (delete, reply, like, message, story). ${KEYWORD_OPENING_NOTE}`),
+          .describe(`Automation configuration object (delete, reply, like, message, story). ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`),
       },
     },
     async (args) =>
@@ -79,7 +79,7 @@ export function registerAutomationTools(ctx: ToolContext): void {
         automationId: z.string().describe("The automation id to update."),
         config: z
           .record(z.unknown())
-          .describe(`Updated automation configuration object (delete, reply, like, message, story). ${KEYWORD_OPENING_NOTE}`),
+          .describe(`Updated automation configuration object (delete, reply, like, message, story). ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`),
       },
     },
     async (args) =>

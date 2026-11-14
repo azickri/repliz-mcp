@@ -1,7 +1,7 @@
 /** Template tools: manage reusable automation templates. */
 
 import { z } from 'zod';
-import { KEYWORD_OPENING_NOTE, registerTool, type ToolContext } from './helpers.js';
+import { KEYWORD_OPENING_NOTE, LIMIT_KNOWLEDGE_NOTE, registerTool, type ToolContext } from './helpers.js';
 
 export function registerTemplateTools(ctx: ToolContext): void {
   registerTool(
@@ -52,7 +52,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
         config: z
           .record(z.unknown())
           .describe(
-            `Automation template configuration object containing rules (delete, reply, like, message, chat, story, and the optional storyMention: an Instagram DM to people who mention the account in their story, type text, ai, or opening). ${KEYWORD_OPENING_NOTE}`,
+            `Automation template configuration object containing rules (delete, reply, like, message, chat, story, and the optional storyMention: an Instagram DM to people who mention the account in their story, type text, ai, or opening). ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`,
           ),
       },
     },
@@ -93,7 +93,7 @@ export function registerTemplateTools(ctx: ToolContext): void {
         config: z
           .record(z.unknown())
           .describe(
-            `Updated automation template configuration object containing rules (delete, reply, like, message, chat, story, and the optional storyMention: an Instagram DM to people who mention the account in their story, type text, ai, or opening). ${KEYWORD_OPENING_NOTE}`,
+            `Updated automation template configuration object containing rules (delete, reply, like, message, chat, story, and the optional storyMention: an Instagram DM to people who mention the account in their story, type text, ai, or opening). ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`,
           ),
       },
     },
