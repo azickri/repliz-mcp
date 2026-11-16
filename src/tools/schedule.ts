@@ -153,7 +153,7 @@ const additionalInfoSchema = z
       .max(10000)
       .default('')
       .describe(
-        'A comment the account posts on its own post right after it is published: Facebook, Instagram, LinkedIn, YouTube, and TikTok, not on a story or a TikTok draft. TikTok takes up to 150 characters, LinkedIn 1,250, Instagram 2,200. Empty posts no comment. The result shows on the schedule as firstCommentId or firstCommentErrorMessage.',
+        'A comment the account posts on its own post right after it is published: Facebook, Instagram, LinkedIn, YouTube, and TikTok, not on a story, a TikTok draft, or a YouTube video made for kids. TikTok takes up to 150 characters, LinkedIn 1,250, Instagram 2,200. Empty posts no comment. The result shows on the schedule as firstCommentId or firstCommentErrorMessage.',
       ),
     isShareToFeed: z
       .boolean()
@@ -166,6 +166,12 @@ const additionalInfoSchema = z
       .default('public')
       .describe(
         "YouTube only: who can watch the video. 'unlisted' is watchable by link only, 'private' only by the channel owner. A private video is not listed by repliz_list_content, so its automation and statistics don't run.",
+      ),
+    isMadeForKids: z
+      .boolean()
+      .default(false)
+      .describe(
+        'YouTube video only: declare the video as made for kids (COPPA). YouTube turns off its comments, so firstComment is not posted on it. false sends no audience, so the video follows the channel setting.',
       ),
     trialParams: z
       .object({
@@ -202,7 +208,7 @@ const additionalInfoSchema = z
       ),
   })
   .describe(
-    'Optional extras: firstComment (Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text), quotePost (Threads quote of a post from Threads research).',
+    'Optional extras: firstComment (Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, tagged products, hashtags, mentions, isShareToFeed (Instagram video), privacy and isMadeForKids (YouTube), trialParams (Instagram video), target countries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text), quotePost (Threads quote of a post from Threads research).',
   );
 
 const replySchema = z.object({
@@ -239,6 +245,7 @@ const DEFAULT_ADDITIONAL_INFO = {
   firstComment: '',
   isShareToFeed: false,
   privacy: 'public',
+  isMadeForKids: false,
   trialParams: { graduationStrategy: '' },
   collaborators: [] as string[],
   music: {
@@ -415,7 +422,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link), quotePost (Threads: { id } of a post from repliz_search_threads_content or repliz_search_threads_user_content to quote).',
+            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), isMadeForKids (YouTube: made for kids, no comments), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link), quotePost (Threads: { id } of a post from repliz_search_threads_content or repliz_search_threads_user_content to quote).',
           ),
         replies: z
           .array(replySchema)

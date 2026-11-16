@@ -4724,6 +4724,7 @@
                       "isAutoAddMusic": false,
                       "isShareToFeed": false,
                       "privacy": "unlisted",
+                      "isMadeForKids": false,
                       "trialParams": { "graduationStrategy": "" },
                       "collaborators": [],
                       "music": {
@@ -12987,7 +12988,7 @@
           "firstComment": {
             "type": "string",
             "example": "Full price list in the link in our bio 👆",
-            "description": "A comment the account posts on its own post right after it is published. Facebook, Instagram, LinkedIn, YouTube, and TikTok, not on a `story` or a TikTok draft. TikTok takes up to 150 characters, LinkedIn 1,250, and Instagram 2,200. Empty or left out posts no comment."
+            "description": "A comment the account posts on its own post right after it is published. Facebook, Instagram, LinkedIn, YouTube, and TikTok, not on a `story`, a TikTok draft, or a YouTube video made for kids. TikTok takes up to 150 characters, LinkedIn 1,250, and Instagram 2,200. Empty or left out posts no comment."
           },
           "isShareToFeed": {
             "type": "boolean",
@@ -12999,6 +13000,11 @@
             "enum": ["", "public", "unlisted", "private"],
             "example": "public",
             "description": "YouTube `video`. Who can watch the video: `public` for everyone, `unlisted` for people with the link, `private` for the channel owner only. Empty or left out is `public`. A `private` video does not appear in Get Content, so its automation and statistics do not run."
+          },
+          "isMadeForKids": {
+            "type": "boolean",
+            "example": false,
+            "description": "YouTube `video`. `true` declares the video as made for kids (COPPA). YouTube then turns off its comments, so `firstComment` is not posted on it. `false` or left out sends no audience, so the video follows the channel setting on YouTube. Default `false`."
           },
           "trialParams": {
             "description": "Instagram `video` and `reel`. Posts the Reel as a trial reel, shown to non-followers first. Leave it out for a regular Reel.",
