@@ -74,7 +74,7 @@ export class ReplizClient {
     }
 
     // Bound every outbound call: without a timeout a stalled Repliz request
-    // pins the caller's session (and its memory) open indefinitely.
+    // holds the caller's request (and its in-flight slot) open indefinitely.
     let response: Response;
     try {
       response = await fetch(url, {

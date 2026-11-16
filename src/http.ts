@@ -4,30 +4,33 @@
  * A user connects by pointing their MCP client at https://<host>/mcp and
  * either sending their own Repliz Access Key and Secret Key as headers, or —
  * when OAuth is configured — clicking "Connect" and typing those keys into the
- * sign-in page once. Nothing else is installed or configured on their side,
- * and the server stores nothing between requests beyond the live session
- * itself.
+ * sign-in page once. Nothing else is installed or configured on their side.
+ *
+ * The server is stateless: it keeps no MCP sessions. Every request carries the
+ * caller's credentials and is answered by a fresh MCP server built for them,
+ * which is thrown away once the response is sent. Building one takes about a
+ * millisecond, and in exchange there is nothing to cap, evict, expire, or lose
+ * on restart — a thousand connected users cost no more memory than ten, and
+ * several processes can serve the same users without sharing anything.
  *
  * Four rules keep an internet-facing endpoint honest:
  *
- *   - Credentials are verified against the Repliz API *before* a session
- *     exists, so an anonymous caller cannot make the server allocate memory.
- *   - Every later request is re-checked against the credentials that opened the
- *     session, so a leaked session id is useless on its own.
- *   - Sessions expire when idle and are capped in number, so memory stays
- *     bounded even when clients vanish without saying goodbye.
+ *   - Credentials are verified against the Repliz API *before* any work is done
+ *     for a request, so an anonymous caller cannot make the server allocate.
+ *     Successes are cached briefly, so this is rarely a network call.
+ *   - Each request runs as exactly the credentials it carries. There is no
+ *     session id to leak or replay.
+ *   - Requests in flight are capped, so memory stays bounded under any load.
  *   - Requests are rate limited per IP.
  */
 
 import express, { type Request, type Response, type NextFunction } from "express";
-import { randomUUID } from "node:crypto";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import {
   createOAuthMetadata,
   getOAuthProtectedResourceMetadataUrl,
   mcpAuthRouter,
 } from "@modelcontextprotocol/sdk/server/auth/router.js";
-import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { ReplizClient } from "./client.js";
 import { createReplizServer } from "./server.js";
 import {
@@ -35,17 +38,16 @@ import {
   bearerTokenFromHeaders,
   credentialsFromHeaders,
   getBaseUrl,
-  maxSessions,
+  maxConcurrentRequests,
   oauthSettings,
   port,
   rateLimitPerMinute,
-  sessionIdleMs,
   trustProxySetting,
   type ReplizCredentials,
 } from "./config.js";
 import { ReplizOAuthProvider, withIssuer } from "./oauth.js";
 import { SIGN_IN_PATH, renderMessagePage, sendPage } from "./oauth-page.js";
-import { AuthCache, RateLimiter, SessionStore, fingerprint, sameFingerprint } from "./session.js";
+import { AuthCache, InFlightLimiter, RateLimiter, fingerprint } from "./guards.js";
 
 const MCP_PATH = "/mcp";
 const SWEEP_INTERVAL_MS = 60_000;
@@ -91,8 +93,8 @@ export async function runHttp(): Promise<void> {
         "Content-Type, Authorization, X-Repliz-Access-Key, X-Repliz-Secret-Key, Mcp-Session-Id, Mcp-Protocol-Version"
       );
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
-      // Browser clients cannot resume a session, or find the OAuth sign-in, without reading these.
-      res.setHeader("Access-Control-Expose-Headers", "Mcp-Session-Id, WWW-Authenticate");
+      // Browser clients cannot find the OAuth sign-in without reading this.
+      res.setHeader("Access-Control-Expose-Headers", "WWW-Authenticate");
       if (req.method === "OPTIONS") {
         res.sendStatus(204);
         return;
@@ -101,9 +103,7 @@ export async function runHttp(): Promise<void> {
     });
   }
 
-  const sessions = new SessionStore<StreamableHTTPServerTransport>((id, reason, live) => {
-    console.error(`[session] ${id} closed (${reason}). Live: ${live}`);
-  });
+  const inFlight = new InFlightLimiter();
   const authCache = new AuthCache();
   const rateLimiter = new RateLimiter();
   const signInLimiter = new RateLimiter(() => SIGN_IN_ATTEMPTS_PER_MINUTE);
@@ -248,11 +248,9 @@ export async function runHttp(): Promise<void> {
     next();
   });
 
-  // Reclaim sessions whose client went away without sending DELETE — the common
-  // case for a closed tab or a dropped network. Without this the session map
-  // grows until the process runs out of memory.
+  // Drop expired credential checks and rate-limit windows, so these maps stay
+  // as small as the current traffic rather than growing with every caller seen.
   const sweeper = setInterval(() => {
-    sessions.sweepIdle();
     authCache.sweep();
     rateLimiter.sweep();
     signInLimiter.sweep();
@@ -260,78 +258,10 @@ export async function runHttp(): Promise<void> {
   }, SWEEP_INTERVAL_MS);
   sweeper.unref();
 
-  /**
-   * Re-check the caller against the credentials that opened this session.
-   * Returns true when the request may proceed; otherwise it has already replied.
-   *
-   * The session id is sent as a plain header on every request, so it can surface
-   * in a reverse-proxy access log, a client's debug output, or the shell history
-   * on a shared machine. Binding the session to a fingerprint of its credentials
-   * means that replaying a leaked id grants nothing. An OAuth session is bound
-   * to the keys sealed in its token, so a refreshed token keeps the session.
-   */
-  function authorizeSession(req: Request, res: Response, credentialHash: string): boolean {
-    const caller = identify(req);
-    if (caller.kind === "bad-token") {
-      unauthorized(res, BAD_TOKEN_MESSAGE, "invalid_token");
-      return false;
-    }
-    if (caller.kind === "anonymous") {
-      unauthorized(
-        res,
-        "Unauthorized: this session is bound to a set of Repliz credentials — send them with every request, not only at initialize."
-      );
-      return false;
-    }
-    if (!sameFingerprint(fingerprint(caller.creds), credentialHash)) {
-      res
-        .status(403)
-        .json(
-          jsonRpcError(
-            -32003,
-            "Forbidden: these credentials do not own this session. Start your own session instead of reusing another one's id."
-          )
-        );
-      return false;
-    }
-    return true;
-  }
-
+  // Every POST is handled on its own, whatever it carries — initialize, a tool
+  // call, a notification — and whether or not the client sends an
+  // Mcp-Session-Id left over from before this server went stateless.
   app.post(MCP_PATH, async (req: Request, res: Response) => {
-    const sessionId = req.headers["mcp-session-id"] as string | undefined;
-    const existing = sessionId ? sessions.get(sessionId) : undefined;
-
-    if (existing && sessionId) {
-      if (!authorizeSession(req, res, existing.credentialHash)) return;
-      sessions.touch(sessionId);
-      await existing.transport.handleRequest(req, res, req.body);
-      return;
-    }
-
-    // A session id we don't recognise means it expired, or the process restarted
-    // and lost its in-memory sessions. The spec's signal for that is 404, which
-    // tells a compliant client to re-initialize on its own; a 400 would surface
-    // as a hard error instead.
-    if (sessionId) {
-      res.status(404).json(jsonRpcError(-32001, "Session not found: start a new session."));
-      return;
-    }
-
-    if (!isInitializeRequest(req.body)) {
-      res
-        .status(400)
-        .json(jsonRpcError(-32000, "Bad Request: no session ID and not an initialize request."));
-      return;
-    }
-
-    if (sessions.atCapacity() && !sessions.makeRoom()) {
-      res.setHeader("Retry-After", "60");
-      res
-        .status(503)
-        .json(jsonRpcError(-32000, "Server at capacity: too many active sessions. Retry shortly."));
-      return;
-    }
-
     const caller = identify(req);
     if (caller.kind === "bad-token") {
       unauthorized(res, BAD_TOKEN_MESSAGE, "invalid_token");
@@ -343,8 +273,24 @@ export async function runHttp(): Promise<void> {
     }
     const { creds } = caller;
 
+    const release = inFlight.acquire();
+    if (!release) {
+      res.setHeader("Retry-After", "5");
+      res
+        .status(503)
+        .json(jsonRpcError(-32000, "Server busy: too many requests in progress. Retry in a few seconds."));
+      return;
+    }
+    // 'close' fires both when the response is sent and when the client hangs
+    // up first, so the slot is always given back.
+    let closed = false;
+    res.on("close", () => {
+      closed = true;
+      release();
+    });
+
     // Verify before allocating anything: an unverified caller must not be able
-    // to make the server hold a session's worth of memory.
+    // to make the server build an MCP server.
     let valid: boolean;
     try {
       valid = await checkCredentials(creds);
@@ -377,43 +323,39 @@ export async function runHttp(): Promise<void> {
       }
       return;
     }
+    // The client gave up while its keys were being checked; nobody is listening.
+    if (closed) return;
 
-    const credentialHash = fingerprint(creds);
+    // A server and transport for this one request, bound to these credentials
+    // and dropped with the response. No session id is issued, so the client
+    // sends its credentials again next time and gets a fresh pair.
     const server = createReplizServer(new ReplizClient({ ...creds, baseUrl }));
-    const transport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => randomUUID(),
-      onsessioninitialized: (sid) => {
-        sessions.add(sid, transport, credentialHash);
-        console.error(`[session] ${sid} opened. Live: ${sessions.size}`);
-      },
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+    res.on("close", () => {
+      void server.close().catch(() => {
+        /* already closed */
+      });
     });
-    transport.onclose = () => {
-      if (transport.sessionId) sessions.forget(transport.sessionId);
-    };
 
-    await server.connect(transport);
-    await transport.handleRequest(req, res, req.body);
+    try {
+      await server.connect(transport);
+      await transport.handleRequest(req, res, req.body);
+    } catch (err) {
+      // Express 4 does not catch async errors; an escape here would take the process down.
+      console.error(`[mcp] request failed: ${err instanceof Error ? err.message : err}`);
+      if (!res.headersSent) res.status(500).json(jsonRpcError(-32603, "Internal server error."));
+    }
   });
 
-  // GET opens the server-sent events stream; DELETE tears the session down.
-  const handleSessionRequest = async (req: Request, res: Response) => {
-    const sessionId = req.headers["mcp-session-id"] as string | undefined;
-    const session = sessionId ? sessions.get(sessionId) : undefined;
-    if (!session || !sessionId) {
-      if (sessionId) {
-        res.status(404).json(jsonRpcError(-32001, "Session not found: start a new session."));
-      } else {
-        res.status(400).json(jsonRpcError(-32000, "Bad Request: missing session ID."));
-      }
-      return;
-    }
-    if (!authorizeSession(req, res, session.credentialHash)) return;
-    sessions.touch(sessionId);
-    await session.transport.handleRequest(req, res);
+  // GET would open a stream for server-initiated messages, and DELETE would end
+  // a session. With no sessions there is nothing to stream or end, and the
+  // spec's answer for both is 405, which clients handle by carrying on.
+  const methodNotAllowed = (_req: Request, res: Response) => {
+    res.setHeader("Allow", "POST");
+    res.status(405).json(jsonRpcError(-32000, "Method Not Allowed: this server is stateless; send requests with POST."));
   };
-
-  app.get(MCP_PATH, handleSessionRequest);
-  app.delete(MCP_PATH, handleSessionRequest);
+  app.get(MCP_PATH, methodNotAllowed);
+  app.delete(MCP_PATH, methodNotAllowed);
 
   app.get("/health", (_req, res) => {
     const memory = process.memoryUsage();
@@ -421,11 +363,12 @@ export async function runHttp(): Promise<void> {
       status: "ok",
       baseUrl,
       oauth: Boolean(provider),
-      sessions: sessions.size,
-      maxSessions: maxSessions(),
-      sessionIdleMinutes: sessionIdleMs() / 60_000,
+      stateless: true,
+      inFlight: inFlight.size,
+      maxConcurrentRequests: maxConcurrentRequests(),
       rateLimitPerMinute: rateLimitPerMinute(),
       rssMb: Math.round(memory.rss / 1024 / 1024),
+      heapUsedMb: Math.round(memory.heapUsed / 1024 / 1024),
       uptimeSeconds: Math.round(process.uptime()),
     });
   });
@@ -438,8 +381,8 @@ export async function runHttp(): Promise<void> {
           ? `  OAuth: on, issuer ${oauth.publicUrl.origin} — ${oauth.accessTokenMs / 60_000} min access, ` +
             `${oauth.refreshTokenMs / 86_400_000} day refresh tokens.\n`
           : `  OAuth: off (set REPLIZ_OAUTH_SECRET and REPLIZ_PUBLIC_URL to enable).\n`) +
-        `  Limits: ${maxSessions()} sessions, ${sessionIdleMs() / 60_000} min idle timeout, ` +
-        `${rateLimitPerMinute()} req/min per IP.`
+        `  Stateless: no sessions are kept between requests.\n` +
+        `  Limits: ${maxConcurrentRequests()} requests in flight, ${rateLimitPerMinute()} req/min per IP.`
     );
   });
 
@@ -464,7 +407,7 @@ export async function runHttp(): Promise<void> {
   const shutdown = (signal: string) => {
     console.error(`Received ${signal}, shutting down...`);
     clearInterval(sweeper);
-    sessions.closeAll("shutdown");
+    // Stops accepting connections and waits for requests in flight to finish.
     httpServer.close(() => process.exit(0));
     setTimeout(() => process.exit(0), 5_000).unref();
   };

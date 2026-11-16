@@ -21,10 +21,11 @@ This repository is the server that serves that URL.
 
 ## How it works
 
-One process serves everyone. It holds **no credentials of its own** — each
-request carries the caller's keys, which are verified against the Repliz API and
-bound to that caller's session. A session owns its own API client, so no two
-users ever share one.
+One process serves everyone. It holds **no credentials of its own** and **no
+sessions** — each request carries the caller's keys, which are verified against
+the Repliz API, and is answered by a fresh MCP server built for those keys and
+discarded with the response. No two users ever share an API client, and a
+thousand connected users cost no more memory than ten.
 
 ```
 MCP client ──(URL + keys)──► this server ──(Basic auth)──► api.repliz.com
@@ -64,7 +65,9 @@ cp .env.example .env
 npm start
 ```
 
-The endpoint is `POST/GET/DELETE /mcp`, plus `GET /health` for monitoring.
+The endpoint is `POST /mcp`, plus `GET /health` for monitoring. `GET` and
+`DELETE /mcp` answer `405`: with no sessions there is no stream to open or
+session to end, and MCP clients carry on without either.
 With OAuth on, the server also answers `/.well-known/oauth-protected-resource/mcp`,
 `/.well-known/oauth-authorization-server`, `/register`, `/authorize`, `/token`,
 and `/oauth/login` (the sign-in form). Serve it over HTTPS in production, behind
@@ -78,8 +81,7 @@ Everything is optional; the defaults suit a 1 GB VPS.
 | -------------------------------- | ------------------------ | ------------------------------------------------------------------ |
 | `PORT`                           | `3000`                   | Port to listen on                                                  |
 | `REPLIZ_BASE_URL`                | `https://api.repliz.com` | Repliz API base URL                                                |
-| `REPLIZ_MAX_SESSIONS`            | `300`                    | Cap on concurrent sessions; beyond it new connects get `503`       |
-| `REPLIZ_SESSION_IDLE_MINUTES`    | `30`                     | Close a session after this long without a request                  |
+| `REPLIZ_MAX_CONCURRENT_REQUESTS` | `500`                    | Cap on `/mcp` requests handled at once; beyond it they get `503`   |
 | `REPLIZ_RATE_LIMIT_PER_MINUTE`   | `120`                    | Requests allowed per IP per minute                                 |
 | `REPLIZ_TRUST_PROXY`             | `loopback`               | Which proxies may set `X-Forwarded-For`                            |
 | `REPLIZ_REQUEST_TIMEOUT_SECONDS` | `30`                     | Timeout for outbound calls to the Repliz API                       |
@@ -153,19 +155,27 @@ redirect URI. Header authentication keeps working alongside OAuth.
 ```bash
 npm ci && npm run build
 cp .env.example .env           # PORT and the limits live here
-pm2 start dist/index.js --name repliz-mcp
+pm2 start dist/index.js --name repliz-mcp --node-args="--max-old-space-size=192"
 pm2 save && pm2 startup        # survive a reboot
 ```
 
-**Do not add `-i` / `--instances`.** PM2's default fork mode is what you want.
-Sessions live in this process's memory, so cluster mode would spread a user's
-requests across workers that know nothing about each other, and every follow-up
-request would be told its session does not exist. Scale by raising
-`REPLIZ_MAX_SESSIONS` on a bigger box, not by adding instances.
+**Keep `--max-old-space-size`.** Every request leaves its short-lived MCP server
+behind as garbage, and without a ceiling V8 prefers growing the heap to
+collecting it — after a burst the process can sit at 500 MB of mostly garbage
+and never give it back. With the flag it collects sooner and stays near
+330 MB even at hundreds of requests a second. What is actually live is small
+(~30 MB plus ~0.16 MB per request in flight), so 192 leaves ample headroom.
 
-Nginx needs two non-default settings, because the transport holds a
-Server-Sent Events stream open and Nginx would otherwise buffer it and cut it
-after 60 seconds:
+Fork mode (no `-i`) serves well over a thousand users from one core. Because
+nothing is kept between requests, cluster mode (`-i max`) also works if one
+core is ever not enough: any worker can answer any request. Each worker keeps
+its own rate-limit counters and auth cache, though, so the per-IP limit
+becomes per worker, and the check that an OAuth authorization code is redeemed
+only once is per worker too (harmless: a code is useless without the PKCE
+verifier only the client holds, and it expires in five minutes).
+
+Nginx needs two non-default settings, because each response is streamed as
+Server-Sent Events and Nginx would otherwise buffer it:
 
 ```nginx
 location /mcp {
@@ -175,7 +185,7 @@ location /mcp {
 
     proxy_buffering off;
     proxy_cache off;
-    proxy_read_timeout 3600s;   # keep above REPLIZ_SESSION_IDLE_MINUTES
+    proxy_read_timeout 3600s;   # generous: a large repliz_upload_file can take minutes
 
     proxy_set_header Host              $host;
     proxy_set_header X-Real-IP         $remote_addr;
@@ -201,45 +211,46 @@ like `127.0.0.1` and shares that one budget.
 
 ### What a restart does
 
-`pm2 restart` drops every live session — they exist only in this process's
-memory. Nothing is queued or half-written, since every tool call is a single
-synchronous call to the Repliz API, so the cost is small:
+Nothing is lost: there are no sessions to drop, and nothing is queued or
+half-written, since every tool call is a single synchronous call to the Repliz
+API.
 
 | | |
 | --- | --- |
 | **Mid-request** | That one call fails; retrying works. |
-| **Idle** | The next request gets `404 Session not found`, which the MCP spec defines as "start a new session" — compliant clients re-initialize silently. |
-| **After reconnecting** | Normal. One extra verification call, because the auth cache is empty again. |
+| **Everyone else** | Notices nothing. Their next request is served like any other. |
+| **After the restart** | One extra verification call per user, because the auth cache is empty again. |
 | **OAuth users** | Stay signed in. Their tokens are sealed, not stored, so they open again after a restart. |
 
-Shutdown on `SIGTERM` closes sessions and stops listening in about 0.1s, well
-inside PM2's default `kill_timeout`.
+On `SIGTERM` the server stops accepting connections and exits once the requests
+in flight have finished, or after 5 seconds at most.
 
 ---
 
 ## Sizing
 
 The server is a thin proxy — every tool call is one outbound HTTPS request with
-no computation in between — so CPU is effectively idle and memory is the only
-thing to plan for. Measured:
+no computation in between. Each request builds a fresh MCP server with all 146
+tools, which takes about 1.2 ms of CPU and 0.16 MB of memory that becomes
+garbage as soon as the response is sent. What costs resources is the request
+rate, not how many users are connected: an idle connection costs nothing.
 
-| Live sessions | Process RSS |
-| ------------- | ----------- |
-| 0 (baseline)  | ~96 MB      |
-| 10            | ~103 MB     |
-| 100           | ~122 MB     |
-| 300           | ~173 MB     |
-| 1000          | ~356 MB     |
+Measured against a stub API, with 1500 distinct users each sending
+`initialize`, `tools/list` and two tool calls, 100 at a time:
 
-That is roughly **0.26 MB per live session** on top of a ~96 MB baseline. The
-146 tool schemas are built once and shared by every session; only the MCP
-server object, the transport and the Repliz client — which holds that user's
-credentials — are per session. The default cap of 300 fits easily on a 1 GB
-VPS. Sessions are only live while a client is connected and idle ones are
-reclaimed after 30 minutes, so the steady-state number is far below the total
-user count.
+| | |
+| --- | --- |
+| Idle | ~96 MB RSS |
+| Sustained ~330 requests/s, with `--max-old-space-size=192` | ~330 MB RSS at peak, no errors |
+| Live heap once the burst is over | ~32 MB |
 
-`GET /health` reports live sessions, the cap, RSS, and uptime.
+That burst is far heavier than real traffic — a thousand users each calling a
+tool every 20 seconds is 50 requests a second — and it fits a 1 GB VPS. The 146
+tool input schemas are built once and shared by every request; only the MCP
+server object, the transport and the Repliz client, which holds that user's
+credentials, are per request.
+
+`GET /health` reports requests in flight, the cap, RSS, heap in use, and uptime.
 
 ---
 
@@ -247,22 +258,18 @@ user count.
 
 Because `/mcp` is open to the internet:
 
-- **Credentials are verified before a session exists.** On `initialize` the
-  server calls `GET /public/account/count` with the supplied keys and returns
-  `401` if Repliz rejects them, so an anonymous caller cannot make the server
-  allocate memory. Successes are cached briefly so reconnects stay cheap.
-- **Sessions are bound to the credentials that opened them.** Every later
-  request is re-checked against a fingerprint of those keys, in constant time.
-  The session id travels as a plain header and can end up in a proxy access log
-  or a client's debug output; without this check, replaying it would hand over
-  the owner's workspace with no credentials at all. A mismatch gets `403`, a
-  request with no credentials gets `401`.
-- **Sessions expire and are capped.** Idle sessions are swept, because MCP
-  clients routinely disappear without sending `DELETE` — the SDK's own
-  `client.close()` does not send one. At capacity the server sweeps first, then
-  evicts the least recently used session if it has been quiet for over a minute,
-  so dead sessions cannot lock out real users; if every session is genuinely
-  active, the new connect gets `503` rather than cutting someone off.
+- **Credentials are verified before any work is done.** Every request's keys
+  are checked with `GET /public/account/count`, and the request gets `401` if
+  Repliz rejects them, so an anonymous caller cannot make the server build
+  anything. Successes are cached for `REPLIZ_AUTH_CACHE_MINUTES`, so a user
+  costs at most one verification call per five minutes by default.
+- **Each request runs as exactly the keys it carries.** With no sessions there
+  is no session id to leak into a proxy access log and replay. A request with no
+  credentials gets `401`, and an `Mcp-Session-Id` header that a client still
+  sends from an earlier version is ignored, never trusted.
+- **Requests in flight are capped** by `REPLIZ_MAX_CONCURRENT_REQUESTS`, so
+  memory stays bounded however many users connect. Past the cap a request gets
+  `503` with `Retry-After`.
 - **Requests are rate limited** per IP, counted against the address chosen by
   `REPLIZ_TRUST_PROXY`.
 - **The OAuth sign-in page guards the keys typed into it.** It cannot be framed
@@ -281,17 +288,19 @@ Because `/mcp` is open to the internet:
   5 KB. A document whose `client_id` differs from its URL, that carries a client
   secret, or that lists a disallowed redirect URI is refused, and nothing
   fetched is ever relayed back to the caller.
-- **Outbound calls time out**, so a stalled Repliz request cannot pin a session.
+- **Outbound calls time out**, so a stalled Repliz request cannot hold its slot
+  forever.
 - **Uploads never touch the host's disk.** See [File uploads](#file-uploads).
 - **Clean shutdown** on `SIGTERM` / `SIGINT`.
 
 Two things to be aware of:
 
-- Credentials are verified when a session opens, not on every call. A revoked
-  key keeps working until its session goes idle; shorten
-  `REPLIZ_SESSION_IDLE_MINUTES` if that matters.
-- Sessions live in memory, so this is a single-instance server. Horizontal
-  scaling needs a shared session store — see [Roadmap](#roadmap).
+- A revoked key keeps working for up to `REPLIZ_AUTH_CACHE_MINUTES` (default 5)
+  after it is revoked. Shorten it if that matters, at the cost of more
+  verification calls.
+- The rate limit is per IP, and hosted clients such as Claude.ai and ChatGPT
+  call from a small set of shared addresses, so many of their users share one
+  budget. Raise `REPLIZ_RATE_LIMIT_PER_MINUTE` as usage grows.
 
 ### File uploads
 
@@ -361,18 +370,19 @@ npm run build   # compile to dist/
 ```
 
 `npm test` covers the parts where a quiet mistake becomes a security hole: the
-SSRF and upload-host guards, credential parsing, the session credential binding,
-the limits that bound memory, and OAuth token sealing, single-use codes, and
-client binding. `npm run smoke` covers the wiring — that two users stay apart,
-that a session id alone opens nothing, that the full OAuth flow works over HTTP,
-and that the upload guards are reachable through the tool surface. Neither needs
+SSRF and upload-host guards, credential parsing, the auth cache, the limits that
+bound memory, and OAuth token sealing, single-use codes, and client binding.
+`npm run smoke` covers the wiring — that two users stay apart, that every
+request runs as exactly the keys it carries, that the in-flight cap holds, that
+the full OAuth flow works over HTTP, and that the upload guards are reachable
+through the tool surface. Neither needs
 credentials or network access, and CI runs both.
 
 ```
 src/
   index.ts     # entry point: load .env, start the server
   http.ts      # the HTTP transport, auth, and request lifecycle
-  session.ts   # session store, credential fingerprints, rate limiter, auth cache
+  guards.ts    # auth cache, credential fingerprints, rate limiter, in-flight cap
   server.ts    # createReplizServer(client)
   config.ts    # env config + per-request credential parsing
   client.ts    # Repliz API client (Basic auth, timeouts, errors)
@@ -380,18 +390,13 @@ src/
   oauth-page.ts  # the sign-in page and its security headers
   net.ts       # upload-host allowlist and SSRF guards
   tools/       # one module per API domain, registered via tools/index.ts
-test/          # unit tests for config, session, oauth, and net
+test/          # unit tests for config, guards, oauth, and net
 scripts/
   smoke-test.mjs   # end-to-end check against a stub API
 api.json           # the source OpenAPI spec, kept as reference
 ```
 
 ---
-
-## Roadmap
-
-- **Shared session store** (Redis) so several replicas can run behind a load
-  balancer without sticky sessions.
 
 ## License
 

@@ -69,8 +69,9 @@ export function bearerTokenFromHeaders(headers: HeaderBag): string | null {
 }
 
 // ─── Tunables ───────────────────────────────────────────────────────────────
-// Defaults are sized for a ~1 GB VPS. Each live session costs roughly 0.26 MB,
-// so maxSessions() is the main memory lever.
+// Defaults are sized for a ~1 GB VPS. The server keeps nothing between
+// requests, so memory follows the number of requests in flight, not the number
+// of connected users — maxConcurrentRequests() is what bounds it.
 
 function intFromEnv(name: string, fallback: number, min: number): number {
   const raw = process.env[name]?.trim();
@@ -85,14 +86,12 @@ export function port(): number {
   return intFromEnv("PORT", 3000, 1);
 }
 
-/** Drop a session after this long with no request. Default 30 minutes. */
-export function sessionIdleMs(): number {
-  return intFromEnv("REPLIZ_SESSION_IDLE_MINUTES", 30, 1) * 60_000;
-}
-
-/** Hard cap on concurrent sessions, to bound memory. Default 300. */
-export function maxSessions(): number {
-  return intFromEnv("REPLIZ_MAX_SESSIONS", 300, 1);
+/**
+ * Hard cap on /mcp requests being handled at once, to bound memory. Each holds
+ * a short-lived MCP server (~0.1 MB) until its response is sent. Default 500.
+ */
+export function maxConcurrentRequests(): number {
+  return intFromEnv("REPLIZ_MAX_CONCURRENT_REQUESTS", 500, 1);
 }
 
 /** Requests allowed per IP per minute. Default 120. */

@@ -10,19 +10,17 @@ import {
   bearerTokenFromHeaders,
   credentialsFromHeaders,
   getBaseUrl,
-  maxSessions,
+  maxConcurrentRequests,
   maxUploadBytes,
   oauthSettings,
   port,
   rateLimitPerMinute,
-  sessionIdleMs,
   trustProxySetting,
 } from "../src/config.js";
 
 const ENV_KEYS = [
   "REPLIZ_BASE_URL",
-  "REPLIZ_MAX_SESSIONS",
-  "REPLIZ_SESSION_IDLE_MINUTES",
+  "REPLIZ_MAX_CONCURRENT_REQUESTS",
   "REPLIZ_RATE_LIMIT_PER_MINUTE",
   "REPLIZ_MAX_UPLOAD_MB",
   "REPLIZ_ALLOWED_ORIGINS",
@@ -141,31 +139,30 @@ describe("getBaseUrl", () => {
 describe("tunables", () => {
   test("use their documented defaults when unset", () => {
     assert.equal(port(), 3000);
-    assert.equal(maxSessions(), 300);
-    assert.equal(sessionIdleMs(), 30 * 60_000);
+    assert.equal(maxConcurrentRequests(), 500);
     assert.equal(rateLimitPerMinute(), 120);
     assert.equal(maxUploadBytes(), 100 * 1024 * 1024);
     assert.deepEqual(allowedOrigins(), []);
   });
 
   test("read valid overrides", () => {
-    process.env.REPLIZ_MAX_SESSIONS = "1000";
-    process.env.REPLIZ_SESSION_IDLE_MINUTES = "5";
-    assert.equal(maxSessions(), 1000);
-    assert.equal(sessionIdleMs(), 5 * 60_000);
+    process.env.REPLIZ_MAX_CONCURRENT_REQUESTS = "1000";
+    process.env.REPLIZ_RATE_LIMIT_PER_MINUTE = "600";
+    assert.equal(maxConcurrentRequests(), 1000);
+    assert.equal(rateLimitPerMinute(), 600);
   });
 
   test("ignore nonsense rather than starting with a broken limit", () => {
     // A typo must not disable the cap that bounds memory.
     for (const bad of ["abc", "-1", "0", "", "   ", "NaN"]) {
-      process.env.REPLIZ_MAX_SESSIONS = bad;
-      assert.equal(maxSessions(), 300, `"${bad}" should fall back to the default`);
+      process.env.REPLIZ_MAX_CONCURRENT_REQUESTS = bad;
+      assert.equal(maxConcurrentRequests(), 500, `"${bad}" should fall back to the default`);
     }
   });
 
   test("truncate a fractional value instead of rejecting it", () => {
-    process.env.REPLIZ_MAX_SESSIONS = "10.9";
-    assert.equal(maxSessions(), 10);
+    process.env.REPLIZ_MAX_CONCURRENT_REQUESTS = "10.9";
+    assert.equal(maxConcurrentRequests(), 10);
   });
 });
 

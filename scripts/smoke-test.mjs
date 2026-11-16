@@ -9,8 +9,9 @@
  *   npm run build && npm run smoke
  *
  * The unit tests cover the pure logic; this covers the wiring — that two users
- * stay apart, that a session id alone opens nothing, and that the upload guards
- * are actually reachable through the tool surface.
+ * stay apart, that every request runs as exactly the keys it carries, that the
+ * cap on requests in flight holds, and that the upload guards are actually
+ * reachable through the tool surface.
  */
 
 import { createServer } from "node:http";
@@ -28,6 +29,10 @@ const HEALTH_URL = `${ORIGIN}/health`;
 
 const A = { "X-Repliz-Access-Key": "keyA", "X-Repliz-Secret-Key": "secretA" };
 const B = { "X-Repliz-Access-Key": "keyB", "X-Repliz-Secret-Key": "secretB" };
+/** A workspace whose API calls take SLOW_MS, to hold requests in flight. */
+const S = { "X-Repliz-Access-Key": "keyS", "X-Repliz-Secret-Key": "secretS" };
+const SLOW_MS = 400;
+const MAX_IN_FLIGHT = 3;
 
 let failures = 0;
 const pass = (m) => console.log("  ✔", m);
@@ -41,8 +46,9 @@ const check = (cond, m, detail = "") => (cond ? pass(m) : fail(`${m}${detail ? `
 const WORKSPACES = {
   "keyA:secretA": { owner: "USER-A", total: 11, secretNote: "A-private" },
   "keyB:secretB": { owner: "USER-B", total: 22, secretNote: "B-private" },
+  "keyS:secretS": { owner: "USER-S", total: 33, secretNote: "S-private" },
 };
-const api = createServer((req, res) => {
+const api = createServer(async (req, res) => {
   const decoded = Buffer.from(
     (req.headers.authorization || "").replace(/^Basic /i, ""),
     "base64"
@@ -53,6 +59,7 @@ const api = createServer((req, res) => {
     res.end(JSON.stringify({ message: "invalid credentials" }));
     return;
   }
+  if (workspace.owner === "USER-S") await sleep(SLOW_MS);
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(JSON.stringify(workspace));
 });
@@ -64,7 +71,7 @@ const server = spawn(process.execPath, ["dist/index.js"], {
     ...process.env,
     PORT: String(MCP_PORT),
     REPLIZ_BASE_URL: `http://127.0.0.1:${API_PORT}`,
-    REPLIZ_MAX_SESSIONS: "2",
+    REPLIZ_MAX_CONCURRENT_REQUESTS: String(MAX_IN_FLIGHT),
     REPLIZ_PUBLIC_URL: ORIGIN,
     REPLIZ_OAUTH_SECRET: "smoke-test-oauth-secret-0123456789abcdef",
     REPLIZ_ACCESS_KEY: "should-be-ignored",
@@ -72,7 +79,7 @@ const server = spawn(process.execPath, ["dist/index.js"], {
   },
   stdio: ["ignore", "inherit", "pipe"],
 });
-server.stderr.on("data", () => {}); // the server logs sessions to stderr
+server.stderr.on("data", () => {}); // the server logs to stderr
 
 const cleanup = () => {
   server.kill("SIGTERM");
@@ -106,6 +113,12 @@ const raw = (headers, body, method = "POST") =>
     headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", ...headers },
     body: body ? JSON.stringify(body) : undefined,
   });
+/** Like raw, but waits for the whole body, which for a tool call is an SSE stream. */
+const rawText = async (headers, body, method = "POST") => {
+  const res = await raw(headers, body, method);
+  return { status: res.status, headers: res.headers, text: await res.text() };
+};
+const health = async () => (await fetch(HEALTH_URL)).json();
 const initialize = {
   jsonrpc: "2.0",
   id: 1,
@@ -131,14 +144,16 @@ try {
   await connect({ "X-Repliz-Access-Key": "nope", "X-Repliz-Secret-Key": "nope" });
   fail("connected with invalid credentials");
 } catch {
-  pass("invalid credentials are rejected, before a session exists");
+  pass("invalid credentials are rejected, before any server is built");
 }
-const health = await (await fetch(HEALTH_URL)).json();
-check(health.sessions === 0, "rejected attempts allocate no session", `sessions=${health.sessions}`);
-check(
-  health.baseUrl === `http://127.0.0.1:${API_PORT}`,
-  "env credentials are ignored entirely (no single-tenant fallback)"
-);
+{
+  const h = await health();
+  check(h.stateless === true && h.inFlight === 0, "rejected attempts hold nothing", `inFlight=${h.inFlight}`);
+  check(
+    h.baseUrl === `http://127.0.0.1:${API_PORT}`,
+    "env credentials are ignored entirely (no single-tenant fallback)"
+  );
+}
 
 console.log("\nOAuth");
 {
@@ -263,32 +278,24 @@ console.log("\nOAuth");
   res = await raw({ Authorization: "Bearer not-a-real-token" }, initialize);
   check(res.status === 401 && /error="invalid_token"/.test(res.headers.get("www-authenticate") ?? ""),
     "a forged token gets invalid_token", `got ${res.status}`);
-  res = await raw({ Authorization: "Bearer not-a-real-token", ...A }, initialize);
-  const fallbackSid = res.headers.get("mcp-session-id");
-  check(res.status === 200 && fallbackSid, "header keys still work beside an unrecognised Bearer token", `got ${res.status}`);
-  await res.body?.cancel().catch(() => {});
-  if (fallbackSid) await raw({ "Mcp-Session-Id": fallbackSid, ...A }, undefined, "DELETE");
-  res = await raw({ "Mcp-Session-Id": oauthA.transport.sessionId, ...B }, toolCall("repliz_count_accounts"));
-  check(res.status === 403, "another user's keys cannot ride an OAuth session", `got ${res.status}`);
+  const fallback = await rawText({ Authorization: "Bearer not-a-real-token", ...A }, toolCall("repliz_count_accounts"));
+  check(fallback.status === 200 && fallback.text.includes("USER-A"),
+    "header keys still work beside an unrecognised Bearer token", `got ${fallback.status}`);
 
-  // Refresh keeps the session: it is bound to the keys, not to one token.
   res = await tokenRequest({ grant_type: "refresh_token", refresh_token: tokens.refresh_token });
   const refreshed = await res.json();
   check(res.status === 200 && refreshed.access_token !== tokens.access_token, "a refresh token buys a new access token");
-  res = await raw(
-    { "Mcp-Session-Id": oauthA.transport.sessionId, Authorization: `Bearer ${refreshed.access_token}` },
-    toolCall("repliz_count_accounts")
-  );
-  check(res.status === 200, "the refreshed token keeps the existing session", `got ${res.status}`);
+  const afterRefresh = await rawText({ Authorization: `Bearer ${refreshed.access_token}` }, toolCall("repliz_count_accounts"));
+  check(afterRefresh.status === 200 && afterRefresh.text.includes("USER-A"),
+    "the refreshed token reaches the same workspace", `got ${afterRefresh.status}`);
 
-  await oauthA.transport.terminateSession();
   await oauthA.client.close();
 }
 
 console.log("\nIsolation");
 const a = await connect(A);
 const b = await connect(B);
-check(a.transport.sessionId !== b.transport.sessionId, "two users get distinct session ids");
+check(a.transport.sessionId === undefined && b.transport.sessionId === undefined, "no session id is issued");
 const [ra, rb] = [await callCount(a.client), await callCount(b.client)];
 check(ra.includes("USER-A") && !ra.includes("USER-B"), "user A sees only their own workspace");
 check(rb.includes("USER-B") && !rb.includes("USER-A"), "user B sees only their own workspace");
@@ -299,21 +306,27 @@ for (let i = 0; i < 5; i += 1) {
 }
 check(interleaved, "five interleaved rounds show no cross-talk");
 
-console.log("\nSession binding");
-let res = await raw({ "Mcp-Session-Id": a.transport.sessionId, ...B }, toolCall("repliz_count_accounts"));
-check(res.status === 403, "another user's credentials cannot ride A's session", `got ${res.status}`);
-res = await raw({ "Mcp-Session-Id": a.transport.sessionId }, toolCall("repliz_count_accounts"));
-check(res.status === 401, "a bare session id grants nothing", `got ${res.status}`);
-res = await raw({ "Mcp-Session-Id": a.transport.sessionId, ...B }, undefined, "DELETE");
-check(res.status === 403, "user B cannot terminate A's session", `got ${res.status}`);
-res = await fetch(MCP_URL, {
-  method: "GET",
-  headers: { Accept: "text/event-stream", "Mcp-Session-Id": a.transport.sessionId, ...B },
-});
-check(res.status === 403, "user B cannot attach to A's event stream", `got ${res.status}`);
+console.log("\nStateless");
+const OLD_SID = "11111111-2222-3333-4444-555555555555";
+let res = await raw({ "Mcp-Session-Id": OLD_SID }, toolCall("repliz_count_accounts"));
+check(res.status === 401, "a session id alone grants nothing", `got ${res.status}`);
+{
+  const init = await rawText(A, initialize);
+  check(init.status === 200 && init.headers.get("mcp-session-id") === null,
+    "initialize answers without issuing a session id", `got ${init.status}`);
+  const cold = await rawText(B, toolCall("repliz_count_accounts"));
+  check(cold.status === 200 && cold.text.includes("USER-B"), "a tool call needs no initialize first", `got ${cold.status}`);
+  // A client still holding an id from before the switch must keep working, and
+  // the id must not decide whose workspace it reaches — only the keys do.
+  const leftover = await rawText({ "Mcp-Session-Id": OLD_SID, ...B }, toolCall("repliz_count_accounts"));
+  check(leftover.status === 200 && leftover.text.includes("USER-B") && !leftover.text.includes("USER-A"),
+    "a leftover session id is ignored; the call runs as the keys it carries", `got ${leftover.status}`);
+}
+res = await fetch(MCP_URL, { method: "GET", headers: { Accept: "text/event-stream", ...A } });
+check(res.status === 405 && res.headers.get("allow") === "POST", "GET answers 405, with nothing to stream", `got ${res.status}`);
 await res.body?.cancel().catch(() => {});
-res = await raw({ "Mcp-Session-Id": "11111111-2222-3333-4444-555555555555", ...A }, toolCall("repliz_count_accounts"));
-check(res.status === 404, "an unknown session id returns 404 so clients re-initialize", `got ${res.status}`);
+res = await raw(A, undefined, "DELETE");
+check(res.status === 405, "DELETE answers 405, with no session to end", `got ${res.status}`);
 
 console.log("\nTool surface");
 const { tools } = await a.client.listTools();
@@ -348,11 +361,22 @@ const ssrf = await a.client.callTool({
 check(/private address/.test(ssrf.content[0].text), "fetching a cloud metadata address is refused");
 
 console.log("\nCapacity");
-try {
-  await connect(A);
-  fail("a third session was admitted past the cap of 2");
-} catch (err) {
-  check(/capacity/.test(err.message), "a third session is refused while both are active");
+await a.client.close();
+await b.client.close();
+{
+  // Warm the auth cache, so the burst below waits only on the slow tool call.
+  await rawText(S, toolCall("repliz_count_accounts"));
+  const burst = await Promise.all(
+    Array.from({ length: MAX_IN_FLIGHT + 1 }, () => rawText(S, toolCall("repliz_count_accounts")))
+  );
+  const served = burst.filter((r) => r.status === 200 && r.text.includes("USER-S")).length;
+  const refused = burst.filter((r) => r.status === 503 && /too many requests in progress/.test(r.text)).length;
+  check(served === MAX_IN_FLIGHT && refused === 1,
+    `${MAX_IN_FLIGHT} requests in flight are served and one more is refused`, `served=${served} refused=${refused}`);
+  const h = await health();
+  check(h.inFlight === 0, "every slot is given back once responses are sent", `inFlight=${h.inFlight}`);
+  const after = await rawText(S, toolCall("repliz_count_accounts"));
+  check(after.status === 200, "a request after the burst is served again", `got ${after.status}`);
 }
 
 console.log(failures === 0 ? "\nSmoke test OK.\n" : `\nSmoke test FAILED (${failures}).\n`);
