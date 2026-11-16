@@ -309,7 +309,12 @@ guards apply:
   redirects
 
 Clients that would rather not route media through the server can `PUT` straight
-to the presigned URL themselves and then call `repliz_complete_file`.
+to the presigned URL themselves and then call `repliz_complete_file`. That path
+has no file size limit beyond the user's free storage; `REPLIZ_MAX_UPLOAD_MB`
+caps only `repliz_upload_file`, which buffers the file on this server. A code
+sandbox that PUTs a file attached to the chat must be allowed to reach the R2
+host (Claude: Settings → Capabilities); the tool descriptions tell the model
+what to tell the user when it is not.
 
 ---
 

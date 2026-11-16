@@ -80,14 +80,32 @@ export function registerStorageTools(ctx: ToolContext): void {
       title: "Init File Upload",
       effect: "additive",
       description:
-        "Step 1 of 3 — Initialize a file upload session.\n\n" +
-        "Provide the filename, file size in bytes, and MIME type. " +
-        "The response contains:\n" +
-        "- `id`     — the fileId used in subsequent steps\n" +
-        "- `upload` — the presigned PUT URL to upload the file binary to\n" +
+        "Step 1 of 3 — Register a file in Repliz storage and get a presigned URL to upload it to.\n\n" +
+        "Provide the filename, the exact size in bytes, and the MIME type. The response contains:\n" +
+        "- `id`     — the fileId for `repliz_complete_file`\n" +
+        "- `upload` — a presigned PUT URL on Cloudflare R2 (`https://repliz.<account>.r2.cloudflarestorage.com/...`), valid for 600 seconds\n" +
         "- `key`    — the storage object key\n" +
-        "- `url`    — the final public URL of the file after upload is complete\n\n" +
-        "After this call, use `repliz_upload_file` to push the file, then `repliz_complete_file` to finalize.",
+        "- `url`    — the file's public URL once it is completed; use it in schedules\n\n" +
+        "There is no file size limit other than the storage left: the bytes go straight to Cloudflare R2 and never " +
+        "pass through Repliz's servers.\n\n" +
+        "Step 2 sends the bytes to `upload`, one of two ways:\n" +
+        "- A file at a public URL: `repliz_upload_file` copies it on the server.\n" +
+        "- A file the user attached to the chat, or one you created: PUT it yourself from your code sandbox, e.g. " +
+        "`curl -X PUT -H 'Content-Type: <mimetype>' --data-binary @<file> '<upload>'`. Use the URL exactly as returned " +
+        "and send no other headers: it is signed for the host only, so an added x-amz-* header fails with 403 SignatureDoesNotMatch.\n\n" +
+        "If that PUT fails with 403 and a message that the host is not allowed (an allowlist or proxy error from your " +
+        "sandbox, not an XML error from R2), your sandbox blocks the storage host. Do not look for another way around " +
+        "the block. Tell the user to allow the host once and then start a new chat:\n" +
+        "1. In Claude, open Settings → Capabilities.\n" +
+        "2. Under \"Create and edit files\", turn on \"Use the internet while making files\".\n" +
+        "3. Choose specific domains, not full internet access, and add the host of the `upload` URL " +
+        "(`repliz.2ca853e78c4cd1a89797e3d770c7ca9f.r2.cloudflarestorage.com`).\n" +
+        "On Claude Team and Enterprise, an Owner manages this setting. Meanwhile the user can upload the file in the " +
+        "Repliz dashboard (Content → Storage, https://repliz.com/user/storage) and share the file's URL.\n\n" +
+        "Then call `repliz_complete_file`. A file not completed within 10 minutes of this call is removed " +
+        "automatically; after that, start again here.\n\n" +
+        "Errors: HTTP 402 \"upgrade to get more storage\" means the file doesn't fit in the storage left, or the " +
+        "account has no Storage add-on.",
       inputSchema: {
         filename: z.string().describe("Original filename including extension, e.g. 'video.mp4'."),
         size: z
@@ -124,14 +142,21 @@ export function registerStorageTools(ctx: ToolContext): void {
       title: "Upload File to Presigned URL",
       effect: "additive",
       description:
-        "Step 2 of 3 — Copy a file from a public URL to the presigned URL returned by `repliz_init_file`.\n\n" +
-        "This server runs remotely and has no access to your local disk. Host the file at a publicly " +
-        "reachable https URL first, or upload it to the presigned URL yourself with a direct PUT from " +
-        "your own machine and skip straight to `repliz_complete_file`.\n\n" +
+        "Step 2 of 3 — Copy a file from a public URL to the presigned `upload` URL from `repliz_init_file`. " +
+        "This server downloads the file and PUTs it, so the bytes never pass through your sandbox.\n\n" +
+        "Use this only for a file already at a publicly reachable http(s) URL. This server runs remotely and " +
+        "can't read the user's disk or your sandbox. For a file the user attached to the chat, PUT it to `upload` " +
+        "from your sandbox instead, as `repliz_init_file` describes.\n\n" +
         "Provide:\n" +
         "- `uploadUrl`  — the `upload` field from `repliz_init_file`, passed through unchanged\n" +
         "- `sourceUrl`  — public http(s) URL of the file to copy\n" +
         "- `mimetype`   — must match exactly what was used in `repliz_init_file`\n\n" +
+        `Limits: this tool copies the file through the Repliz MCP server, so it takes files up to ` +
+        `${Math.round(maxUploadBytes() / 1048576)} MB. A bigger file has no size limit when it is PUT straight to ` +
+        "`upload` instead. `sourceUrl` must not redirect: share links (Google Drive, Dropbox) usually do, and then " +
+        "the call fails with \"fetch failed\". Pass the file's direct download URL instead.\n\n" +
+        "Errors: \"Could not fetch sourceUrl\" means the source answered with an error. \"Upload failed with HTTP 403\" " +
+        "means the upload URL expired (600 seconds) or was changed: call `repliz_init_file` again.\n\n" +
         "After this succeeds, call `repliz_complete_file` with the fileId to finalize.",
       inputSchema: {
         uploadUrl: z
@@ -224,9 +249,15 @@ export function registerStorageTools(ctx: ToolContext): void {
       title: "Complete File Upload",
       effect: "additive",
       description:
-        "Step 3 of 3 — Finalize a file upload after the binary has been PUT to the presigned URL.\n\n" +
-        "Provide the `fileId` (the `id` field from `repliz_init_file`). " +
-        "On success, the file status changes from `pending` to `success` and is available for use in schedules.",
+        "Step 3 of 3 — Finalize a file upload after the bytes were PUT to the `upload` URL.\n\n" +
+        "Provide the `fileId` (the `id` field from `repliz_init_file`). Repliz checks the stored file, records its " +
+        "real size, and changes the status from `pending` to `success`. Its `url` can then be used in schedules.\n\n" +
+        "Errors:\n" +
+        "- HTTP 400 \"file is invalid or has not been uploaded\": the PUT never reached storage. Check step 2; if the " +
+        "PUT from your sandbox failed with 403 because the host is not allowed, `repliz_init_file` says what to tell the user.\n" +
+        "- HTTP 404 \"file not found\": the record is gone, usually because more than 10 minutes passed since " +
+        "`repliz_init_file`. Start again with `repliz_init_file`.\n" +
+        "- HTTP 402 \"upgrade to get more storage\": the uploaded file is bigger than the storage left.",
       inputSchema: {
         fileId: z
           .string()
