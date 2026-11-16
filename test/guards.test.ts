@@ -62,6 +62,14 @@ describe("AuthCache", () => {
     assert.equal(cache.has("abc", t0 + 5 * 60_000), false, "expires exactly at the boundary");
   });
 
+  test("can hold entries for its own window, as the rejected-keys cache does", () => {
+    process.env.REPLIZ_AUTH_CACHE_MINUTES = "5";
+    const rejected = new AuthCache(() => 60_000);
+    rejected.add("bad", 0);
+    assert.equal(rejected.has("bad", 59_999), true);
+    assert.equal(rejected.has("bad", 60_000), false, "ignores REPLIZ_AUTH_CACHE_MINUTES");
+  });
+
   test("never claims to know an unseen pair", () => {
     assert.equal(new AuthCache().has("never-added"), false);
   });

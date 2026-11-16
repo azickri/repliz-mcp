@@ -94,9 +94,22 @@ export function maxConcurrentRequests(): number {
   return intFromEnv("REPLIZ_MAX_CONCURRENT_REQUESTS", 500, 1);
 }
 
-/** Requests allowed per IP per minute. Default 120. */
+/**
+ * /mcp requests allowed per user — per credential pair, not per address — per
+ * minute. Default 120.
+ */
 export function rateLimitPerMinute(): number {
   return intFromEnv("REPLIZ_RATE_LIMIT_PER_MINUTE", 120, 1);
+}
+
+/**
+ * Credential checks against the Repliz API allowed per IP per minute. Only keys
+ * not already verified (or recently rejected) cost a check, so a user costs one
+ * per REPLIZ_AUTH_CACHE_MINUTES; what this stops is one address cycling through
+ * made-up keys. Default 300.
+ */
+export function verifyLimitPerMinute(): number {
+  return intFromEnv("REPLIZ_VERIFY_LIMIT_PER_MINUTE", 300, 1);
 }
 
 /** Timeout for outbound calls to the Repliz API, in ms. Default 30s. */

@@ -24,12 +24,17 @@ export function fingerprint(creds: ReplizCredentials): string {
 }
 
 /**
- * Remembers recently verified credentials so each request does not cost an
- * extra Repliz API round-trip. Only positive results are cached, and only
- * briefly, so a revoked key stops working soon after.
+ * Remembers credential pairs recently checked against Repliz, so each request
+ * does not cost an extra API round-trip. The server keeps one for accepted
+ * pairs, short enough that a revoked key stops working soon after, and one for
+ * rejected pairs, shorter still, so a client retrying bad keys costs one check
+ * a minute instead of one per request.
  */
 export class AuthCache {
   private readonly entries = new Map<string, number>();
+
+  /** `ttlMs` defaults to REPLIZ_AUTH_CACHE_MINUTES. */
+  constructor(private readonly ttlMs: () => number = authCacheMs) {}
 
   has(hash: string, now = Date.now()): boolean {
     const expiry = this.entries.get(hash);
@@ -42,7 +47,7 @@ export class AuthCache {
   }
 
   add(hash: string, now = Date.now()): void {
-    this.entries.set(hash, now + authCacheMs());
+    this.entries.set(hash, now + this.ttlMs());
   }
 
   sweep(now = Date.now()): void {

@@ -716,6 +716,22 @@ export class ReplizOAuthProvider implements OAuthServerProvider {
     };
   }
 
+  /**
+   * The Repliz keys sealed in a token request's authorization code or refresh
+   * token, or null when it carries neither or the one it carries does not open.
+   * Lets /token be rate limited per user: Claude.ai and ChatGPT redeem every
+   * user's tokens from the same few addresses.
+   */
+  credentialsFromTokenRequest(body: Record<string, unknown>): ReplizCredentials | null {
+    let grant: Grant | null = null;
+    if (body.grant_type === "refresh_token" && typeof body.refresh_token === "string") {
+      grant = this.sealer.open<Grant>("refresh", body.refresh_token);
+    } else if (body.grant_type === "authorization_code" && typeof body.code === "string") {
+      grant = this.sealer.open<CodeGrant>("code", body.code);
+    }
+    return grant ? { accessKey: grant.ak, secretKey: grant.sk } : null;
+  }
+
   /** The Repliz keys behind an access token, or null if it is invalid or expired. */
   credentialsFromAccessToken(token: string): ReplizCredentials | null {
     const grant = this.sealer.open<Grant>("access", token);

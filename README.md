@@ -82,7 +82,8 @@ Everything is optional; the defaults suit a 1 GB VPS.
 | `PORT`                           | `3000`                   | Port to listen on                                                  |
 | `REPLIZ_BASE_URL`                | `https://api.repliz.com` | Repliz API base URL                                                |
 | `REPLIZ_MAX_CONCURRENT_REQUESTS` | `500`                    | Cap on `/mcp` requests handled at once; beyond it they get `503`   |
-| `REPLIZ_RATE_LIMIT_PER_MINUTE`   | `120`                    | Requests allowed per IP per minute                                 |
+| `REPLIZ_RATE_LIMIT_PER_MINUTE`   | `120`                    | `/mcp` requests allowed per user (key pair) per minute             |
+| `REPLIZ_VERIFY_LIMIT_PER_MINUTE` | `300`                    | Checks of not-yet-verified keys against Repliz, per IP per minute  |
 | `REPLIZ_TRUST_PROXY`             | `loopback`               | Which proxies may set `X-Forwarded-For`                            |
 | `REPLIZ_REQUEST_TIMEOUT_SECONDS` | `30`                     | Timeout for outbound calls to the Repliz API                       |
 | `REPLIZ_AUTH_CACHE_MINUTES`      | `5`                      | How long a verified credential pair is cached                      |
@@ -169,10 +170,10 @@ and never give it back. With the flag it collects sooner and stays near
 Fork mode (no `-i`) serves well over a thousand users from one core. Because
 nothing is kept between requests, cluster mode (`-i max`) also works if one
 core is ever not enough: any worker can answer any request. Each worker keeps
-its own rate-limit counters and auth cache, though, so the per-IP limit
-becomes per worker, and the check that an OAuth authorization code is redeemed
-only once is per worker too (harmless: a code is useless without the PKCE
-verifier only the client holds, and it expires in five minutes).
+its own rate-limit counters and auth cache, though, so every limit becomes per
+worker, and the check that an OAuth authorization code is redeemed only once is
+per worker too (harmless: a code is useless without the PKCE verifier only the
+client holds, and it expires in five minutes).
 
 Nginx needs two non-default settings, because each response is streamed as
 Server-Sent Events and Nginx would otherwise buffer it:
@@ -205,9 +206,10 @@ location / {
 
 `$proxy_add_x_forwarded_for` is correct here: the server trusts only loopback,
 so it reads the rightmost untrusted entry and a client cannot forge its way into
-a fresh rate-limit bucket. It matters even more with OAuth on: `/register` allows
-20 registrations per IP per hour, and without `X-Forwarded-For` every user looks
-like `127.0.0.1` and shares that one budget.
+a fresh rate-limit bucket. Most limits follow the user, but a few are per
+address — checks of unfamiliar keys, the sign-in form, and with OAuth on,
+`/register` (20 registrations per IP per hour) — and without `X-Forwarded-For`
+every user looks like `127.0.0.1` and shares those budgets.
 
 ### What a restart does
 
@@ -270,8 +272,18 @@ Because `/mcp` is open to the internet:
 - **Requests in flight are capped** by `REPLIZ_MAX_CONCURRENT_REQUESTS`, so
   memory stays bounded however many users connect. Past the cap a request gets
   `503` with `Retry-After`.
-- **Requests are rate limited** per IP, counted against the address chosen by
-  `REPLIZ_TRUST_PROXY`.
+- **Rate limits follow the user, not the address.** Claude.ai and ChatGPT call
+  from a few shared addresses on behalf of all their users, so a per-address
+  budget would let one busy user throttle everyone behind the same IP. `/mcp`
+  is limited per key pair (`REPLIZ_RATE_LIMIT_PER_MINUTE`), and `/token` per
+  user by the keys sealed in the code or refresh token (60 a minute) — the
+  SDK's own `/token` limit of 50 per address per 15 minutes would start
+  refusing refreshes at a few hundred users. What an unverified caller can
+  trigger is still counted per address, as chosen by `REPLIZ_TRUST_PROXY`:
+  each check of keys not already known costs a Repliz call, so an address may
+  make `REPLIZ_VERIFY_LIMIT_PER_MINUTE` of them, and rejected keys are
+  remembered for a minute so a client retrying them costs one check, not one
+  per request. A `/token` grant that does not open counts against its address.
 - **The OAuth sign-in page guards the keys typed into it.** It cannot be framed
   (`frame-ancestors 'none'`, `X-Frame-Options: DENY`), so a clickjacking
   overlay cannot trick a user into submitting. Any client can register itself,
@@ -298,9 +310,10 @@ Two things to be aware of:
 - A revoked key keeps working for up to `REPLIZ_AUTH_CACHE_MINUTES` (default 5)
   after it is revoked. Shorten it if that matters, at the cost of more
   verification calls.
-- The rate limit is per IP, and hosted clients such as Claude.ai and ChatGPT
-  call from a small set of shared addresses, so many of their users share one
-  budget. Raise `REPLIZ_RATE_LIMIT_PER_MINUTE` as usage grows.
+- Each user's keys are checked again once per `REPLIZ_AUTH_CACHE_MINUTES`, and
+  those checks count against the address they arrive from. Behind a shared
+  address, the default of 300 a minute covers about 1500 active users at the
+  default 5-minute cache; raise `REPLIZ_VERIFY_LIMIT_PER_MINUTE` beyond that.
 
 ### File uploads
 
@@ -382,7 +395,7 @@ credentials or network access, and CI runs both.
 src/
   index.ts     # entry point: load .env, start the server
   http.ts      # the HTTP transport, auth, and request lifecycle
-  guards.ts    # auth cache, credential fingerprints, rate limiter, in-flight cap
+  guards.ts    # auth caches, credential fingerprints, rate limiter, in-flight cap
   server.ts    # createReplizServer(client)
   config.ts    # env config + per-request credential parsing
   client.ts    # Repliz API client (Basic auth, timeouts, errors)

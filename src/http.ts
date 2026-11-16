@@ -21,7 +21,9 @@
  *   - Each request runs as exactly the credentials it carries. There is no
  *     session id to leak or replay.
  *   - Requests in flight are capped, so memory stays bounded under any load.
- *   - Requests are rate limited per IP.
+ *   - Requests are rate limited per user. Only credential checks for keys not
+ *     yet verified are limited per address: hosted clients send every user's
+ *     traffic from a few shared IPs, and must not throttle users for each other.
  */
 
 import express, { type Request, type Response, type NextFunction } from "express";
@@ -31,6 +33,7 @@ import {
   getOAuthProtectedResourceMetadataUrl,
   mcpAuthRouter,
 } from "@modelcontextprotocol/sdk/server/auth/router.js";
+import { TooManyRequestsError } from "@modelcontextprotocol/sdk/server/auth/errors.js";
 import { ReplizClient } from "./client.js";
 import { createReplizServer } from "./server.js";
 import {
@@ -43,6 +46,7 @@ import {
   port,
   rateLimitPerMinute,
   trustProxySetting,
+  verifyLimitPerMinute,
   type ReplizCredentials,
 } from "./config.js";
 import { ReplizOAuthProvider, withIssuer } from "./oauth.js";
@@ -51,8 +55,18 @@ import { AuthCache, InFlightLimiter, RateLimiter, fingerprint } from "./guards.j
 
 const MCP_PATH = "/mcp";
 const SWEEP_INTERVAL_MS = 60_000;
-/** Each sign-in attempt costs a Repliz API call, so it gets a tighter budget than /mcp. */
+/**
+ * Each sign-in attempt costs a Repliz API call. The form is posted from the
+ * user's own browser, so unlike /mcp and /token it can be counted per address.
+ */
 const SIGN_IN_ATTEMPTS_PER_MINUTE = 10;
+/** Token requests per user per minute. A connection in use refreshes about once an hour. */
+const TOKEN_REQUESTS_PER_MINUTE = 60;
+/**
+ * How long a rejected key pair is answered from memory. Short, so keys that
+ * were rejected only because they had just been created are not refused long.
+ */
+const REJECTED_CACHE_MS = 60_000;
 
 function jsonRpcError(code: number, message: string) {
   return { jsonrpc: "2.0" as const, error: { code, message }, id: null };
@@ -73,8 +87,8 @@ export async function runHttp(): Promise<void> {
   const oauth = oauthSettings();
 
   const app = express();
-  // Decides which address the rate limiter counts against — see the config
-  // helper for why this must match the deployment.
+  // Decides which address the per-address limits count against — see the
+  // config helper for why this must match the deployment.
   app.set("trust proxy", trustProxySetting());
   app.use(express.json({ limit: "4mb" }));
 
@@ -105,19 +119,35 @@ export async function runHttp(): Promise<void> {
 
   const inFlight = new InFlightLimiter();
   const authCache = new AuthCache();
-  const rateLimiter = new RateLimiter();
+  const rejectedCache = new AuthCache(() => REJECTED_CACHE_MS);
+  // Claude.ai and ChatGPT call from a few shared addresses on behalf of all
+  // their users, so a per-address budget would let one busy user throttle
+  // everyone else behind the same IP. Budgets follow the user's keys; only the
+  // work an unverified caller can trigger is counted per address.
+  const userLimiter = new RateLimiter();
+  const verifyLimiter = new RateLimiter(verifyLimitPerMinute);
+  const tokenLimiter = new RateLimiter(() => TOKEN_REQUESTS_PER_MINUTE);
   const signInLimiter = new RateLimiter(() => SIGN_IN_ATTEMPTS_PER_MINUTE);
 
+  /** What is remembered about a key pair: accepted, rejected, or undefined if neither. */
+  function knownVerdict(hash: string): boolean | undefined {
+    if (authCache.has(hash)) return true;
+    if (rejectedCache.has(hash)) return false;
+    return undefined;
+  }
+
   /**
-   * Check a key pair against the Repliz API, remembering successes briefly so
-   * reconnects stay cheap. Returns false only when Repliz rejects the keys;
-   * other failures throw, so an outage is never reported as bad keys.
+   * Check a key pair against the Repliz API, remembering the answer so a
+   * user costs one check per cache window rather than one per request.
+   * Returns false only when Repliz rejects the keys; other failures throw, so
+   * an outage is never reported as bad keys.
    */
   async function checkCredentials(creds: ReplizCredentials): Promise<boolean> {
     const hash = fingerprint(creds);
-    if (authCache.has(hash)) return true;
+    const known = knownVerdict(hash);
+    if (known !== undefined) return known;
     const valid = await new ReplizClient({ ...creds, baseUrl }).verifyCredentials();
-    if (valid) authCache.add(hash);
+    (valid ? authCache : rejectedCache).add(hash);
     return valid;
   }
 
@@ -171,12 +201,35 @@ export async function runHttp(): Promise<void> {
       next();
     });
 
+    // Claude.ai and ChatGPT redeem every user's codes and refresh tokens from
+    // a few shared addresses, so the SDK's own /token limit — 50 per address
+    // per 15 minutes — would start refusing refreshes once a few hundred users
+    // are connected. This replaces it with a budget per user, found from the
+    // keys sealed in the grant; a grant that does not open counts against its
+    // address, and costs no more than a failed decryption.
+    app.post(
+      new URL(authServerMetadata.token_endpoint).pathname,
+      express.urlencoded({ extended: false }),
+      (req: Request, res: Response, next: NextFunction) => {
+        const creds = oauthProvider.credentialsFromTokenRequest(req.body ?? {});
+        const key = creds ? `user:${fingerprint(creds)}` : `ip:${req.ip ?? "unknown"}`;
+        if (!tokenLimiter.take(key)) {
+          res.setHeader("Retry-After", "60");
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.status(429).json(new TooManyRequestsError("Too many token requests. Retry in a minute.").toResponseObject());
+          return;
+        }
+        next();
+      }
+    );
+
     app.use(
       mcpAuthRouter({
         provider: oauthProvider,
         issuerUrl: oauth.publicUrl,
         resourceServerUrl: resourceUrl,
         resourceName: "Repliz",
+        tokenOptions: { rateLimit: false },
       })
     );
 
@@ -237,22 +290,14 @@ export async function runHttp(): Promise<void> {
     res.status(401).json(jsonRpcError(-32001, message));
   }
 
-  app.use(MCP_PATH, (req: Request, res: Response, next: NextFunction) => {
-    if (!rateLimiter.take(req.ip ?? "unknown")) {
-      res.setHeader("Retry-After", "60");
-      res
-        .status(429)
-        .json(jsonRpcError(-32029, "Too Many Requests: slow down and retry in a minute."));
-      return;
-    }
-    next();
-  });
-
   // Drop expired credential checks and rate-limit windows, so these maps stay
   // as small as the current traffic rather than growing with every caller seen.
   const sweeper = setInterval(() => {
     authCache.sweep();
-    rateLimiter.sweep();
+    rejectedCache.sweep();
+    userLimiter.sweep();
+    verifyLimiter.sweep();
+    tokenLimiter.sweep();
     signInLimiter.sweep();
     provider?.sweep();
   }, SWEEP_INTERVAL_MS);
@@ -272,6 +317,25 @@ export async function runHttp(): Promise<void> {
       return;
     }
     const { creds } = caller;
+    const hash = fingerprint(creds);
+
+    if (!userLimiter.take(hash)) {
+      res.setHeader("Retry-After", "60");
+      res
+        .status(429)
+        .json(jsonRpcError(-32029, "Too Many Requests: these keys sent too many requests this minute. Retry in a minute."));
+      return;
+    }
+    // Checking keys against Repliz is the one thing a caller without valid keys
+    // can make this server do, so that alone is budgeted per address — keys
+    // already verified (or already rejected) are answered from memory and free.
+    if (knownVerdict(hash) === undefined && !verifyLimiter.take(req.ip ?? "unknown")) {
+      res.setHeader("Retry-After", "60");
+      res
+        .status(429)
+        .json(jsonRpcError(-32029, "Too Many Requests: too many unrecognised keys from this address. Retry in a minute."));
+      return;
+    }
 
     const release = inFlight.acquire();
     if (!release) {
@@ -366,7 +430,8 @@ export async function runHttp(): Promise<void> {
       stateless: true,
       inFlight: inFlight.size,
       maxConcurrentRequests: maxConcurrentRequests(),
-      rateLimitPerMinute: rateLimitPerMinute(),
+      rateLimitPerUserPerMinute: rateLimitPerMinute(),
+      verifyLimitPerIpPerMinute: verifyLimitPerMinute(),
       rssMb: Math.round(memory.rss / 1024 / 1024),
       heapUsedMb: Math.round(memory.heapUsed / 1024 / 1024),
       uptimeSeconds: Math.round(process.uptime()),
@@ -382,7 +447,8 @@ export async function runHttp(): Promise<void> {
             `${oauth.refreshTokenMs / 86_400_000} day refresh tokens.\n`
           : `  OAuth: off (set REPLIZ_OAUTH_SECRET and REPLIZ_PUBLIC_URL to enable).\n`) +
         `  Stateless: no sessions are kept between requests.\n` +
-        `  Limits: ${maxConcurrentRequests()} requests in flight, ${rateLimitPerMinute()} req/min per IP.`
+        `  Limits: ${maxConcurrentRequests()} requests in flight, ${rateLimitPerMinute()} req/min per user, ` +
+        `${verifyLimitPerMinute()} key checks/min per IP.`
     );
   });
 

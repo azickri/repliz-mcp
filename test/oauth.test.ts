@@ -408,6 +408,29 @@ describe("tokens", () => {
     assert.deepEqual(provider.credentialsFromAccessToken(second.access_token), KEYS);
   });
 
+  test("a token request yields the keys sealed in its grant, for per-user rate limiting", async () => {
+    const provider = makeProvider();
+    const client = await register(provider);
+    const code = await codeFor(provider, client);
+    assert.deepEqual(provider.credentialsFromTokenRequest({ grant_type: "authorization_code", code }), KEYS);
+    const tokens = await provider.exchangeAuthorizationCode(client, code);
+    assert.deepEqual(
+      provider.credentialsFromTokenRequest({ grant_type: "refresh_token", refresh_token: tokens.refresh_token }),
+      KEYS
+    );
+    // Anything that does not open is not attributed to a user, and so is counted per address.
+    for (const body of [
+      {},
+      { grant_type: "refresh_token", refresh_token: "forged" },
+      { grant_type: "refresh_token", refresh_token: tokens.access_token },
+      { grant_type: "authorization_code", code: tokens.refresh_token },
+      { grant_type: "refresh_token", code },
+      { grant_type: "refresh_token", refresh_token: ["not", "a", "string"] },
+    ]) {
+      assert.equal(provider.credentialsFromTokenRequest(body), null, JSON.stringify(body).slice(0, 60));
+    }
+  });
+
   test("refresh is refused to another client", async () => {
     const provider = makeProvider();
     const client = await register(provider);

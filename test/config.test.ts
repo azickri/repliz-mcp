@@ -16,12 +16,14 @@ import {
   port,
   rateLimitPerMinute,
   trustProxySetting,
+  verifyLimitPerMinute,
 } from "../src/config.js";
 
 const ENV_KEYS = [
   "REPLIZ_BASE_URL",
   "REPLIZ_MAX_CONCURRENT_REQUESTS",
   "REPLIZ_RATE_LIMIT_PER_MINUTE",
+  "REPLIZ_VERIFY_LIMIT_PER_MINUTE",
   "REPLIZ_MAX_UPLOAD_MB",
   "REPLIZ_ALLOWED_ORIGINS",
   "REPLIZ_TRUST_PROXY",
@@ -141,6 +143,7 @@ describe("tunables", () => {
     assert.equal(port(), 3000);
     assert.equal(maxConcurrentRequests(), 500);
     assert.equal(rateLimitPerMinute(), 120);
+    assert.equal(verifyLimitPerMinute(), 300);
     assert.equal(maxUploadBytes(), 100 * 1024 * 1024);
     assert.deepEqual(allowedOrigins(), []);
   });
@@ -148,8 +151,10 @@ describe("tunables", () => {
   test("read valid overrides", () => {
     process.env.REPLIZ_MAX_CONCURRENT_REQUESTS = "1000";
     process.env.REPLIZ_RATE_LIMIT_PER_MINUTE = "600";
+    process.env.REPLIZ_VERIFY_LIMIT_PER_MINUTE = "1000";
     assert.equal(maxConcurrentRequests(), 1000);
     assert.equal(rateLimitPerMinute(), 600);
+    assert.equal(verifyLimitPerMinute(), 1000);
   });
 
   test("ignore nonsense rather than starting with a broken limit", () => {

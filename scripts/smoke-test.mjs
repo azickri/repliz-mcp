@@ -10,8 +10,9 @@
  *
  * The unit tests cover the pure logic; this covers the wiring — that two users
  * stay apart, that every request runs as exactly the keys it carries, that the
- * cap on requests in flight holds, and that the upload guards are actually
- * reachable through the tool surface.
+ * cap on requests in flight holds, that rate limits follow the user rather than
+ * the address, and that the upload guards are actually reachable through the
+ * tool surface.
  */
 
 import { createServer } from "node:http";
@@ -33,6 +34,11 @@ const B = { "X-Repliz-Access-Key": "keyB", "X-Repliz-Secret-Key": "secretB" };
 const S = { "X-Repliz-Access-Key": "keyS", "X-Repliz-Secret-Key": "secretS" };
 const SLOW_MS = 400;
 const MAX_IN_FLIGHT = 3;
+/** A workspace used only to exhaust its own per-user budget. */
+const R = { "X-Repliz-Access-Key": "keyR", "X-Repliz-Secret-Key": "secretR" };
+const PER_USER_PER_MINUTE = 50;
+const VERIFY_PER_IP_PER_MINUTE = 12;
+const TOKEN_PER_MINUTE = 60; // TOKEN_REQUESTS_PER_MINUTE in src/http.ts
 
 let failures = 0;
 const pass = (m) => console.log("  ✔", m);
@@ -47,12 +53,16 @@ const WORKSPACES = {
   "keyA:secretA": { owner: "USER-A", total: 11, secretNote: "A-private" },
   "keyB:secretB": { owner: "USER-B", total: 22, secretNote: "B-private" },
   "keyS:secretS": { owner: "USER-S", total: 33, secretNote: "S-private" },
+  "keyR:secretR": { owner: "USER-R", total: 44, secretNote: "R-private" },
 };
+/** Calls the stub received, per key pair, to see which checks were answered from memory. */
+const apiCalls = new Map();
 const api = createServer(async (req, res) => {
   const decoded = Buffer.from(
     (req.headers.authorization || "").replace(/^Basic /i, ""),
     "base64"
   ).toString();
+  apiCalls.set(decoded, (apiCalls.get(decoded) ?? 0) + 1);
   const workspace = WORKSPACES[decoded];
   if (!workspace) {
     res.writeHead(401, { "Content-Type": "application/json" });
@@ -72,6 +82,8 @@ const server = spawn(process.execPath, ["dist/index.js"], {
     PORT: String(MCP_PORT),
     REPLIZ_BASE_URL: `http://127.0.0.1:${API_PORT}`,
     REPLIZ_MAX_CONCURRENT_REQUESTS: String(MAX_IN_FLIGHT),
+    REPLIZ_RATE_LIMIT_PER_MINUTE: String(PER_USER_PER_MINUTE),
+    REPLIZ_VERIFY_LIMIT_PER_MINUTE: String(VERIFY_PER_IP_PER_MINUTE),
     REPLIZ_PUBLIC_URL: ORIGIN,
     REPLIZ_OAUTH_SECRET: "smoke-test-oauth-secret-0123456789abcdef",
     REPLIZ_ACCESS_KEY: "should-be-ignored",
@@ -289,6 +301,17 @@ console.log("\nOAuth");
   check(afterRefresh.status === 200 && afterRefresh.text.includes("USER-A"),
     "the refreshed token reaches the same workspace", `got ${afterRefresh.status}`);
 
+  // /token is budgeted per user: Claude.ai and ChatGPT refresh everyone's
+  // tokens from the same few addresses. Grants that do not open share their
+  // address's budget, and exhausting it must not block a real user's refresh.
+  let lastGarbage = 0;
+  for (let i = 0; i <= TOKEN_PER_MINUTE; i += 1) {
+    lastGarbage = (await tokenRequest({ grant_type: "refresh_token", refresh_token: `garbage-${i}` })).status;
+  }
+  check(lastGarbage === 429, "unopenable grants are rate limited per address", `got ${lastGarbage}`);
+  res = await tokenRequest({ grant_type: "refresh_token", refresh_token: refreshed.refresh_token });
+  check(res.status === 200, "a real user's refresh is still served from that address", `got ${res.status}`);
+
   await oauthA.client.close();
 }
 
@@ -377,6 +400,46 @@ await b.client.close();
   check(h.inFlight === 0, "every slot is given back once responses are sent", `inFlight=${h.inFlight}`);
   const after = await rawText(S, toolCall("repliz_count_accounts"));
   check(after.status === 200, "a request after the burst is served again", `got ${after.status}`);
+}
+
+// Last: it uses up this address's budget for checking unfamiliar keys.
+console.log("\nRate limits");
+{
+  // Rejected keys are remembered briefly, so a client retrying them costs one
+  // Repliz call, not one per request.
+  const X = { "X-Repliz-Access-Key": "keyX", "X-Repliz-Secret-Key": "bad" };
+  const first = await rawText(X, toolCall("repliz_count_accounts"));
+  const second = await rawText(X, toolCall("repliz_count_accounts"));
+  check(first.status === 401 && second.status === 401 && apiCalls.get("keyX:bad") === 1,
+    "rejected keys are answered from memory the second time", `calls=${apiCalls.get("keyX:bad")}`);
+
+  // One user exhausting their budget does not touch another's from the same
+  // address — the whole point, since hosted clients share a few addresses.
+  let served = 0;
+  let status = 0;
+  for (let i = 0; i <= PER_USER_PER_MINUTE; i += 1) {
+    status = (await rawText(R, toolCall("repliz_count_accounts"))).status;
+    if (status === 200) served += 1;
+  }
+  check(served === PER_USER_PER_MINUTE && status === 429,
+    `a user is held to ${PER_USER_PER_MINUTE} requests a minute`, `served=${served} last=${status}`);
+  const other = await rawText(B, toolCall("repliz_count_accounts"));
+  check(other.status === 200 && other.text.includes("USER-B"),
+    "another user from the same address is unaffected", `got ${other.status}`);
+
+  // Made-up keys each cost a Repliz check, so those alone are counted per address.
+  let rejected = 0;
+  let refusedAt = -1;
+  for (let i = 0; i < VERIFY_PER_IP_PER_MINUTE * 2 && refusedAt < 0; i += 1) {
+    const r = await rawText({ "X-Repliz-Access-Key": `made-up-${i}`, "X-Repliz-Secret-Key": "x" }, toolCall("repliz_count_accounts"));
+    if (r.status === 401) rejected += 1;
+    if (r.status === 429 && /unrecognised keys/.test(r.text)) refusedAt = i;
+  }
+  check(refusedAt >= 0 && rejected < VERIFY_PER_IP_PER_MINUTE,
+    "an address cycling through made-up keys is cut off", `rejected=${rejected} refusedAt=${refusedAt}`);
+  const verified = await rawText(A, toolCall("repliz_count_accounts"));
+  check(verified.status === 200 && verified.text.includes("USER-A"),
+    "keys already verified keep working from that address", `got ${verified.status}`);
 }
 
 console.log(failures === 0 ? "\nSmoke test OK.\n" : `\nSmoke test FAILED (${failures}).\n`);
