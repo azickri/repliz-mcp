@@ -98,6 +98,32 @@ export function registerResearchTools(ctx: ToolContext): void {
 
   registerTool(
     ctx,
+    'repliz_get_threads_content_by_url',
+    {
+      title: 'Get Threads Content by URL',
+      effect: 'read',
+      description:
+        "Find a public Threads post from its link (https://www.threads.com/@username/post/{shortcode}) and return it, with the `id` to use as `contentId`, for example to reply with repliz_create_content_comment. Repliz looks through the recent posts of the username in the link, so it works for main posts of public profiles with at least 100 followers. Replies, posts of private or smaller profiles and posts older than the latest 1,000 return 404: use repliz_search_threads_content with `username` for those. A short /t/{shortcode} link has no username and is not accepted. Requires a connected Threads account id.",
+      inputSchema: {
+        accountId: z
+          .string()
+          .describe('A connected Threads account id to look up with.'),
+        url: z
+          .string()
+          .describe(
+            'The Threads post link, for example https://www.threads.com/@meta/post/DYZ80_hDVCA. threads.net links and links with a query string work too.',
+          ),
+      },
+    },
+    async (args) =>
+      ctx.client.get('/public/research/threads/content', {
+        accountId: args.accountId,
+        url: args.url,
+      }),
+  );
+
+  registerTool(
+    ctx,
     'repliz_search_threads_user',
     {
       title: 'Get Threads User Profile',

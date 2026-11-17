@@ -1,7 +1,7 @@
 # Repliz MCP Server
 
 A hosted [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Repliz Public API**. It gives an AI assistant 146 tools for managing a Repliz
+**Repliz Public API**. It gives an AI assistant 147 tools for managing a Repliz
 workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads and TikTok, managing
 automations and templates, and more.
@@ -342,7 +342,7 @@ what to tell the user when it is not.
 
 ## Tools
 
-146 tools across the Repliz Public API:
+147 tools across the Repliz Public API:
 
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
@@ -359,13 +359,13 @@ what to tell the user when it is not.
 | **Templates**       | 5     | list, get, create, update, delete                                                           |
 | **Storage**         | 8     | statistics, list, get, init upload, upload, complete, delete, bulk delete                   |
 | **Reports**         | 3     | list, get, retry                                                                            |
-| **Research**        | 9     | Threads content, user content, user profile; TikTok hashtags, videos, photo posts, user content, comments, comment replies (TikWM key) |
+| **Research**        | 10    | Threads content, user content, content by link, user profile; TikTok hashtags, videos, photo posts, user content, comments, comment replies (TikWM key) |
 | **Add-ons**         | 11    | TikTok trending music, Shopee products, WhatsApp and Telegram channels & groups, Pinterest boards (list, create, update, delete), Instagram profile (follow check), link metadata, addon allocation |
 
 Tool availability follows the caller's Repliz plan; calling one above your tier
 returns a clear error.
 
-Every tool declares what it does, as MCP tool annotations: 64 only read
+Every tool declares what it does, as MCP tool annotations: 65 only read
 (`readOnlyHint`), 49 create or send something without touching what exists
 (`destructiveHint: false`), and 33 change or delete (`destructiveHint: true`).
 Clients use these to decide what to confirm first; ChatGPT asks before any tool

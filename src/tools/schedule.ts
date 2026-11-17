@@ -121,7 +121,7 @@ const quotePostSchema = z
       .string()
       .regex(/^\d+$/)
       .describe(
-        'The id of a Threads post from repliz_search_threads_content or repliz_search_threads_user_content. The only field needed: Repliz reads the post on Threads when the schedule is saved and fills url, username, text, picture and thumbnail.',
+        'The id of a Threads post from repliz_search_threads_content, repliz_search_threads_user_content or repliz_get_threads_content_by_url. The only field needed: Repliz reads the post on Threads when the schedule is saved and fills url, username, text, picture and thumbnail.',
       ),
   })
   .passthrough();
@@ -422,7 +422,7 @@ export function registerScheduleTools(ctx: ToolContext): void {
         additionalInfo: additionalInfoSchema
           .optional()
           .describe(
-            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), isMadeForKids (YouTube: made for kids, no comments), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link), quotePost (Threads: { id } of a post from repliz_search_threads_content or repliz_search_threads_user_content to quote).',
+            'Optional extras: firstComment (a comment posted on the post right after it goes out: Facebook, Instagram, LinkedIn, YouTube, TikTok), isCommentDisabled, isDuetDisabled and isStitchDisabled (TikTok), collaborators, music, products, tags, mentions, isShareToFeed (Instagram video), privacy (YouTube: public, unlisted or private), isMadeForKids (YouTube: made for kids, no comments), trialParams (Instagram video: trial reel with graduationStrategy MANUAL or SS_PERFORMANCE), targetCountries, channel (WhatsApp, Telegram, Pinterest board), link (Pinterest), textAttachment (Threads text: a long text up to 10,000 characters, like an article, with an optional link), quotePost (Threads: { id } of a post from repliz_search_threads_content, repliz_search_threads_user_content or repliz_get_threads_content_by_url to quote).',
           ),
         replies: z
           .array(replySchema)

@@ -93,7 +93,8 @@ export function registerContentTools(ctx: ToolContext): void {
       effect: "additive",
       description:
         "Post a comment on a piece of content, or reply to an existing comment by passing `commentId`. " +
-        "Add `image` { url, mimetype, thumbnail? } to send a picture with the text on Facebook, Threads, TikTok, LinkedIn and X (Twitter).",
+        "Add `image` { url, mimetype, thumbnail? } to send a picture with the text on Facebook, Threads, TikTok, LinkedIn and X (Twitter). " +
+        "To reply to a Threads post from its link, get its id with repliz_get_threads_content_by_url first.",
       inputSchema: {
         contentId: z.string().describe("The content id to comment on."),
         accountId: z.string().describe("The account id posting the comment."),

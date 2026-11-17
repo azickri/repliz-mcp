@@ -8015,6 +8015,88 @@
         "tags": ["API Research (Gold+)"]
       }
     },
+    "/public/research/threads/content": {
+      "get": {
+        "description": "\nFind a public Threads post from its link.\n\nThis endpoint turns a post link such as https://www.threads.com/@username/post/{shortcode} into the Threads post, so its id can be used right away, for example as contentId in Create Comment to reply to it.\n\nParameters:\n- accountId (string) — The connected Threads account identifier\n- url (string) — The link of the Threads post\n\nHow it works:\n- Repliz lists the recent posts of the username in the link and returns the one with the same shortcode\n- Works for the main posts of public profiles with at least 100 followers, as Threads allows\n- Replies, posts of private or smaller profiles, and posts older than the latest 1,000 return 404\n\nResponse:\n- Returns one Threads content object with id, text, media, owner, url, and publish timestamp\n",
+        "operationId": "ResearchController_getContentUrlThreads",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "description": "ID of a connected Threads account, the `_id` from Get Account. The lookup runs with its access.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "url",
+            "required": true,
+            "in": "query",
+            "description": "Link of the Threads post, `https://www.threads.com/@username/post/{shortcode}`. `threads.net` links and links with a query string work too; a short `/t/{shortcode}` link has no username and is not accepted.",
+            "schema": {
+              "example": "https://www.threads.com/@meta/post/DYZ80_hDVCA",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "18439214386190993",
+                  "title": "",
+                  "description": "weeds are no match for @aiatmeta",
+                  "type": "video",
+                  "owner": {
+                    "id": "",
+                    "name": "meta",
+                    "picture": "https://scontent.cdninstagram.com/v/t51.82787-19/551871521_17926195818103788_5244672897793476443_n.jpg"
+                  },
+                  "medias": [
+                    {
+                      "type": "video",
+                      "thumbnail": "https://scontent.cdninstagram.com/v/t51.71878-15/671284855_27517940931142565_5980685917477664410_n.jpg",
+                      "url": "https://instagram.fbdo9-1.fna.fbcdn.net/o1/v/t16/f2/m84/AQORkvt4V_t1S6r06Vh2dLFuGMrZGZQUHjIXp7sE2rLe_nTJ5zoKgX3g2BVYZ2YYQZe9LPjIKwHRTPCTIWZ8wY9CSI5xxuoiUgYa96E.mp4"
+                    }
+                  ],
+                  "url": "https://www.threads.com/@meta/post/DYZ80_hDVCA",
+                  "createdAt": "2026-05-16T16:00:41.000Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "url must be a Threads post link like https://www.threads.com/@username/post/shortcode"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 404,
+                  "message": "post not found in the posts of @meta"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Content Threads by URL",
+        "tags": ["API Research (Gold+)"]
+      }
+    },
     "/public/research/threads/user": {
       "get": {
         "description": "\nSearch for Threads users by username.\n\nThis endpoint is used to find public Threads accounts matching the provided username.\nIt helps identify users before retrieving their content.\n\nParameters:\n- accountId (string) — The connected Threads account identifier\n- username (string) — The target Threads username to search\n\nResponse:\n- Returns an array of user objects\n- Includes user details such as id, username, display name, and profile information\n",
