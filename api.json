@@ -9144,7 +9144,7 @@
         "tags": ["API Comment Sync (Gold+)"]
       },
       "post": {
-        "description": "\nRun the automation on a post's old comments, including the ones from before the account was connected, and on comments the platform never sent.\n\nRepliz reads all old comments first, then keeps checking for missed ones until the sync is removed. Pending inbox comments the automation never ran on are included. Top-level comments only, at least 5 minutes old. Not replied yet: `pending` with automation. Already replied: `resolved` without automation. The automation is paced per platform and waits by itself at a limit (`heldUntil`).\n\nInstagram, Facebook, Threads, TikTok, YouTube, and LinkedIn. One sync per post (409), limited per plan (403).\n\nResponse:\n- Returns the `listenerId`\n",
+        "description": "\nRun the automation on a post's old comments, including the ones from before the account was connected, and on comments the platform never sent.\n\nRepliz reads all old comments first, then keeps checking for missed ones until the sync is removed. Pending inbox comments the automation never ran on are included. Top-level comments only, at least 1 minute old (5 minutes on TikTok, YouTube, and LinkedIn). Not replied yet: `pending` with automation. Already replied: `resolved` without automation. The automation is paced per platform and waits by itself at a limit (`heldUntil`).\n\nInstagram, Facebook, Threads, TikTok, YouTube, and LinkedIn. One sync per post (409), limited per plan (403).\n\nResponse:\n- Returns the `listenerId`\n",
         "operationId": "ListenerController_createListener",
         "parameters": [],
         "requestBody": {

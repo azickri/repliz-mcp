@@ -38,7 +38,7 @@ export function registerCommentSyncTools(ctx: ToolContext): void {
       title: "Create Comment Sync",
       effect: "additive",
       description:
-        "Run the automation on a post's old comments, including the ones from before the account was connected, on comments the platform never sent, and on pending inbox comments the automation never ran on. Top-level comments only, at least 5 minutes old, paced per platform. Instagram, Facebook, Threads, TikTok, YouTube, and LinkedIn. One sync per post (409), limited per plan (403). Returns listenerId.",
+        "Run the automation on a post's old comments, including the ones from before the account was connected, on comments the platform never sent, and on pending inbox comments the automation never ran on. Top-level comments only, at least 1 minute old (5 minutes on TikTok, YouTube, and LinkedIn), paced per platform. Instagram, Facebook, Threads, TikTok, YouTube, and LinkedIn. One sync per post (409), limited per plan (403). Returns listenerId.",
       inputSchema: {
         contentId: z.string().describe("The post id on the platform, the id from list content."),
         accountId: z.string().describe("The account id that published the post."),
