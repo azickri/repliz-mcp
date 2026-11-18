@@ -9277,6 +9277,700 @@
         "tags": ["API Comment Sync (Gold+)"]
       }
     },
+    "/public/watcher": {
+      "get": {
+        "description": "\nRetrieve the keyword watches, newest first.\n\nEach item has `keyword`, `filter`, `excludes`, `criteria`, `status` (`active` or `paused`), `token` (AI tokens the criteria filter used), `draftCount` (replies waiting for review), the Threads account that searches in `accountId` and `account`, its `reply` setting, `checkedAt`, `nextAt`, `totalMatched`, `totalReplied`, `errorMessage`, and `heldUntil` with `heldReason` when it waits for a limit.\n",
+        "operationId": "WatcherController_getWatcher",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "description": "Page to return, starting from `1`. Keyword watches are sorted newest first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "description": "Items per page, for example `20`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "accountIds",
+            "required": false,
+            "in": "query",
+            "description": "Only return watches that use one of these accounts, as `_id`s from Get Account. Send each one as `accountIds[]=ID`.",
+            "schema": {
+              "example": ["680affa5ce12f2f72916f67e"],
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Matches the keyword or the description, case-insensitive.",
+            "schema": { "example": "kopi", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "_id": "6913a5c2e4b0a1f2c3d4e5f6",
+                      "platform": "threads",
+                      "keyword": "rekomendasi kopi",
+                      "filter": {
+                        "mode": "KEYWORD",
+                        "type": "",
+                        "username": "",
+                        "isIncludeReplies": false
+                      },
+                      "excludes": ["lowongan"],
+                      "criteria": "Orang yang minta rekomendasi kedai kopi di Jakarta.",
+                      "status": "active",
+                      "accountId": "680affa5ce12f2f72916f67e",
+                      "account": {
+                        "_id": "680affa5ce12f2f72916f67e",
+                        "name": "Repliz",
+                        "username": "replizofficial",
+                        "picture": "",
+                        "type": "threads",
+                        "isConnected": true
+                      },
+                      "reply": {
+                        "type": "ai",
+                        "text": "",
+                        "prompt": "Jawab singkat dan ramah sebagai tim Kopi Kita.",
+                        "knowledgeIds": [],
+                        "approval": "review"
+                      },
+                      "since": 1794729600,
+                      "interval": 15,
+                      "nextAt": "2026-11-18T08:15:00.000Z",
+                      "checkedAt": "2026-11-18T08:00:00.000Z",
+                      "heldUntil": null,
+                      "heldReason": "",
+                      "errorMessage": "",
+                      "totalMatched": 12,
+                      "totalReplied": 4,
+                      "addedAt": "2026-11-18T07:00:00.000Z",
+                      "token": 15200,
+                      "draftCount": 3,
+                      "userId": "680aff8bce12f2f72916f67a",
+                      "createdAt": "2026-11-18T07:00:00.000Z",
+                      "updatedAt": "2026-11-18T08:00:00.000Z"
+                    }
+                  ],
+                  "totalDocs": 1,
+                  "limit": 20,
+                  "totalPages": 1,
+                  "page": 1,
+                  "hasPrevPage": false,
+                  "hasNextPage": false
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Keyword Watch",
+        "tags": ["API Keyword Watch (Gold+)"]
+      },
+      "post": {
+        "description": "\nWatch Threads for new posts by other people that contain one keyword and fit a description, and reply to them.\n\nThe account searches Threads with its own token for posts published after it was set, every 5 to 60 minutes, and less often when the account is used by many active watches so its daily searches last the whole day. Posts with a word of `excludes` are skipped. With `criteria`, the AI of Setting AI (own key or Repliz tokens, set up first) reads each new post and keeps the ones that fit, at most 2,000 read per account a day; without it every post with the keyword is kept and `approval` `auto` is not allowed. Each kept post sends the `keyword_match` webhook event. The account then does what `reply` says: `none` only collects the post, `text` replies with a text (spintax and `{name}`), `ai` writes a reply with the user's AI setting. `approval` `review` keeps the reply as a draft until it is sent with Send Keyword Watch Reply, `auto` sends it by itself.\n\nReplies are paced per account: at most 10 an hour and 50 a day, 3 to 10 minutes apart, and the same person isn't replied to again by that account for 7 days. Threads accounts only (400). Limited per plan (403).\n\nResponse:\n- Returns the `watcherId`\n",
+        "operationId": "WatcherController_createWatcher",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodySaveWatcherDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "watcherId": "6913a5c2e4b0a1f2c3d4e5f6" }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "set up AI in Setting AI first to filter posts with criteria"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 403,
+                  "message": "keyword watch limit reached for your plan"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Create Keyword Watch",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
+    "/public/watcher/{watcherId}": {
+      "get": {
+        "description": "\nRetrieve one keyword watch, in the same shape as an item of Get Keyword Watch.\n",
+        "operationId": "WatcherController_getOneWatcher",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "6913a5c2e4b0a1f2c3d4e5f6",
+                  "platform": "threads",
+                  "keyword": "rekomendasi kopi",
+                  "filter": {
+                    "mode": "KEYWORD",
+                    "type": "",
+                    "username": "",
+                    "isIncludeReplies": false
+                  },
+                  "excludes": ["lowongan"],
+                  "criteria": "Orang yang minta rekomendasi kedai kopi di Jakarta.",
+                  "status": "active",
+                  "accountId": "680affa5ce12f2f72916f67e",
+                  "account": {
+                    "_id": "680affa5ce12f2f72916f67e",
+                    "name": "Repliz",
+                    "username": "replizofficial",
+                    "picture": "",
+                    "type": "threads",
+                    "isConnected": true
+                  },
+                  "reply": {
+                    "type": "ai",
+                    "text": "",
+                    "prompt": "Jawab singkat dan ramah sebagai tim Kopi Kita.",
+                    "knowledgeIds": [],
+                    "approval": "review"
+                  },
+                  "since": 1794729600,
+                  "interval": 15,
+                  "nextAt": "2026-11-18T08:15:00.000Z",
+                  "checkedAt": "2026-11-18T08:00:00.000Z",
+                  "heldUntil": null,
+                  "heldReason": "",
+                  "errorMessage": "",
+                  "totalMatched": 12,
+                  "totalReplied": 4,
+                  "addedAt": "2026-11-18T07:00:00.000Z",
+                  "token": 15200,
+                  "draftCount": 3,
+                  "userId": "680aff8bce12f2f72916f67a",
+                  "createdAt": "2026-11-18T07:00:00.000Z",
+                  "updatedAt": "2026-11-18T08:00:00.000Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get One Keyword Watch",
+        "tags": ["API Keyword Watch (Gold+)"]
+      },
+      "put": {
+        "description": "\nReplace the settings of a keyword watch. Send every field, as for Create Keyword Watch.\n\nKeeping the same `accountId` keeps the progress. Changing it starts over: the posts found by the previous account are deleted, and the new account only picks up posts published after the change.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "WatcherController_updateWatcher",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodySaveWatcherDTO" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "set up AI in Setting AI first to filter posts with criteria"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Update Keyword Watch",
+        "tags": ["API Keyword Watch (Gold+)"]
+      },
+      "delete": {
+        "description": "\nRemove a keyword watch with the posts it found and their drafts. Replies already sent stay on Threads.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "WatcherController_removeWatcher",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Remove Keyword Watch",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
+    "/public/watcher/{watcherId}/status": {
+      "put": {
+        "description": "\nPause or resume a keyword watch. While paused, nothing is searched and queued automatic replies are skipped. Resuming searches right away.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "WatcherController_updateStatusWatcher",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyUpdateStatusWatcherDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Update Status Keyword Watch",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
+    "/public/watcher/{watcherId}/match": {
+      "get": {
+        "description": "\nRetrieve the posts a keyword watch found, newest first.\n\nEach item has the post in `content`, why it was kept in `reason`, the account that found it in `account`, `status`, and the reply in `reply` (`text`, `id` once sent, `sendAt` while queued, `sentAt`). `status` is `found` (kept without a reply), `draft` (waiting for review), `queued`, `replied`, `failed` (see `errorMessage`), or `skipped` (see `skipReason`).\n",
+        "operationId": "WatcherController_getWatcherMatch",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "description": "Page to return, starting from `1`. Newest found posts first.",
+            "schema": { "minimum": 1, "example": 1, "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "description": "Items per page, for example `20`.",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "`found` (no reply), `draft` (waiting for review), `queued`, `replied`, `failed`, or `skipped`. All when empty.",
+            "schema": {
+              "example": "draft",
+              "type": "string",
+              "enum": [
+                "found",
+                "draft",
+                "queued",
+                "replied",
+                "failed",
+                "skipped"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "_id": "6913a5c2e4b0a1f2c3d4e5f7",
+                      "watcherId": "6913a5c2e4b0a1f2c3d4e5f6",
+                      "accountId": "680affa5ce12f2f72916f67e",
+                      "account": {
+                        "_id": "680affa5ce12f2f72916f67e",
+                        "name": "Repliz",
+                        "username": "replizofficial",
+                        "picture": "",
+                        "type": "threads"
+                      },
+                      "postId": "18082157540400777",
+                      "content": {
+                        "id": "18082157540400777",
+                        "title": "",
+                        "description": "Ada rekomendasi kedai kopi enak di Jakarta Selatan?",
+                        "topic": "",
+                        "type": "text",
+                        "owner": {
+                          "id": "",
+                          "name": "kopilover",
+                          "picture": "",
+                          "isVerified": false
+                        },
+                        "medias": [],
+                        "url": "https://www.threads.com/@kopilover/post/DfmMobMz8kB",
+                        "link": "",
+                        "createdAt": "2026-11-18T07:58:00.000Z"
+                      },
+                      "reason": "Meminta rekomendasi kedai kopi di Jakarta.",
+                      "reply": {
+                        "type": "ai",
+                        "text": "Halo! Coba mampir ke Kopi Kita di Kemang, ada promo minggu ini.",
+                        "id": "",
+                        "isManual": false,
+                        "sendAt": null,
+                        "sentAt": null
+                      },
+                      "status": "draft",
+                      "errorMessage": "",
+                      "skipReason": "",
+                      "createdAt": "2026-11-18T08:00:00.000Z",
+                      "updatedAt": "2026-11-18T08:00:00.000Z"
+                    }
+                  ],
+                  "totalDocs": 1,
+                  "limit": 20,
+                  "totalPages": 1,
+                  "page": 1,
+                  "hasPrevPage": false,
+                  "hasNextPage": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Keyword Watch Post",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
+    "/public/watcher/{watcherId}/match/{matchId}": {
+      "put": {
+        "description": "\nChange the reply text of a found post before sending it. Works on `found`, `draft`, `failed`, and `skipped` posts (409 otherwise).\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "WatcherController_updateWatcherMatch",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "matchId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the found post, the `_id` from Get Keyword Watch Post.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f7",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyUpdateWatcherMatchDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 409,
+                  "message": "this post was already queued, sent, or changed"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Update Keyword Watch Draft",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
+    "/public/watcher/{watcherId}/match/{matchId}/send": {
+      "post": {
+        "description": "\nSend the reply of a found post. Works on `found`, `draft`, `failed`, and `skipped` posts (409 otherwise). `text` replaces the draft first.\n\nThe reply joins the account's reply queue and is sent at `sendAt`, spaced like automatic replies. When the account reached its reply limit or Threads limited it, the request fails with 429 and `retryAt`.\n\nResponse:\n- Returns `status` `queued` and `sendAt`\n",
+        "operationId": "WatcherController_sendWatcherMatch",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "matchId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the found post, the `_id` from Get Keyword Watch Post.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f7",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodySendWatcherMatchDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "queued",
+                  "sendAt": "2026-11-18T08:04:00.000Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 409,
+                  "message": "this post was already queued, sent, or changed"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 429,
+                  "message": "reply limit reached for this account, try again after 2026-11-18T09:00:00.000Z",
+                  "retryAt": "2026-11-18T09:00:00.000Z"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Send Keyword Watch Reply",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
+    "/public/watcher/{watcherId}/match/{matchId}/skip": {
+      "post": {
+        "description": "\nSkip a found post so it gets no reply. Works on `found`, `draft`, and `failed` posts (409 otherwise).\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "WatcherController_skipWatcherMatch",
+        "parameters": [
+          {
+            "name": "watcherId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the keyword watch, the `_id` from Get Keyword Watch.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "matchId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the found post, the `_id` from Get Keyword Watch Post.",
+            "schema": {
+              "example": "6913a5c2e4b0a1f2c3d4e5f7",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "keyword watch not found" }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 409,
+                  "message": "this post was already queued, sent, or changed"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Skip Keyword Watch Post",
+        "tags": ["API Keyword Watch (Gold+)"]
+      }
+    },
     "/public/template": {
       "get": {
         "description": "\nRetrieve a list of automation templates.\n\nThis endpoint is used to fetch available templates that can be used to configure content automations.\nIt is useful for browsing and selecting templates before creating or configuring an automation.\n\nResponse:\n- Returns an array of automation template objects\n- Each template includes its basic information and automation configuration\n",
@@ -11996,7 +12690,14 @@
             "type": "number",
             "example": 86400,
             "enum": [3600, 21600, 86400, 604800, 2592000],
-            "description": "How long, in seconds, before the same person can be answered again: 1 hour, 6 hours, 24 hours, 7 days, or 30 days."
+            "description": "The period, in seconds, in which the same person is answered at most `count` times: 1 hour, 6 hours, 24 hours, 7 days, or 30 days. It starts at their first answer."
+          },
+          "count": {
+            "type": "number",
+            "example": 3,
+            "minimum": 1,
+            "maximum": 100,
+            "description": "How many times the same person is answered within `value`, 1 to 100. Default 1. With 3, their 4th comment or message in the period is skipped."
           }
         },
         "required": ["isActive", "value"]
@@ -13770,6 +14471,134 @@
           }
         },
         "required": ["status"]
+      },
+      "WatcherFilterDTO": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": ["KEYWORD", "TAG"],
+            "example": "KEYWORD",
+            "description": "`KEYWORD` (default) searches the text, `TAG` searches topic tags. Empty means `KEYWORD`."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["TEXT", "IMAGE", "VIDEO"],
+            "example": "TEXT",
+            "description": "Only posts of this media type. All types when empty."
+          },
+          "username": {
+            "type": "string",
+            "example": "replizofficial",
+            "description": "Only posts by this Threads username. Everyone when empty."
+          },
+          "isIncludeReplies": {
+            "type": "boolean",
+            "example": false,
+            "description": "Also keep posts that are replies inside someone else's thread. `false` (default) keeps only main posts."
+          }
+        }
+      },
+      "WatcherReplyDTO": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["none", "text", "ai"],
+            "example": "ai",
+            "description": "`none` only collects the posts (and sends the webhook), `text` replies with `text`, `ai` writes a reply from `prompt`."
+          },
+          "text": {
+            "type": "string",
+            "example": "{Hi|Hello} {name}, we can help with that!",
+            "description": "Reply text when `type` is `text`. `{name}` becomes the author and `{a|b}` picks one at random."
+          },
+          "prompt": {
+            "type": "string",
+            "example": "Answer as the Repliz team, short and friendly, offer a free trial.",
+            "description": "How the AI writes the reply when `type` is `ai`."
+          },
+          "knowledgeIds": {
+            "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "approval": {
+            "type": "string",
+            "enum": ["auto", "review"],
+            "example": "review",
+            "description": "Required unless `type` is `none`: `auto` sends the reply by itself, `review` keeps it as a draft until you send it."
+          }
+        },
+        "required": ["type"]
+      },
+      "BodySaveWatcherDTO": {
+        "type": "object",
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "example": "rekomendasi kopi",
+            "description": "One keyword (or phrase) to search Threads for. With mode KEYWORD, a post is kept only when it contains every word of it (text, image description, article, or topic tag)."
+          },
+          "filter": {
+            "description": "Narrows the search. The newest posts are always used.",
+            "allOf": [{ "$ref": "#/components/schemas/WatcherFilterDTO" }]
+          },
+          "excludes": {
+            "example": ["lowongan", "giveaway"],
+            "description": "Posts containing any of these words or phrases are skipped before anything else, case-insensitive. Up to 20.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "criteria": {
+            "type": "string",
+            "example": "People asking for a coffee shop recommendation in Jakarta.",
+            "description": "Which of the found posts to keep, described in plain words. Read by the AI of Setting AI (own key or Repliz tokens), which must be set up first (400). Empty keeps every post with the keyword, and then `approval` `auto` is not allowed (400)."
+          },
+          "accountId": {
+            "type": "string",
+            "example": "680affa5ce12f2f72916f67e",
+            "description": "ID of the Threads account that searches and replies, the `_id` from Get Account."
+          },
+          "reply": {
+            "description": "What the account does with the posts it finds.",
+            "allOf": [{ "$ref": "#/components/schemas/WatcherReplyDTO" }]
+          }
+        },
+        "required": ["keyword", "accountId", "reply"]
+      },
+      "BodyUpdateStatusWatcherDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"],
+            "example": "paused",
+            "description": "`paused` stops searching, `active` resumes it."
+          }
+        },
+        "required": ["status"]
+      },
+      "BodyUpdateWatcherMatchDTO": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Hi! We can help with that.",
+            "description": "The reply text to send."
+          }
+        },
+        "required": ["text"]
+      },
+      "BodySendWatcherMatchDTO": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "example": "Hi! We can help with that.",
+            "description": "Replaces the draft text before sending. The draft is sent when left out."
+          }
+        }
       },
       "ConfigAutomationTemplate": {
         "type": "object",
