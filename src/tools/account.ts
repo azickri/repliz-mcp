@@ -108,7 +108,7 @@ export function registerAccountTools(ctx: ToolContext): void {
       title: "Update Account Automation",
       effect: "destructive",
       description:
-        `Update the default automation configurations (delete, reply, like, message, chat, story, storyMention, pause) for a connected account. ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`,
+        `Update the default automation configurations (delete, reply, like, message, chat, story, storyMention, pause, starter) for a connected account. ${KEYWORD_OPENING_NOTE} ${LIMIT_KNOWLEDGE_NOTE}`,
       inputSchema: {
         accountId: z.string().describe("The Repliz account id."),
         delete: z.record(z.unknown()).describe("Delete automation configuration object."),
@@ -134,6 +134,68 @@ export function registerAccountTools(ctx: ToolContext): void {
           .describe(
             "Pauses Reply DM, Reply Story and Reply Story Mention in a chat when the account replies to it by hand, from Repliz or the platform's app. Resume a chat early with repliz_resume_chat. Left out, the saved setting is kept."
           ),
+        starter: z
+          .object({
+            isActive: z
+              .boolean()
+              .describe("Turns DM Starters on. false removes the questions from the chat and stops answering the links."),
+            questions: z
+              .array(
+                z.object({
+                  id: z
+                    .string()
+                    .optional()
+                    .describe("Send back the id Repliz returns unchanged, or questions already shown stop working."),
+                  question: z.string().max(80).describe("The question shown in an empty chat, up to 80 characters."),
+                  type: z
+                    .enum(["text", "opening"])
+                    .optional()
+                    .describe("text answers with text, opening answers with the button flow in opening. Text when left out."),
+                  text: z.string().describe("The answer for type text. Supports {name} and spintax. Send '' for opening."),
+                  opening: z
+                    .record(z.unknown())
+                    .optional()
+                    .describe("The answer for type opening: { postback, additional, webUrl }, like a keyword with buttons."),
+                })
+              )
+              .max(4)
+              .describe(
+                "Up to 4 questions (ice breakers) shown in an empty chat in the mobile app; tapping one sends its answer. They replace the FAQ set in the Instagram or Facebook app. A question without an answer is not shown."
+              ),
+            links: z
+              .array(
+                z.object({
+                  id: z
+                    .string()
+                    .optional()
+                    .describe("Send back the id Repliz returns unchanged, or buttons already sent stop working."),
+                  ref: z
+                    .string()
+                    .max(50)
+                    .regex(/^[A-Za-z0-9_=-]*$/)
+                    .describe(
+                      "The ref of the link, like promo in https://ig.me/m/<username>?ref=promo (Instagram) or https://m.me/<page id>?ref=promo (Facebook). Letters, numbers, -, _ and =, unique per account, case-insensitive."
+                    ),
+                  type: z
+                    .enum(["text", "opening"])
+                    .optional()
+                    .describe("text answers with text, opening answers with the button flow in opening. Text when left out."),
+                  text: z.string().describe("The answer for type text. Supports {name} and spintax. Send '' for opening."),
+                  opening: z
+                    .record(z.unknown())
+                    .optional()
+                    .describe("The answer for type opening: { postback, additional, webUrl }, like a keyword with buttons."),
+                })
+              )
+              .max(20)
+              .describe(
+                "Up to 20 chat links answered when someone opens the chat through them. On Instagram, a link opens the chat only when tapped inside the Instagram app (bio or DM), and a new chat through a link needs at least one question."
+              ),
+          })
+          .optional()
+          .describe(
+            "Instagram and Facebook only: DM Starters, questions shown in an empty chat and chat links with a ref, each with its own answer. Left out, the saved setting is kept. Guide: https://docs.repliz.com/api/guides/automation-config#dm-starters"
+          ),
       },
     },
     async (args) =>
@@ -146,6 +208,7 @@ export function registerAccountTools(ctx: ToolContext): void {
         story: args.story,
         storyMention: args.storyMention,
         pause: args.pause,
+        starter: args.starter,
       })
   );
 

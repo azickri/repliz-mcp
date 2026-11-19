@@ -13325,6 +13325,12 @@
           "pause": {
             "description": "Pauses the DM automation of a chat when the account replies by hand. When left out, the saved setting is kept.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigAutomationPause" }]
+          },
+          "starter": {
+            "description": "DM Starters: up to 4 questions shown in an empty chat (ice breakers) and chat links with a `ref`, each with its own answer. Instagram and Facebook only. When left out, the saved setting is kept.",
+            "allOf": [
+              { "$ref": "#/components/schemas/ConfigAutomationStarter" }
+            ]
           }
         },
         "required": ["delete", "reply", "like", "message", "chat", "story"]
@@ -14929,6 +14935,91 @@
           }
         },
         "required": ["token"]
+      },
+      "ConfigStarterQuestion": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "0b6f7c1e-4f0a-4c2b-9d3e-8a1f2b3c4d5e",
+            "description": "Identifies the question in its payloads. Send it back unchanged so questions and buttons already shown keep working; a missing, non-UUID or duplicate id is replaced with a new one on save."
+          },
+          "question": {
+            "type": "string",
+            "example": "How much is the e-book?",
+            "maxLength": 80,
+            "description": "The question shown in an empty chat. Tapping it sends the question as the person."
+          },
+          "type": {
+            "type": "string",
+            "example": "text",
+            "enum": ["text", "opening"],
+            "description": "`text`: answer with `text`. `opening`: answer with the button flow in `opening`. Text when left out."
+          },
+          "text": {
+            "type": "string",
+            "example": "It is Rp49.000, {name}.",
+            "description": "The answer, required unless type is 'opening'. Supports `{name}` and spintax."
+          },
+          "opening": {
+            "description": "The answer for type 'opening'.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpening" }]
+          }
+        },
+        "required": ["question"]
+      },
+      "ConfigStarterLink": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "0b6f7c1e-4f0a-4c2b-9d3e-8a1f2b3c4d5e",
+            "description": "Identifies the link in its payloads. Send it back unchanged so buttons already sent keep working; a missing, non-UUID or duplicate id is replaced with a new one on save."
+          },
+          "ref": {
+            "type": "string",
+            "example": "promo",
+            "maxLength": 50,
+            "description": "The `ref` of the link, like `promo` in `ig.me/m/username?ref=promo`. Letters, numbers, `-`, `_` and `=`, unique per account, case-insensitive."
+          },
+          "type": {
+            "type": "string",
+            "example": "text",
+            "enum": ["text", "opening"],
+            "description": "`text`: answer with `text`. `opening`: answer with the button flow in `opening`. Text when left out."
+          },
+          "text": {
+            "type": "string",
+            "example": "Hi {name}, here is the promo.",
+            "description": "The answer, required unless type is 'opening'. Supports `{name}` and spintax."
+          },
+          "opening": {
+            "description": "The answer for type 'opening'.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpening" }]
+          }
+        },
+        "required": ["ref"]
+      },
+      "ConfigAutomationStarter": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Turns the module on. With `false`, the questions are removed from the chat and links are not answered. Runs on Instagram and Facebook only."
+          },
+          "questions": {
+            "description": "Up to 4 questions shown in an empty chat with the account (ice breakers). They replace the questions set in the Instagram or Facebook app.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ConfigStarterQuestion" }
+          },
+          "links": {
+            "description": "Chat links with a `ref`, answered when someone opens the chat through them. A new chat through a link needs at least one question.",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ConfigStarterLink" }
+          }
+        },
+        "required": ["isActive", "questions", "links"]
       }
     }
   }
