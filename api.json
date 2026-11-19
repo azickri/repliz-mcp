@@ -12947,6 +12947,29 @@
         },
         "required": ["title", "buttons"]
       },
+      "ConfigOpeningFollowUp": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Sends one reminder when the person has not tapped any link of this message after `delay`. Needs `isTrackLink`, and a first message with a button when the opening is a DM to a commenter."
+          },
+          "delay": {
+            "type": "number",
+            "example": 3600,
+            "enum": [600, 1800, 3600, 10800, 21600, 43200, 82800],
+            "description": "Seconds to wait before the reminder: `600`, `1800`, `3600`, `10800`, `21600`, `43200` or `82800`, within the 24 hours Meta allows after the last message of the person."
+          },
+          "text": {
+            "type": "string",
+            "example": "Hi {name}, the link is still waiting for you 👇",
+            "maxLength": 640,
+            "description": "The reminder, sent with the same links again. Supports `{name}` and spintax."
+          }
+        },
+        "required": ["isActive", "delay", "text"]
+      },
       "ConfigOpeningWebUrl": {
         "type": "object",
         "properties": {
@@ -12980,8 +13003,12 @@
           },
           "isTrackLink": {
             "type": "boolean",
-            "example": false,
-            "description": "Instagram and Facebook only. With `true`, the links in `buttons` and `elements` are sent as `rplz.link` short links, so their clicks show up in the link report. `false` when left out."
+            "example": true,
+            "description": "Instagram and Facebook only. With `true`, the links in `buttons` and `elements` are sent as `rplz.link` short links, so their clicks show up in the link report. `true` when left out, `false` sends the links unchanged."
+          },
+          "followUp": {
+            "description": "A reminder when no link was tapped, Instagram and Facebook only. When left out, no reminder is sent.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningFollowUp" }]
           }
         },
         "required": ["text", "buttons"]

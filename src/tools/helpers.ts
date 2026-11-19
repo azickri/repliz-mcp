@@ -33,6 +33,8 @@ export const KEYWORD_OPENING_NOTE =
   '{ "keyword", "type": "opening", "opening": { postback, additional, webUrl } } instead of { "keyword", "text" }. ' +
   'Send the "id" Repliz returns on such a keyword back unchanged, or the buttons in DMs already sent stop working. ' +
   'Set opening.webUrl.isTrackLink to true to send the links of an opening as rplz.link short links and count their clicks. ' +
+  'Set opening.webUrl.followUp { isActive, delay, text } to send one reminder with the same links when none was tapped after delay seconds ' +
+  '(600, 1800, 3600, 10800, 21600, 43200 or 82800; needs isTrackLink, Instagram and Facebook only; a DM to a commenter needs a first message with a button). ' +
   "Schema: https://docs.repliz.com/api/guides/automation-config#keyword-with-buttons";
 
 /**
