@@ -35,7 +35,7 @@ import {
 } from "@modelcontextprotocol/sdk/server/auth/router.js";
 import { TooManyRequestsError } from "@modelcontextprotocol/sdk/server/auth/errors.js";
 import { ReplizClient } from "./client.js";
-import { createReplizServer } from "./server.js";
+import { createReplizServer, prepareToolList } from "./server.js";
 import {
   allowedOrigins,
   bearerTokenFromHeaders,
@@ -437,6 +437,15 @@ export async function runHttp(): Promise<void> {
       uptimeSeconds: Math.round(process.uptime()),
     });
   });
+
+  // The tool list is the same for everyone, so it is worked out once here
+  // rather than on every tools/list. If that fails the server still starts,
+  // and each request works the list out for itself as before.
+  try {
+    await prepareToolList();
+  } catch (err) {
+    console.error(`[mcp] could not prepare the tool list: ${err instanceof Error ? err.message : err}`);
+  }
 
   const httpServer = app.listen(listenPort, () => {
     console.error(

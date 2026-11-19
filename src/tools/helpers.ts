@@ -9,26 +9,18 @@ import type { ZodRawShape } from "zod";
 import { ReplizApiError, type ReplizClient } from "../client.js";
 
 /**
- * One input schema per tool name, shared by every request.
+ * A tool's input schema, built from its raw shape.
  *
- * A server is built per request, and each build runs every register function,
- * which constructs that tool's Zod schemas afresh. Kept per server, those
- * schemas cost about 1 MB each — the bulk of a server's memory. The schemas
- * depend on nothing but the code, so the first build's are kept here and every
- * later build's copies are left for the garbage collector.
+ * The tools are defined once per process (see server.ts), so this runs once per
+ * tool and every request's server is given the same schema object. Handing the
+ * SDK the raw shape instead would make it build a new object schema each time
+ * the tool is registered, which is once per request.
  *
  * Built with the SDK's own objectFromShape, so tools/list is exactly what the
  * SDK would have produced from the raw shape.
  */
-const sharedInputSchemas = new Map<string, AnyObjectSchema>();
-
-function sharedInputSchema(name: string, shape: ZodRawShape): AnyObjectSchema {
-  let schema = sharedInputSchemas.get(name);
-  if (!schema) {
-    schema = objectFromShape(shape);
-    sharedInputSchemas.set(name, schema);
-  }
-  return schema;
+function inputSchemaFromShape(shape: ZodRawShape): AnyObjectSchema {
+  return objectFromShape(shape);
 }
 
 /**
@@ -134,7 +126,7 @@ export function registerTool<TShape extends ZodRawShape>(
     {
       title: meta.title,
       description: meta.description,
-      inputSchema: sharedInputSchema(name, meta.inputSchema),
+      inputSchema: inputSchemaFromShape(meta.inputSchema),
       annotations: ANNOTATIONS[meta.effect],
     },
     // The SDK validates args against inputSchema before calling us.
