@@ -12730,6 +12730,23 @@
         },
         "required": ["isActive", "value", "type"]
       },
+      "ConfigReact": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Reacts to the message of the person with `emoji`."
+          },
+          "emoji": {
+            "type": "string",
+            "example": "❤️",
+            "enum": ["❤️", "🔥", "😍", "😂", "👍", "🙏"],
+            "description": "The reaction: ❤️, 🔥, 😍, 😂, 👍 or 🙏."
+          }
+        },
+        "required": ["isActive", "emoji"]
+      },
       "ConfigLimit": {
         "type": "object",
         "properties": {
@@ -13077,7 +13094,7 @@
             "type": "string",
             "example": "email",
             "enum": ["email", "phone"],
-            "description": "`email` or `phone`. The question comes with a button that fills in the email or phone number from the profile of the person, when the profile has one."
+            "description": "`email` or `phone`. On Facebook the question comes with a button that fills in the email or phone number from the profile of the person, when the profile has one. Instagram does not allow that button, so people type their answer there."
           },
           "text": {
             "type": "string",
@@ -13331,6 +13348,10 @@
             "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
             "type": "array",
             "items": { "type": "string" }
+          },
+          "react": {
+            "description": "Instagram only. Reacts to every story reply this action handles, together with the answer (after `delay`), also when `limit` skips the answer. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigReact" }]
           }
         },
         "required": [
@@ -13384,6 +13405,10 @@
             "description": "IDs of the knowledge the AI reads when `type` is `ai`, up to 5. When left out, the saved setting is kept.",
             "type": "array",
             "items": { "type": "string" }
+          },
+          "react": {
+            "description": "Instagram only. Reacts to every story mention this action handles, together with the answer (after `delay`), also when `limit` skips the answer. When left out, the saved setting is kept.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigReact" }]
           }
         },
         "required": ["isActive", "type", "text", "prompt", "opening", "delay"]

@@ -48,7 +48,9 @@ export const LIMIT_KNOWLEDGE_NOTE =
   "reply, message, chat, story and storyMention also take limit { isActive, value, count } to answer the same person at most count times " +
   "(1-100, default 1) per value seconds, counted from their first answer (value: 3600, 21600, 86400, 604800 or 2592000; " +
   "per post for comments, per account for DMs), and knowledgeIds, " +
-  "up to 5 knowledge _id from repliz_list_knowledge that the AI reads when type is 'ai'. Left out, the saved limit and knowledgeIds are kept.";
+  "up to 5 knowledge _id from repliz_list_knowledge that the AI reads when type is 'ai'. Left out, the saved limit and knowledgeIds are kept. " +
+  "story and storyMention (Instagram) also take react { isActive, emoji } to react to the story reply or mention with one of ❤️ 🔥 😍 😂 👍 🙏, " +
+  "together with the answer, also when limit skips it; left out, the saved react is kept.";
 
 export interface ToolContext {
   server: McpServer;
