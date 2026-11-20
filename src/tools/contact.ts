@@ -8,13 +8,24 @@ const FOLLOW_UP = ["scheduled", "due"] as const;
 
 type Contact = { stage: string; tags?: string[]; note?: string };
 
+const CONTACT_SOURCE = ["comment", "chat"] as const;
+const CONTACT_FIELD = ["email", "phone"] as const;
+
 const filterSchema = {
-  search: z.string().optional().describe("Search in contact name and note."),
+  search: z.string().optional().describe("Search in contact name, note, email and phone number."),
   tag: z.string().optional().describe("Only contacts with this exact tag (see repliz_list_contact_tags)."),
   followUp: z
     .enum(FOLLOW_UP)
     .optional()
     .describe("'scheduled' for contacts with a follow-up, 'due' for follow-ups whose time has passed."),
+  source: z
+    .enum(CONTACT_SOURCE)
+    .optional()
+    .describe("'comment' for contacts who ever commented, 'chat' for contacts who ever sent a DM. A contact can have both."),
+  has: z
+    .enum(CONTACT_FIELD)
+    .optional()
+    .describe("'email' for contacts with an email, 'phone' for contacts with a phone number (collected by an opening DM or filled in by hand)."),
   accountIds: z.array(z.string()).optional().describe("Only contacts of these account id(s)."),
 };
 
@@ -27,7 +38,7 @@ export function registerContactTools(ctx: ToolContext): void {
       effect: "read",
       description:
         "List contacts: people who commented on or messaged your connected accounts, created automatically by Repliz. " +
-        "Each has a funnel stage (new, contacted, interested, won, lost), tags, a note, an optional follow-up reminder and the last comment or message. " +
+        "Each has a funnel stage (new, contacted, interested, won, lost), tags, a note, an optional email and phone number, an optional follow-up reminder and the last comment or message. " +
         "Sorted by latest interaction, or by nearest follow-up when followUp is set.",
       inputSchema: {
         page: z.number().int().min(1).default(1).describe("Page number (1-based)."),
@@ -44,6 +55,8 @@ export function registerContactTools(ctx: ToolContext): void {
         search: args.search,
         tag: args.tag,
         followUp: args.followUp,
+        source: args.source,
+        has: args.has,
         accountIds: args.accountIds,
       })
   );
@@ -63,6 +76,8 @@ export function registerContactTools(ctx: ToolContext): void {
         search: args.search,
         tag: args.tag,
         followUp: args.followUp,
+        source: args.source,
+        has: args.has,
         accountIds: args.accountIds,
       })
   );
@@ -132,7 +147,7 @@ export function registerContactTools(ctx: ToolContext): void {
       title: "Update Contact",
       effect: "destructive",
       description:
-        "Change the funnel stage, tags or note of a contact. Fields you leave out keep their current value. " +
+        "Change the funnel stage, tags, note, email or phone number of a contact. Fields you leave out keep their current value. " +
         "`tags` replaces the whole list, so include the existing tags (from repliz_get_contact) when adding one.",
       inputSchema: {
         contactId: z.string().describe("The contact id."),
@@ -143,6 +158,12 @@ export function registerContactTools(ctx: ToolContext): void {
           .optional()
           .describe("Every tag of the contact, at most 20 of up to 30 characters."),
         note: z.string().max(2000).optional().describe("New note, replacing the current one."),
+        email: z.string().max(254).optional().describe('New email. "" removes it.'),
+        phone: z
+          .string()
+          .max(25)
+          .optional()
+          .describe('New phone number, 8 to 15 digits with an optional leading +. "" removes it.'),
       },
     },
     async (args) => {
@@ -154,6 +175,8 @@ export function registerContactTools(ctx: ToolContext): void {
         stage: args.stage ?? current?.stage,
         tags: args.tags ?? current?.tags ?? [],
         note: args.note ?? current?.note ?? "",
+        email: args.email,
+        phone: args.phone,
       });
     }
   );

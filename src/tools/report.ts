@@ -60,7 +60,7 @@ export function registerReportTools(ctx: ToolContext): void {
     {
       title: "Retry Report",
       effect: "additive",
-      description: "Retry generating or processing a report that failed or encountered errors. A link reminder report (isFollowUp: true) can't be retried and returns 400.",
+      description: "Retry generating or processing a report that failed or encountered errors. A link reminder report (isFollowUp: true) and an email or phone question report (isInput: true) can't be retried and return 400.",
       inputSchema: {
         reportId: z.string().describe("The report id to retry."),
       },

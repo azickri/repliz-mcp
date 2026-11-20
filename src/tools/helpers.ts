@@ -35,6 +35,8 @@ export const KEYWORD_OPENING_NOTE =
   'Set opening.webUrl.isTrackLink to true to send the links of an opening as rplz.link short links and count their clicks. ' +
   'Set opening.webUrl.followUp { isActive, delay, text } to send one reminder with the same links when none was tapped after delay seconds ' +
   '(600, 1800, 3600, 10800, 21600, 43200 or 82800; needs isTrackLink, Instagram and Facebook only; a DM to a commenter needs a first message with a button). ' +
+  'Set opening.input { isActive, type: "email" | "phone", text, retryText, tag } to ask for an email or phone number after a button tap and before webUrl ' +
+  '(Instagram and Facebook only; needs postback or additional active): a valid answer is saved to the contact (plus tag), then webUrl is sent; after 3 invalid answers webUrl is sent anyway. ' +
   "Schema: https://docs.repliz.com/api/guides/automation-config#keyword-with-buttons";
 
 /**

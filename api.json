@@ -1600,7 +1600,7 @@
             "name": "search",
             "required": false,
             "in": "query",
-            "description": "Matches the contact name or note, case-insensitive.",
+            "description": "Matches the contact name, note, email or phone number, case-insensitive.",
             "schema": { "example": "Azickri", "type": "string" }
           },
           {
@@ -1619,6 +1619,28 @@
               "example": "due",
               "type": "string",
               "enum": ["scheduled", "due"]
+            }
+          },
+          {
+            "name": "source",
+            "required": false,
+            "in": "query",
+            "description": "`comment` for contacts who ever commented, `chat` for contacts who ever sent a DM. A contact can have both. Every contact when left out.",
+            "schema": {
+              "example": "comment",
+              "type": "string",
+              "enum": ["comment", "chat"]
+            }
+          },
+          {
+            "name": "has",
+            "required": false,
+            "in": "query",
+            "description": "`email` for contacts with an email, `phone` for contacts with a phone number, whether collected by an automation or filled in by hand. Every contact when left out.",
+            "schema": {
+              "example": "email",
+              "type": "string",
+              "enum": ["email", "phone"]
             }
           },
           {
@@ -1649,6 +1671,8 @@
                       "stage": "interested",
                       "tags": ["reseller"],
                       "note": "Asked for the reseller price list.",
+                      "email": "shika@example.com",
+                      "phone": "+6281234567890",
                       "followUp": {
                         "at": "2026-11-05T09:00:00.000Z",
                         "note": "Send the new catalog.",
@@ -1701,7 +1725,7 @@
             "name": "search",
             "required": false,
             "in": "query",
-            "description": "Matches the contact name or note, case-insensitive.",
+            "description": "Matches the contact name, note, email or phone number, case-insensitive.",
             "schema": { "example": "Azickri", "type": "string" }
           },
           {
@@ -1720,6 +1744,28 @@
               "example": "due",
               "type": "string",
               "enum": ["scheduled", "due"]
+            }
+          },
+          {
+            "name": "source",
+            "required": false,
+            "in": "query",
+            "description": "`comment` for contacts who ever commented, `chat` for contacts who ever sent a DM. A contact can have both. Every contact when left out.",
+            "schema": {
+              "example": "comment",
+              "type": "string",
+              "enum": ["comment", "chat"]
+            }
+          },
+          {
+            "name": "has",
+            "required": false,
+            "in": "query",
+            "description": "`email` for contacts with an email, `phone` for contacts with a phone number, whether collected by an automation or filled in by hand. Every contact when left out.",
+            "schema": {
+              "example": "email",
+              "type": "string",
+              "enum": ["email", "phone"]
             }
           },
           {
@@ -1805,6 +1851,8 @@
                   "stage": "interested",
                   "tags": ["reseller"],
                   "note": "Asked for the reseller price list.",
+                  "email": "shika@example.com",
+                  "phone": "+6281234567890",
                   "followUp": {
                     "at": "2026-11-05T09:00:00.000Z",
                     "note": "Send the new catalog.",
@@ -1875,6 +1923,8 @@
                   "stage": "interested",
                   "tags": ["reseller"],
                   "note": "Asked for the reseller price list.",
+                  "email": "shika@example.com",
+                  "phone": "+6281234567890",
                   "followUp": {
                     "at": "2026-11-05T09:00:00.000Z",
                     "note": "Send the new catalog.",
@@ -1945,6 +1995,8 @@
                   "stage": "interested",
                   "tags": ["reseller"],
                   "note": "Asked for the reseller price list.",
+                  "email": "shika@example.com",
+                  "phone": "+6281234567890",
                   "followUp": {
                     "at": "2026-11-05T09:00:00.000Z",
                     "note": "Send the new catalog.",
@@ -13013,6 +13065,41 @@
         },
         "required": ["text", "buttons"]
       },
+      "ConfigOpeningInput": {
+        "type": "object",
+        "properties": {
+          "isActive": {
+            "type": "boolean",
+            "example": true,
+            "description": "Asks for an email or phone number after the person taps a button, before the Follow-up Message. A valid answer is saved to the contact, then the links are sent. After 3 invalid answers the links are sent anyway. Needs a First Message or Additional Message with a button, Instagram and Facebook only."
+          },
+          "type": {
+            "type": "string",
+            "example": "email",
+            "enum": ["email", "phone"],
+            "description": "`email` or `phone`. The question comes with a button that fills in the email or phone number from the profile of the person, when the profile has one."
+          },
+          "text": {
+            "type": "string",
+            "example": "Before the link, what is your email {name}?",
+            "maxLength": 640,
+            "description": "The question. Supports `{name}` and spintax. Nothing is asked while it is empty."
+          },
+          "retryText": {
+            "type": "string",
+            "example": "That does not look like an email, please check it again 🙏",
+            "maxLength": 640,
+            "description": "Sent when the answer is not a valid email or phone number. Supports `{name}` and spintax. `text` is sent again when it is empty."
+          },
+          "tag": {
+            "type": "string",
+            "example": "ebook-november",
+            "maxLength": 30,
+            "description": "Tag added to the contact after a valid answer, to find the contacts of this automation. No tag when left out or empty."
+          }
+        },
+        "required": ["isActive", "type", "text", "retryText"]
+      },
       "ConfigOpening": {
         "type": "object",
         "properties": {
@@ -13029,6 +13116,10 @@
           "webUrl": {
             "description": "Follow-up Message, the last step, with the links you want to give.",
             "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningWebUrl" }]
+          },
+          "input": {
+            "description": "Asks for an email or phone number before the Follow-up Message, Instagram and Facebook only. Not asked when left out.",
+            "allOf": [{ "$ref": "#/components/schemas/ConfigOpeningInput" }]
           }
         },
         "required": ["postback", "additional", "webUrl"]
@@ -13408,6 +13499,16 @@
             "type": "string",
             "example": "Asked for the reseller price list.",
             "description": "Free note about the contact, up to 2000 characters."
+          },
+          "email": {
+            "type": "string",
+            "example": "shika@example.com",
+            "description": "Email of the contact, saved in lowercase. `\"\"` removes it, left out keeps the current one."
+          },
+          "phone": {
+            "type": "string",
+            "example": "+6281234567890",
+            "description": "Phone number of the contact, 8 to 15 digits with an optional leading `+`. Spaces, dashes, dots and brackets are removed. `\"\"` removes it, left out keeps the current one."
           }
         },
         "required": ["stage", "tags", "note"]
