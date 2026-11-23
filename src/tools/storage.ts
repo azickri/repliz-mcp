@@ -1,5 +1,6 @@
 /**
- * Storage tools: list, get, init upload, upload to presigned URL, complete, and delete files.
+ * Storage tools: list, get, init upload, upload to presigned URL, complete, and delete files,
+ * plus folders (list, create, update, delete) and moving files between them.
  *
  * Upload flow:
  *   1. repliz_init_file       — registers the file and gets a presigned PUT URL + fileId
@@ -39,11 +40,17 @@ export function registerStorageTools(ctx: ToolContext): void {
       title: "List Storage Files",
       effect: "read",
       description:
-        "List uploaded files with pagination and optional filename search. Each file includes id, filename, size, mimetype, url, and status.",
+        "List uploaded files with pagination, optional filename search and optional folder filter. Each file includes id, filename, size, mimetype, url, status, and folderId.",
       inputSchema: {
         page: z.number().int().min(1).default(1).describe("Page number (1-based)."),
         limit: z.number().int().min(1).max(100).default(20).describe("Items per page."),
         search: z.string().optional().describe("Filter files by filename (partial match)."),
+        folderId: z
+          .string()
+          .optional()
+          .describe(
+            "Only files in this folder (id from repliz_list_storage_folders), or 'none' for files outside any folder. Omit for all files."
+          ),
       },
     },
     async (args) =>
@@ -51,6 +58,7 @@ export function registerStorageTools(ctx: ToolContext): void {
         page: args.page,
         limit: args.limit,
         search: args.search,
+        folderId: args.folderId,
       })
   );
 
@@ -118,6 +126,12 @@ export function registerStorageTools(ctx: ToolContext): void {
           .describe(
             "MIME type of the file, e.g. 'video/mp4', 'image/jpeg', 'image/png'."
           ),
+        folderId: z
+          .string()
+          .optional()
+          .describe(
+            "Folder to put the file in (id from repliz_list_storage_folders). Omit to keep it outside any folder."
+          ),
       },
     },
     async (args) =>
@@ -125,6 +139,7 @@ export function registerStorageTools(ctx: ToolContext): void {
         filename: args.filename,
         size: args.size,
         mimetype: args.mimetype,
+        folderId: args.folderId,
       })
   );
 
@@ -310,5 +325,97 @@ export function registerStorageTools(ctx: ToolContext): void {
     // fileIds is a query parameter per the API spec (same pattern as repliz_delete_schedules)
     async (args) =>
       ctx.client.delete("/public/storage/file/mass", { fileIds: args.fileIds })
+  );
+
+  // ─── Folders ─────────────────────────────────────────────────────────────
+  // Folders only live in Repliz: moving a file never changes its URL or its
+  // place in the bucket, so posts that already use it keep working.
+
+  registerTool(
+    ctx,
+    "repliz_list_storage_folders",
+    {
+      title: "List Storage Folders",
+      effect: "read",
+      description:
+        "List every storage folder, sorted by name. Each folder has its id, name and file { total, used } with the number " +
+        "and bytes of its files. `unfiled` counts the files outside any folder.",
+      inputSchema: {},
+    },
+    async () => ctx.client.get("/public/storage/folder")
+  );
+
+  registerTool(
+    ctx,
+    "repliz_create_storage_folder",
+    {
+      title: "Create Storage Folder",
+      effect: "additive",
+      description:
+        "Create a storage folder, for example one per brand or per social media account. The name is unique " +
+        "(case-insensitive), up to 50 characters, and a user can have up to 100 folders. Returns the new folder.\n\n" +
+        "Errors: HTTP 400 \"folder name already exists\".",
+      inputSchema: {
+        name: z.string().min(1).max(50).describe("Folder name."),
+      },
+    },
+    async (args) => ctx.client.post("/public/storage/folder", { name: args.name })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_update_storage_folder",
+    {
+      title: "Rename Storage Folder",
+      effect: "destructive",
+      description: "Rename a storage folder. Returns the updated folder.",
+      inputSchema: {
+        folderId: z.string().describe("The folder id."),
+        name: z.string().min(1).max(50).describe("New folder name."),
+      },
+    },
+    async (args) =>
+      ctx.client.put(`/public/storage/folder/${encodeURIComponent(args.folderId)}`, {
+        name: args.name,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_delete_storage_folder",
+    {
+      title: "Delete Storage Folder",
+      effect: "destructive",
+      description:
+        "Delete a storage folder. Its files are kept and moved out of the folder; delete them with repliz_delete_files if they should go too.",
+      inputSchema: {
+        folderId: z.string().describe("The folder id to delete."),
+      },
+    },
+    async (args) =>
+      ctx.client.delete(`/public/storage/folder/${encodeURIComponent(args.folderId)}`)
+  );
+
+  registerTool(
+    ctx,
+    "repliz_move_files",
+    {
+      title: "Move Storage Files",
+      effect: "destructive",
+      description:
+        "Move stored files into a folder, or out of their folder when folderId is omitted. The file URLs stay the same.",
+      inputSchema: {
+        fileIds: z.array(z.string()).min(1).max(100).describe("Ids of the files to move."),
+        folderId: z
+          .string()
+          .optional()
+          .describe("Target folder id from repliz_list_storage_folders. Omit to take the files out of their folder."),
+      },
+    },
+    async (args) =>
+      ctx.client.put("/public/storage/file/folder", {
+        fileIds: args.fileIds,
+        folderId: args.folderId ?? null,
+      })
   );
 }

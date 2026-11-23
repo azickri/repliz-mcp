@@ -69,7 +69,8 @@ export function registerContentTools(ctx: ToolContext): void {
       title: "Get Content Comments",
       effect: "read",
       description:
-        "List comments on a piece of content. Pass `commentId` to fetch replies to a specific comment. Uses cursor pagination via `nextToken`.",
+        "List comments on a piece of content. Pass `commentId` to fetch replies to a specific comment. Uses cursor pagination via `nextToken`. " +
+        "Each comment has `likeCount`, its likes on Facebook, Instagram, TikTok, YouTube and X, or null on Threads and LinkedIn.",
       inputSchema: {
         contentId: z.string().describe("The content id."),
         accountId: z.string().describe("The account id that owns the content."),

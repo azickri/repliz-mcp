@@ -6468,7 +6468,7 @@
     },
     "/public/content/{contentId}/comment": {
       "get": {
-        "description": "\nRetrieve comments from a specific content directly from the platform.\n\nThis endpoint returns a list of comments including user information, message, and timestamp.\nIt is commonly used to display comment threads or perform moderation.\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns an array of comment objects\n- Each comment includes id, username, message, and timestamp\n",
+        "description": "\nRetrieve comments from a specific content directly from the platform.\n\nThis endpoint returns a list of comments including user information, message, and timestamp.\nIt is commonly used to display comment threads or perform moderation.\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns an array of comment objects\n- Each comment includes id, username, message, and timestamp\n- likeCount holds the likes on the comment on Facebook, Instagram, TikTok, YouTube, and X, and null on Threads and LinkedIn\n",
         "operationId": "ContentController_getComment",
         "parameters": [
           {
@@ -6527,7 +6527,8 @@
                       },
                       "medias": [],
                       "createdAt": "2026-03-26T04:30:03.000Z",
-                      "hasReplies": true
+                      "hasReplies": true,
+                      "likeCount": 12
                     },
                     {
                       "id": "942538351814577_916293527895950",
@@ -6546,7 +6547,8 @@
                         }
                       ],
                       "createdAt": "2026-03-26T07:06:06.000Z",
-                      "hasReplies": false
+                      "hasReplies": false,
+                      "likeCount": 3
                     },
                     {
                       "id": "942538351814577_1472619164494757",
@@ -6565,7 +6567,8 @@
                         }
                       ],
                       "createdAt": "2026-03-26T07:05:43.000Z",
-                      "hasReplies": false
+                      "hasReplies": false,
+                      "likeCount": 0
                     }
                   ],
                   "nextToken": ""
@@ -12349,9 +12352,184 @@
         "tags": ["API Storage (Storage+)"]
       }
     },
+    "/public/storage/folder": {
+      "get": {
+        "description": "\nRetrieve every storage folder.\n\nFolders group files, for example one folder per brand or per social media account. They only live in Repliz: moving a file never changes its URL or its place in the storage bucket.\n\nResponse:\n- Returns the folders sorted by name, each with the number and size of its files\n- unfiled holds the number and size of files outside any folder\n",
+        "operationId": "StorageController_getFolder",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "_id": "6a4c3b580afd72bb342c3886",
+                      "name": "Brand A",
+                      "userId": "6879b98097fc8c8a78d1d4c1",
+                      "createdAt": "2026-11-23T03:10:00.000Z",
+                      "updatedAt": "2026-11-23T03:10:00.000Z",
+                      "__v": 0,
+                      "id": "6a4c3b580afd72bb342c3886",
+                      "file": { "total": 12, "used": 48234496 }
+                    }
+                  ],
+                  "unfiled": { "total": 3, "used": 1055736 }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Folder Storage",
+        "tags": ["API Storage (Storage+)"]
+      },
+      "post": {
+        "description": "\nCreate a storage folder.\n\nBody:\n- name (string) — Name of the folder, unique and case-insensitive\n\nResponse:\n- Returns the new folder\n",
+        "operationId": "StorageController_createFolder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyCreateFolderDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "6a4c3b580afd72bb342c3886",
+                  "name": "Brand A",
+                  "userId": "6879b98097fc8c8a78d1d4c1",
+                  "createdAt": "2026-11-23T03:10:00.000Z",
+                  "updatedAt": "2026-11-23T03:10:00.000Z",
+                  "__v": 0,
+                  "id": "6a4c3b580afd72bb342c3886"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "folder name already exists"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Create Folder Storage",
+        "tags": ["API Storage (Storage+)"]
+      }
+    },
+    "/public/storage/folder/{folderId}": {
+      "put": {
+        "description": "\nRename a storage folder.\n\nParameters:\n- folderId (string) — The unique identifier of the folder\n\nBody:\n- name (string) — New name of the folder\n\nResponse:\n- Returns the updated folder\n",
+        "operationId": "StorageController_updateFolder",
+        "parameters": [
+          {
+            "name": "folderId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the folder, the `_id` from Get Folder.",
+            "schema": {
+              "example": "6a4c3b580afd72bb342c3886",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyUpdateFolderDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "_id": "6a4c3b580afd72bb342c3886",
+                  "name": "Brand A",
+                  "userId": "6879b98097fc8c8a78d1d4c1",
+                  "createdAt": "2026-11-23T03:10:00.000Z",
+                  "updatedAt": "2026-11-23T03:10:00.000Z",
+                  "__v": 0,
+                  "id": "6a4c3b580afd72bb342c3886"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "folder name already exists"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "folder not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Update Folder Storage",
+        "tags": ["API Storage (Storage+)"]
+      },
+      "delete": {
+        "description": "\nDelete a storage folder.\n\nThe files in the folder are kept and moved out of it.\n\nParameters:\n- folderId (string) — The unique identifier of the folder\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "StorageController_removeFolder",
+        "parameters": [
+          {
+            "name": "folderId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the folder, the `_id` from Get Folder.",
+            "schema": {
+              "example": "6a4c3b580afd72bb342c3886",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "folder not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Remove Folder Storage",
+        "tags": ["API Storage (Storage+)"]
+      }
+    },
     "/public/storage/file": {
       "get": {
-        "description": "\nRetrieve a list of uploaded files.\n\nThis endpoint is used to fetch files stored in your storage.\nIt supports pagination and optional search by filename.\n\nParameters:\n- page (number) — The page number to retrieve\n- limit (number) — Number of files per page\n- search (string, optional) — Search files by filename\n\nResponse:\n- Returns an array of file objects\n- Each file includes id, filename, size, mimetype, and upload information\n",
+        "description": "\nRetrieve a list of uploaded files.\n\nThis endpoint is used to fetch files stored in your storage.\nIt supports pagination and optional search by filename.\n\nParameters:\n- page (number) — The page number to retrieve\n- limit (number) — Number of files per page\n- search (string, optional) — Search files by filename\n- folderId (string, optional) — Only files in this folder, or `none` for files outside any folder\n\nResponse:\n- Returns an array of file objects\n- Each file includes id, filename, size, mimetype, and upload information\n",
         "operationId": "StorageController_getFile",
         "parameters": [
           {
@@ -12379,6 +12557,16 @@
             "in": "query",
             "description": "Matches the file name, case-insensitive.",
             "schema": { "example": "hello", "type": "string" }
+          },
+          {
+            "name": "folderId",
+            "required": false,
+            "in": "query",
+            "description": "Only files in this folder, the `_id` from Get Folder. Send `none` for files that are not in a folder. Leave empty for all files.",
+            "schema": {
+              "example": "6a4c3b580afd72bb342c3886",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -12396,6 +12584,7 @@
                       "key": "uploads/6879b98097fc8c8a78d1d4c1/d69f8f58-48e6-4b58-bfbb-97dc6e5e16b4.mp4",
                       "url": "https://storage.repliz.com/uploads/6879b98097fc8c8a78d1d4c1/d69f8f58-48e6-4b58-bfbb-97dc6e5e16b4.mp4",
                       "status": "success",
+                      "folderId": "6a4c3b580afd72bb342c3886",
                       "userId": "6879b98097fc8c8a78d1d4c1",
                       "createdAt": "2026-07-06T23:33:44.019Z",
                       "updatedAt": "2026-07-06T23:38:37.176Z",
@@ -12410,6 +12599,7 @@
                       "key": "uploads/6879b98097fc8c8a78d1d4c1/0dcb2544-bbc8-4b42-a2e3-0449133ef58f.mp4",
                       "url": "https://storage.repliz.com/uploads/6879b98097fc8c8a78d1d4c1/0dcb2544-bbc8-4b42-a2e3-0449133ef58f.mp4",
                       "status": "pending",
+                      "folderId": null,
                       "userId": "6879b98097fc8c8a78d1d4c1",
                       "createdAt": "2026-07-06T23:28:59.836Z",
                       "updatedAt": "2026-07-06T23:28:59.836Z",
@@ -12465,6 +12655,7 @@
                   "key": "uploads/6879b98097fc8c8a78d1d4c1/0dcb2544-bbc8-4b42-a2e3-0449133ef58f.mp4",
                   "url": "https://storage.repliz.com/uploads/6879b98097fc8c8a78d1d4c1/0dcb2544-bbc8-4b42-a2e3-0449133ef58f.mp4",
                   "status": "pending",
+                  "folderId": null,
                   "userId": "6879b98097fc8c8a78d1d4c1",
                   "createdAt": "2026-07-06T23:28:59.836Z",
                   "updatedAt": "2026-07-06T23:28:59.836Z",
@@ -12520,7 +12711,7 @@
     },
     "/public/storage/file/init": {
       "post": {
-        "description": "\nInitialize a file upload.\n\nThis endpoint is used before uploading a file to storage.\nProvide the filename, file size, and MIME type to create an upload session.\n\nBody:\n- filename (string) — Name of the file\n- size (number) — File size in bytes\n- mimetype (string) — MIME type of the file\n\nResponse:\n- Returns upload session information\n- Includes the file identifier and upload URL required to upload the file\n",
+        "description": "\nInitialize a file upload.\n\nThis endpoint is used before uploading a file to storage.\nProvide the filename, file size, and MIME type to create an upload session.\n\nBody:\n- filename (string) — Name of the file\n- size (number) — File size in bytes\n- mimetype (string) — MIME type of the file\n- folderId (string, optional) — Folder to put the file in\n\nResponse:\n- Returns upload session information\n- Includes the file identifier and upload URL required to upload the file\n",
         "operationId": "StorageController_initFile",
         "parameters": [],
         "requestBody": {
@@ -12594,6 +12785,35 @@
         },
         "security": [{ "basic": [] }, { "bearer": [] }],
         "summary": "API Complete File Storage",
+        "tags": ["API Storage (Storage+)"]
+      }
+    },
+    "/public/storage/file/folder": {
+      "put": {
+        "description": "\nMove files into a folder or out of their folder.\n\nThe file URLs stay the same.\n\nBody:\n- fileIds (string[]) — Files to move\n- folderId (string, optional) — Target folder, or null to take the files out of their folder\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "StorageController_moveFiles",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BodyMoveFilesDTO" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "folder not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Move Files Storage",
         "tags": ["API Storage (Storage+)"]
       }
     },
@@ -15224,9 +15444,57 @@
             "type": "string",
             "example": "video/mp4",
             "description": "MIME type of the file, for example `video/mp4` or `image/png`. Send the same value as the `Content-Type` header of the upload."
+          },
+          "folderId": {
+            "type": "string",
+            "example": "6a4c3b580afd72bb342c3886",
+            "description": "Folder to put the file in, the `_id` from Get Folder. Leave it out to keep the file outside any folder."
           }
         },
         "required": ["filename", "size", "mimetype"]
+      },
+      "BodyMoveFilesDTO": {
+        "type": "object",
+        "properties": {
+          "fileIds": {
+            "example": ["680affa5ce12f2f72916f67e", "680affa5ce12f2f72916f67a"],
+            "maxItems": 100,
+            "description": "IDs of the files to move, from 1 to 100.",
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "folderId": {
+            "type": "string",
+            "example": "6a4c3b580afd72bb342c3886",
+            "nullable": true,
+            "description": "Folder to move the files into, the `_id` from Get Folder. Send `null` or leave it out to take the files out of their folder."
+          }
+        },
+        "required": ["fileIds"]
+      },
+      "BodyCreateFolderDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Brand A",
+            "maxLength": 50,
+            "description": "Name of the folder, up to 50 characters. Spaces at the ends are removed, and the name has to be unique, case-insensitive. A user can have up to 100 folders."
+          }
+        },
+        "required": ["name"]
+      },
+      "BodyUpdateFolderDTO": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Brand Alpha",
+            "maxLength": 50,
+            "description": "New name of the folder, up to 50 characters and unique, case-insensitive."
+          }
+        },
+        "required": ["name"]
       },
       "BodyTokenDTO": {
         "type": "object",
