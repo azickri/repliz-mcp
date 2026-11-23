@@ -156,6 +156,45 @@ export function registerAccountConnectTools(ctx: ToolContext): void {
       })
   );
 
+  registerTool(
+    ctx,
+    "repliz_authorize_instagram_music",
+    {
+      title: "Authorize Instagram Music & Research",
+      effect: "read",
+      description:
+        "Get the Meta Business login URL that turns on Music & Research for a connected Instagram account: music for scheduled Reels and Instagram research. The user logs in with Facebook or Instagram, picks this Instagram account, and Meta sends them back to `redirect` with a `code`; pass it to repliz_connect_instagram_music. No account is added and no account slot is used.",
+      inputSchema: {
+        accountId: z.string().describe("Repliz account ID of the connected Instagram account."),
+        redirect: z.string().describe("Redirect URL after the login."),
+      },
+    },
+    async (args) =>
+      ctx.client.get("/public/account/instagram/unified/authorize", {
+        accountId: args.accountId,
+        redirect: args.redirect,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_connect_instagram_music",
+    {
+      title: "Connect Instagram Music & Research",
+      effect: "additive",
+      description:
+        "Finish turning on Music & Research for the Instagram account with the `code` from the redirect. Also reconnects them. Fails with 400 when the user did not pick this Instagram account in the Meta Business login.",
+      inputSchema: {
+        accountId: z.string().describe("Repliz account ID, the same one given to repliz_authorize_instagram_music."),
+        code: z.string().describe("OAuth authorization code."),
+      },
+    },
+    async (args) =>
+      ctx.client.post(`/public/account/instagram/unified/connect/${encodeURIComponent(args.accountId)}`, {
+        code: args.code,
+      })
+  );
+
   // ─── Threads ──────────────────────────────────────────────────────────────
 
   registerTool(

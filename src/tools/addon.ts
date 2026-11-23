@@ -1,4 +1,4 @@
-/** Add-on tools: TikTok trending music, Shopee products, WhatsApp and Telegram channels, Pinterest boards (list, create, update, delete), Instagram profile, and link metadata. */
+/** Add-on tools: TikTok trending music, Instagram audio, Shopee products, WhatsApp and Telegram channels, Pinterest boards (list, create, update, delete), Instagram profile, and link metadata. */
 
 import { z } from "zod";
 import { registerTool, withoutInlinePicture, type ToolContext } from "./helpers.js";
@@ -36,6 +36,33 @@ export function registerAddonTools(ctx: ToolContext): void {
         genre: args.genre,
         countryCode: args.countryCode,
         dateRange: args.dateRange,
+      })
+  );
+
+  registerTool(
+    ctx,
+    "repliz_instagram_audio",
+    {
+      title: "Instagram Audio",
+      effect: "read",
+      description:
+        "Search Instagram music or original sounds for a scheduled Instagram Reel. The account needs Music & Research turned on (repliz_authorize_instagram_music, then repliz_connect_instagram_music, or Turn On on the account card in Repliz); otherwise it fails with 400. Leave `search` out for trending audio, the only list with more pages. Put the `id` in `additionalInfo.music` when scheduling the Reel.",
+      inputSchema: {
+        accountId: z.string().describe("The connected Instagram account id."),
+        type: z
+          .enum(["music", "original_sound"])
+          .default("music")
+          .describe("'music' for licensed tracks, 'original_sound' for sounds made by Instagram accounts."),
+        search: z.string().max(100).optional().describe("Title or artist. Leave out for trending audio."),
+        nextToken: z.string().optional().describe("Pagination cursor from a previous response (trending only)."),
+      },
+    },
+    async (args) =>
+      ctx.client.get("/public/addon/instagram/audio", {
+        accountId: args.accountId,
+        type: args.type,
+        search: args.search,
+        nextToken: args.nextToken,
       })
   );
 

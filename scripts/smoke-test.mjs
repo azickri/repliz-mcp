@@ -353,7 +353,7 @@ check(res.status === 405, "DELETE answers 405, with no session to end", `got ${r
 
 console.log("\nTool surface");
 const { tools } = await a.client.listTools();
-check(tools.length === 157, `all 157 tools are registered`, `got ${tools.length}`);
+check(tools.length === 160, `all 160 tools are registered`, `got ${tools.length}`);
 const annotated = (name) => tools.find((t) => t.name === name)?.annotations ?? {};
 check(tools.every((t) => typeof t.annotations?.readOnlyHint === "boolean"), "every tool says whether it only reads");
 check(annotated("repliz_list_accounts").readOnlyHint === true, "listing accounts is read-only");

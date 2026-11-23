@@ -64,7 +64,11 @@ const musicVolumeSchema = z
 
 const musicSchema = z
   .object({
-    id: z.string().describe('Music track ID.'),
+    id: z
+      .string()
+      .describe(
+        'Track ID: from repliz_tiktok_trending_music for TikTok, or from repliz_instagram_audio for an Instagram video or reel of an account with Music & Research turned on.',
+      ),
     artist: z.string().describe('Music artist name.'),
     name: z.string().describe('Music track name/title.'),
     thumbnail: z.string().describe('Music track thumbnail URL.'),
@@ -73,7 +77,9 @@ const musicSchema = z
       .default({ video: 50, music: 100 })
       .describe('Volume settings for video and music.'),
   })
-  .describe('Background music attached to the post.');
+  .describe(
+    'Background music attached to the post: TikTok, or an Instagram video or reel of an account with Music & Research turned on. Each account takes a track of its own platform; Instagram ignores it on other accounts.',
+  );
 
 const productSchema = z.object({
   id: z.string(),

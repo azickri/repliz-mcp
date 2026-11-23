@@ -3811,6 +3811,98 @@
         "tags": ["API Addon (Premium+)"]
       }
     },
+    "/public/addon/instagram/audio": {
+      "get": {
+        "description": "\nSearch the audio that can go on a scheduled Instagram Reel.\n\nThe account needs music and research turned on (Authorize and Connect Instagram Unified). Leave `search` out for trending audio, the only list with more pages. Instagram only returns audio licensed for third-party apps, so the list is shorter than in the Instagram app.\n\nPut the `id` in `additionalInfo.music.id` of Create Schedule, with `volume` for the audio and the video sound.\n",
+        "operationId": "AddonController_getInstagramAudio",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "description": "ID of an Instagram account with music and research turned on, the `_id` from Get Account.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "`music` for licensed tracks, or `original_sound` for sounds made by Instagram accounts. Default `music`.",
+            "schema": {
+              "example": "music",
+              "type": "string",
+              "enum": ["music", "original_sound"]
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Title or artist to search for. Left out, Instagram returns trending audio.",
+            "schema": { "example": "tulus", "type": "string" }
+          },
+          {
+            "name": "nextToken",
+            "required": false,
+            "in": "query",
+            "description": "nextToken for next page",
+            "schema": {
+              "example": "QVFIUmx1WTBpMGpJWXprYzVYaVhabW55dVpycko4U2xURGE5ODNtNFZAPal94WTNyV2",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "docs": [
+                    {
+                      "id": "1234567890123456",
+                      "type": "music",
+                      "artist": "Tulus",
+                      "name": "Hati-Hati di Jalan",
+                      "thumbnail": "https://scontent.cdninstagram.com/v/t39.30808-6/cover.jpg",
+                      "duration": 30,
+                      "url": "https://scontent.cdninstagram.com/v/t39.12345-6/audio.m4a",
+                      "link": "https://www.instagram.com/reels/audio/1234567890123456/"
+                    }
+                  ],
+                  "nextToken": ""
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "turn on music and research for this instagram account first"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Get Instagram Audio",
+        "tags": ["API Addon (Premium+)"]
+      }
+    },
     "/public/addon/instagram/profile": {
       "get": {
         "description": "\nRetrieve the profile of an Instagram user who has messaged a connected Instagram account.\n\nThis endpoint is used to check whether the user follows the account before replying, for example to only send a link to followers. Use the senderId of a chat from Get Chat. Instagram only returns the profile of a user who has sent a message to the account; any other user fails with the error from Instagram.\n\nParameters:\n- accountId (string) — The unique identifier of the connected Instagram account\n- senderId (string) — The Instagram-scoped ID of the user\n\nResponse:\n- Returns the user's identifier, name, username, profile picture and number of followers\n- isFollower is true when the user follows the account\n- isFollowing is true when the account follows the user\n",
@@ -10853,6 +10945,110 @@
         "tags": ["API Account Instagram (Gold+)"]
       }
     },
+    "/public/account/instagram/unified/authorize": {
+      "get": {
+        "description": "\nStart turning on music and research for a connected Instagram account.\n\nReturns the Meta Business login URL. The user logs in with Facebook or Instagram and picks the Instagram account, then Meta sends them back to `redirect` with a `code`.\n\nMusic and research add a second token to the same account: music for scheduled Reels and Instagram research. Comments, messages, automation and webhooks stay on the Instagram connection. No account is added and no account slot is used.\n",
+        "operationId": "AccountInstagramController_authorizeUnified",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "query",
+            "description": "ID of the connected Instagram account to turn music and research on for, the `_id` from Get Account. Send the same ID to Connect Instagram Unified.",
+            "schema": {
+              "example": "69e97477a795504e0786cec6",
+              "type": "string"
+            }
+          },
+          {
+            "name": "redirect",
+            "required": true,
+            "in": "query",
+            "description": "The full URL of your page that Meta sends the user back to after they log in with Meta Business and pick the Instagram account. The authorization `code` is added to it as a query parameter. URL-encode it in the query string.",
+            "schema": {
+              "example": "https://app.example.com/oauth/instagram-unified",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "url": "https://www.facebook.com/dialog/oauth?client_id=1235158581557624&config_id=1807348740199306&redirect_uri=https://repliz.com/callback/instagram-unified&response_type=code&prompt=login&state=8fd8c2b5bd2474f7ac1a297648884b623bb2e3591993f17d03cca0e2892078b0a54b094dc82ce42283f1624fbf8f6286"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Authorize Instagram Unified",
+        "tags": ["API Account Instagram (Gold+)"]
+      }
+    },
+    "/public/account/instagram/unified/connect/{accountId}": {
+      "post": {
+        "description": "\nFinish turning on music and research for the account.\n\nSend the `code` from the redirect. The account gets `additional.isUnified: true`. Call it again to reconnect them, for example after the user removed Repliz from their business portfolio.\n\nResponse:\n- No content is returned on success (204 No Content)\n",
+        "operationId": "AccountInstagramController_connectUnified",
+        "parameters": [
+          {
+            "name": "accountId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the account, the `_id` from Get Account.",
+            "schema": {
+              "example": "680affa5ce12f2f72916f67e",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BodyConnectInstagramUnifiedDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "" },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": {
+                  "code": 400,
+                  "message": "this instagram account was not picked in the meta business login"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "example": { "code": 404, "message": "account not found" }
+              }
+            }
+          }
+        },
+        "security": [{ "basic": [] }, { "bearer": [] }],
+        "summary": "API Connect Instagram Unified",
+        "tags": ["API Account Instagram (Gold+)"]
+      }
+    },
     "/public/account/threads/authorize": {
       "get": {
         "description": "\nInitiate Threads authorization process.\n\nThis endpoint is used to redirect users to Threads OAuth authorization page.\nAfter successful authorization, the user will be redirected back to the provided redirect URL with an authorization code.\n\nParameters:\n- redirect (string) — The URL to redirect after authorization is completed\n\nResponse:\n- Redirects user to Threads OAuth page\n",
@@ -13742,14 +13938,14 @@
             "example": 50,
             "minimum": 0,
             "maximum": 100,
-            "description": "Volume of the video original sound in percent, `0` to mute it. The dashboard sends `50`. Left out, TikTok gets `100`."
+            "description": "Volume of the video original sound in percent, `0` to mute it. The dashboard sends `50`. Left out, the platform gets `100`. Instagram takes `1` to `100`, so `0` is sent as `1`."
           },
           "music": {
             "type": "number",
             "example": 100,
             "minimum": 0,
             "maximum": 100,
-            "description": "Track volume in percent, `0` to mute it. The dashboard sends `100`. Left out, TikTok gets `50`."
+            "description": "Track volume in percent, `0` to mute it. The dashboard sends `100`. Left out, TikTok gets `50` and Instagram `100`. Instagram takes `1` to `100`, so `0` is sent as `1`."
           }
         }
       },
@@ -13759,7 +13955,7 @@
           "id": {
             "type": "string",
             "example": "7569541912459692049",
-            "description": "TikTok music ID, from Get TikTok Music. It is the only field sent to TikTok. Leave it empty for no track."
+            "description": "TikTok music ID, from Get TikTok Music, or Instagram audio ID, from Get Instagram Audio. Besides the volume it is the only field sent to the platform. Leave it empty for no track."
           },
           "artist": {
             "type": "string",
@@ -13777,7 +13973,7 @@
             "description": "Track cover image URL, shown in Repliz."
           },
           "volume": {
-            "description": "How loud the track and the video own sound are, for `video` only. Photo posts play the track at TikTok default volume.",
+            "description": "How loud the track and the video own sound are, for `video` and `reel` only. TikTok photo posts play the track at TikTok default volume.",
             "allOf": [
               {
                 "$ref": "#/components/schemas/ScheduleAdditionalInfoMusicVolume"
@@ -13964,7 +14160,7 @@
             "items": { "type": "string" }
           },
           "music": {
-            "description": "TikTok. A TikTok track to put on the post. Leave `id` empty for no track.",
+            "description": "TikTok, and Instagram `video` and `reel` for accounts with music and research turned on. A track to put on the post, from the platform of the account. Leave `id` empty for no track.",
             "allOf": [
               { "$ref": "#/components/schemas/ScheduleAdditionalInfoMusic" }
             ]
@@ -14849,6 +15045,17 @@
             "type": "string",
             "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7ea7d9a40718f2fed191b2ced80405b6bbfa64bce0d577707be9286a980b9f0a8e0a335e6b1ab0559a2b9be13c2101ade91ab964e7a483edcb4834f2d60021b276f37f678407794a72ae0fc95c835006cc5d6c4f874072db08c786417f977760727edf006016e8b655533382675406",
             "description": "The `code` query parameter from the URL Instagram redirected the user to. It works only once and expires soon, so send it right away. On reconnect the user has to sign in with the same Instagram account, or the call returns `400`."
+          }
+        },
+        "required": ["code"]
+      },
+      "BodyConnectInstagramUnifiedDTO": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "9402c20336a7c3ce2d8e4f763fd598ad7e09116ba611eeb4b429b31cce3dda1147e02582211155149b1024fd4995b352d3cc3a975dd18aca8d15b7c0d4531f340688f60649fa6ad053d2ca5b9de3df1cfae47261a16e3680416d82f85b025bdfc41154bdcbb5c01874499b76364ca959ecb5abb4cea1b798e947a6ecf6a471093d7",
+            "description": "The `code` query parameter from the URL the Meta Business login redirected the user to. It works only once and expires soon, so send it right away. The user has to pick this Instagram account in the login, or the call returns `400`."
           }
         },
         "required": ["code"]

@@ -1,7 +1,7 @@
 # Repliz MCP Server
 
 A hosted [Model Context Protocol](https://modelcontextprotocol.io) server for the
-**Repliz Public API**. It gives an AI assistant 157 tools for managing a Repliz
+**Repliz Public API**. It gives an AI assistant 160 tools for managing a Repliz
 workspace in plain language: listing and replying to comments, scheduling posts,
 handling DMs, browsing content and stats, researching Threads and TikTok, managing
 automations and templates, and more.
@@ -342,12 +342,12 @@ what to tell the user when it is not.
 
 ## Tools
 
-157 tools across the Repliz Public API:
+160 tools across the Repliz Public API:
 
 | Group               | Count | Tools                                                                                       |
 | ------------------- | ----- | ------------------------------------------------------------------------------------------- |
 | **Accounts**        | 10    | list, count, get, statistics, update automation, list tags, update tags, rename tag, delete tag, delete |
-| **Account Connect** | 42    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X, Pinterest; QR session / connect / reconnect for WhatsApp; QR session / two-step password / connect / reconnect for Telegram |
+| **Account Connect** | 44    | OAuth authorize / exchange / list / connect / reconnect for Facebook, Instagram, Threads, YouTube, LinkedIn, TikTok, Shopee, Twitter/X, Pinterest; Instagram Music & Research (authorize / connect); QR session / connect / reconnect for WhatsApp; QR session / two-step password / connect / reconnect for Telegram |
 | **Comments**        | 5     | list, get, reply, update status, delete                                                     |
 | **Contacts**        | 10    | list, count, list tags, get, get by comment, get by chat, update, set follow-up, remove follow-up, delete |
 | **Knowledge**       | 10    | list, get, create, update, delete; add source (text, FAQ, web page, file from storage), get source, update source, refresh web page, delete source |
@@ -361,13 +361,13 @@ what to tell the user when it is not.
 | **Storage**         | 8     | statistics, list, get, init upload, upload, complete, delete, bulk delete                   |
 | **Reports**         | 3     | list, get, retry                                                                            |
 | **Research**        | 10    | Threads content, user content, content by link, user profile; TikTok hashtags, videos, photo posts, user content, comments, comment replies (TikWM key) |
-| **Add-ons**         | 11    | TikTok trending music, Shopee products, WhatsApp and Telegram channels & groups, Pinterest boards (list, create, update, delete), Instagram profile (follow check), link metadata, addon allocation |
+| **Add-ons**         | 12    | TikTok trending music, Instagram audio, Shopee products, WhatsApp and Telegram channels & groups, Pinterest boards (list, create, update, delete), Instagram profile (follow check), link metadata, addon allocation |
 
 Tool availability follows the caller's Repliz plan; calling one above your tier
 returns a clear error.
 
-Every tool declares what it does, as MCP tool annotations: 68 only read
-(`readOnlyHint`), 51 create or send something without touching what exists
+Every tool declares what it does, as MCP tool annotations: 70 only read
+(`readOnlyHint`), 52 create or send something without touching what exists
 (`destructiveHint: false`), and 38 change or delete (`destructiveHint: true`).
 Clients use these to decide what to confirm first; ChatGPT asks before any tool
 not marked read-only. A new tool must state its `effect` to compile.
