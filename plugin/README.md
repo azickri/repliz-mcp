@@ -21,9 +21,11 @@ The plugin contains no code that runs on your computer, and no hooks.
 
 ## Requirements
 
-- A [Repliz](https://repliz.com) account. Which tools work depends on your
-  [plan](https://repliz.com/pricing); a tool above your plan returns an error that
-  says so.
+- A [Repliz](https://repliz.com) account on the Standard
+  [plan](https://repliz.com/pricing) or higher; the Free plan has no Public API.
+  Standard covers accounts, comments, contacts and knowledge, Premium adds
+  scheduling and add-ons, and Gold unlocks every tool. A tool above your plan
+  returns an error that says so.
 - Your Repliz **Access Key** and **Secret Key**, from
   [Settings → Public API](https://repliz.com/user/setting/api).
 

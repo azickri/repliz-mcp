@@ -68,8 +68,9 @@ thing) without saying so.
 
 ## Errors
 
-- A tool that is not on the user's Repliz plan returns an error saying so. Tell the
-  user which feature needs an upgrade instead of retrying or working around it.
+- A tool that is not on the user's Repliz plan returns HTTP 402 (`upgrade plan to
+  access this api`). Tell the user their plan doesn't include that feature, and don't
+  retry or work around it.
 - A `401` means the Repliz sign-in has expired or the keys were refreshed; ask the
   user to reconnect Repliz.
 - On a rate-limit error, wait a moment and retry once, then tell the user.

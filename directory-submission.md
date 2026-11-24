@@ -31,18 +31,18 @@ all 165 tools.
 
 ### Listing
 
-| Field | Value |
-| --- | --- |
-| Server URL | `https://mcp.repliz.com/mcp` |
-| Authentication | OAuth 2.0 |
-| Name (≤ 100) | `Repliz` |
-| URL slug (permanent) | `repliz` |
-| Icon | [`plugin/logo.png`](plugin/logo.png) (192 × 192 PNG) |
-| Documentation URL | `https://docs.repliz.com/tutorial/mcp` |
-| Privacy policy URL | `https://repliz.com/privacy-policy` |
-| Terms of service URL | `https://repliz.com/term-of-service` |
-| Support contact | `cs.repliz@gmail.com` |
-| Categories (1–5) | Whichever of the portal's list fit best: marketing, social media, communication, productivity |
+| Field                | Value                                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| Server URL           | `https://mcp.repliz.com/mcp`                                                                  |
+| Authentication       | OAuth 2.0                                                                                     |
+| Name (≤ 100)         | `Repliz`                                                                                      |
+| URL slug (permanent) | `repliz`                                                                                      |
+| Icon                 | [`plugin/logo.png`](plugin/logo.png) (192 × 192 PNG)                                          |
+| Documentation URL    | `https://docs.repliz.com/tutorial/mcp`                                                        |
+| Privacy policy URL   | `https://repliz.com/privacy-policy`                                                           |
+| Terms of service URL | `https://repliz.com/term-of-service`                                                          |
+| Support contact      | `cs.repliz@gmail.com`                                                                         |
+| Categories (1–5)     | Whichever of the portal's list fit best: marketing, social media, communication, productivity |
 
 **One-liner (≤ 200 characters)**
 
@@ -50,19 +50,47 @@ all 165 tools.
 
 **Description (≤ 2,000 characters)**
 
-> Repliz brings the comments, DMs, scheduled posts and automations of Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, X (Twitter), Pinterest, WhatsApp and Telegram into one inbox. This connector lets Claude work in your Repliz workspace in plain language.
->
-> What you can do:
-> - Read the comment inbox, draft replies that fit the thread, reply, and mark comments resolved or ignored.
-> - Read and answer DMs, see who a contact is, and pause or resume the automation on a chat.
-> - Schedule text, image, video, reel, carousel, story, link and document posts, with first comments, threads and music, and retry failed ones.
-> - Check account and post statistics: views, reach, engagement, watch time and follower growth.
-> - Manage comment and DM automations, reply templates, AI knowledge bases, contacts and tags, and media storage.
-> - Research Threads and TikTok content, hashtags and trending music.
->
-> Sign in once with your Repliz Access Key and Secret Key from Settings → Public API. Tools follow your Repliz plan, and every tool is marked as read-only or as one that changes your workspace, so Claude asks before it publishes, sends or deletes anything.
->
-> Requires a Repliz account (repliz.com).
+Repliz brings the comments, DMs, scheduled posts and automations of Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, X (Twitter), Pinterest, WhatsApp and Telegram into one inbox. This connector lets Claude work in your Repliz workspace in plain language.
+
+What you can do:
+
+- Read the comment inbox, draft replies that fit the thread, reply, and mark comments resolved or ignored.
+- Read and answer DMs, see who a contact is, and pause or resume the automation on a chat.
+- Schedule text, image, video, reel, carousel, story, link and document posts, with first comments, threads and music, and retry failed ones.
+- Check account and post statistics: views, reach, engagement, watch time and follower growth.
+- Manage comment and DM automations, reply templates, AI knowledge bases, contacts and tags, and media storage.
+- Research Threads and TikTok content, hashtags and trending music.
+
+Sign in once with your Repliz Access Key and Secret Key from Settings → Public API. Tools follow your Repliz plan, and every tool is marked as read-only or as one that changes your workspace, so Claude asks before it publishes, sends or deletes anything.
+
+Requires a Repliz Standard plan or higher (repliz.com/pricing); Gold unlocks every tool.
+
+### Test & launch
+
+Shown to reviewers only.
+
+**Use cases**
+
+| Use case                     | Example prompt                                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Triage and reply to comments | Show me today's pending Instagram comments, draft a reply to each one, and send the replies I approve.     |
+| Schedule a post              | Schedule a Threads post for tomorrow at 9am Jakarta time that says "Our new collection drops this Friday." |
+| Review post performance      | Which of my TikTok videos from the last 7 days got the most views, and what was their average watch time?  |
+
+**Prerequisites**
+
+> A Repliz account (repliz.com) on a paid plan, with at least one social account connected. The Public API and this MCP server are not on the Free plan. Standard covers accounts, comments, contacts and knowledge; Premium adds scheduling and add-ons; Gold unlocks every tool, including chats, content and statistics, research, reports, automations and connecting new accounts. A tool outside the user's plan returns a clear error. The user signs in with the Access Key and Secret Key from Settings → Public API (repliz.com/user/setting/api).
+
+**Read/write capabilities**: Read and write (71 tools read, 94 create, send,
+change or delete).
+
+### Data handling
+
+| Question                      | Answer                                                                                                                         |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| API ownership                 | We own the API: the server calls only `api.repliz.com`, and uploads go to Repliz storage through presigned URLs from that API. |
+| Personal health data          | No                                                                                                                             |
+| Sponsored or promoted content | No. The only "upgrade" text is in HTTP 402 errors from the Repliz API, passed through unchanged: `upgrade plan to access this api` when a tool is outside the user's plan, and `upgrade to get more storage` when storage is full. They explain a refused request, carry no link or offer, and appear only when the user calls something their plan doesn't cover. |
 
 ### Compliance
 
@@ -75,12 +103,12 @@ Repliz's behalf.
 
 Submit after pushing `plugin/` to `main`.
 
-| Field | Value |
-| --- | --- |
-| Repository | `azickri/repliz-mcp` (public) |
-| Plugin path | `plugin` |
-| Branch or tag | leave empty (`main`) |
-| Update checks | GitHub push webhook |
+| Field         | Value                         |
+| ------------- | ----------------------------- |
+| Repository    | `azickri/repliz-mcp` (public) |
+| Plugin path   | `plugin`                      |
+| Branch or tag | leave empty (`main`)          |
+| Update checks | GitHub push webhook           |
 
 Listing details come from `plugin/.claude-plugin/plugin.json` and
 `plugin/README.md`; edit those files to change them. Raise `version` in
@@ -96,12 +124,12 @@ claude plugin validate --strict .
 
 ### Data handling answers
 
-| Question | Answer |
-| --- | --- |
-| Does it read or store personal data? | It reads personal data: comments, DMs, contact names and handles, and post content from the social accounts the user connected to Repliz. The MCP server stores none of it. Repliz itself stores workspace data as its privacy policy describes. |
-| Does it send data to services other than its declared connectors? | No. Everything goes to `mcp.repliz.com`, which calls `api.repliz.com`. Uploads from a URL fetch that URL and stream it to the user's Repliz storage. |
-| How long is data kept? | The MCP server keeps nothing after a request. In memory it keeps a SHA-256 fingerprint of verified keys for 5 minutes. Sign-in tokens are encrypted and held by the client, not the server; access tokens last 1 hour and an unused sign-in ends after 30 days. |
-| Intended for people under 18? | No. |
+| Question                                                          | Answer                                                                                                                                                                                                                                                          |
+| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Does it read or store personal data?                              | It reads personal data: comments, DMs, contact names and handles, and post content from the social accounts the user connected to Repliz. The MCP server stores none of it. Repliz itself stores workspace data as its privacy policy describes.                |
+| Does it send data to services other than its declared connectors? | No. Everything goes to `mcp.repliz.com`, which calls `api.repliz.com`. Uploads from a URL fetch that URL and stream it to the user's Repliz storage.                                                                                                            |
+| How long is data kept?                                            | The MCP server keeps nothing after a request. In memory it keeps a SHA-256 fingerprint of verified keys for 5 minutes. Sign-in tokens are encrypted and held by the client, not the server; access tokens last 1 hour and an unused sign-in ends after 30 days. |
+| Intended for people under 18?                                     | No.                                                                                                                                                                                                                                                             |
 
 ---
 
