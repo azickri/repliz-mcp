@@ -6680,7 +6680,7 @@
     },
     "/public/content/{contentId}/statistic": {
       "get": {
-        "description": "\nRetrieve engagement statistics for a specific content directly from the platform.\n\nThis endpoint is used to fetch insight metrics such as likes, comments, shares, views, and other platform-specific engagement data.\nThe returned fields may vary depending on the platform (e.g. Instagram, TikTok, YouTube, etc).\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns a statistic object based on the platform\n- Includes engagement metrics such as like, comment, share, views, and other platform-specific fields\n\nFacebook also returns insight from the Page's read_insights permission: the post's views, reach (unique viewers), clicks, and reactions in total (reaction) and per type (reactions, such as like or love). insight is null when the Page hasn't granted read_insights; a Page connected before November 13, 2026 has to be reconnected once.\n\nInstagram returns mediaProductType (FEED, REELS or STORY) and the metrics Instagram has for that type: FEED adds follows, profileVisits and profileActivity; REELS adds averageWatchTime and watchTime (in seconds) and skipRate (the percentage of views skipped in the first 3 seconds); STORY adds follows, profileVisits, profileActivity, replies and navigation, and has no like, comment or saved (always 0).\n\nLinkedIn posts of an organization also return impression, uniqueImpression, click, share and engagement (a 0-1 fraction), the organic totals since the post was published. Posts of a personal profile return like and comment only.\n\nPinterest returns mediaType and covers the last 90 days, except comment and reaction (lifetime). An image pin adds profileVisit and userFollow; a video pin adds videoView, videoStart, video10sView, videoCompleteView (views that reached 95%), averageWatchTime and watchTime (in seconds) instead.\n\nYouTube also returns insight from YouTube Analytics: the video's lifetime watch time (estimatedMinutesWatched, in minutes), average view duration (averageViewDuration, in seconds), average percentage viewed, subscribers gained and lost and shares, its daily views and watch time of the last 28 days (metrics), and its views per traffic source (trafficSources, such as YT_SEARCH, SHORTS or RELATED_VIDEO). The insight is cached for 6 hours. When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
+        "description": "\nRetrieve engagement statistics for a specific content directly from the platform.\n\nThis endpoint is used to fetch insight metrics such as likes, comments, shares, views, and other platform-specific engagement data.\nThe returned fields may vary depending on the platform (e.g. Instagram, TikTok, YouTube, etc).\n\nParameters:\n- contentId (string) — The unique identifier of the content\n\nResponse:\n- Returns a statistic object based on the platform\n- Includes engagement metrics such as like, comment, share, views, and other platform-specific fields\n\nFacebook also returns insight from the Page's read_insights permission: the post's views, reach (unique viewers), clicks, and reactions in total (reaction) and per type (reactions, such as like or love). insight is null when the Page hasn't granted read_insights; a Page connected before November 13, 2026 has to be reconnected once.\n\nFor a video or reel uploaded by the Page itself, insight.video holds its watch metrics (null for other posts and for videos shared from another Page): type (reel or video), length of the video, averageWatchTime and watchTime (all in seconds), and retention, the points from the start to the end of the video with the second and the fraction (percentage, 0-1) of plays still watching there, like TikTok's retention. A reel adds plays (including replays), replays and follows (follows from the reel); a video adds views (plays of at least 3 seconds) and completeViews (plays that reached 97% of the video).\n\nInstagram returns mediaProductType (FEED, REELS or STORY) and the metrics Instagram has for that type: FEED adds follows, profileVisits and profileActivity; REELS adds averageWatchTime and watchTime (in seconds) and skipRate (the percentage of views skipped in the first 3 seconds); STORY adds follows, profileVisits, profileActivity, replies and navigation, and has no like, comment or saved (always 0).\n\nLinkedIn posts of an organization also return impression, uniqueImpression, click, share and engagement (a 0-1 fraction), the organic totals since the post was published. Posts of a personal profile return like and comment only.\n\nPinterest returns mediaType and covers the last 90 days, except comment and reaction (lifetime). An image pin adds profileVisit and userFollow; a video pin adds videoView, videoStart, video10sView, videoCompleteView (views that reached 95%), averageWatchTime and watchTime (in seconds) instead.\n\nYouTube also returns insight from YouTube Analytics: the video's lifetime watch time (estimatedMinutesWatched, in minutes), average view duration (averageViewDuration, in seconds), average percentage viewed, subscribers gained and lost and shares, its daily views and watch time of the last 28 days (metrics), and its views per traffic source (trafficSources, such as YT_SEARCH, SHORTS or RELATED_VIDEO). The insight is cached for 6 hours. When YouTube Analytics fails, the request fails with YouTube's error instead of returning empty numbers.\n",
         "operationId": "ContentController_getStatistic",
         "parameters": [
           {
@@ -6721,7 +6721,75 @@
                         "reach": 10,
                         "clicks": 10,
                         "reaction": 12,
-                        "reactions": { "like": 10, "love": 2 }
+                        "reactions": { "like": 10, "love": 2 },
+                        "video": null
+                      }
+                    }
+                  },
+                  "facebookReel": {
+                    "summary": "Facebook (Reels)",
+                    "value": {
+                      "like": 25,
+                      "comment": 4,
+                      "share": 3,
+                      "insight": {
+                        "views": 340,
+                        "reach": 280,
+                        "clicks": 12,
+                        "reaction": 27,
+                        "reactions": { "like": 25, "love": 2 },
+                        "video": {
+                          "type": "reel",
+                          "length": 18.4,
+                          "plays": 410,
+                          "replays": 52,
+                          "follows": 3,
+                          "averageWatchTime": 6.2,
+                          "watchTime": 2542,
+                          "retention": [
+                            { "second": 0, "percentage": 1 },
+                            { "second": 2.6, "percentage": 0.86 },
+                            { "second": 5.3, "percentage": 0.71 },
+                            { "second": 7.9, "percentage": 0.6 },
+                            { "second": 10.5, "percentage": 0.52 },
+                            { "second": 13.1, "percentage": 0.47 },
+                            { "second": 15.8, "percentage": 0.41 },
+                            { "second": 18.4, "percentage": 0.36 }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "facebookVideo": {
+                    "summary": "Facebook (Video)",
+                    "value": {
+                      "like": 18,
+                      "comment": 6,
+                      "share": 2,
+                      "insight": {
+                        "views": 520,
+                        "reach": 430,
+                        "clicks": 40,
+                        "reaction": 20,
+                        "reactions": { "like": 18, "wow": 2 },
+                        "video": {
+                          "type": "video",
+                          "length": 95.3,
+                          "views": 210,
+                          "completeViews": 34,
+                          "averageWatchTime": 21.7,
+                          "watchTime": 4557,
+                          "retention": [
+                            { "second": 0, "percentage": 1 },
+                            { "second": 13.6, "percentage": 0.74 },
+                            { "second": 27.2, "percentage": 0.58 },
+                            { "second": 40.8, "percentage": 0.49 },
+                            { "second": 54.5, "percentage": 0.43 },
+                            { "second": 68.1, "percentage": 0.38 },
+                            { "second": 81.7, "percentage": 0.33 },
+                            { "second": 95.3, "percentage": 0.29 }
+                          ]
+                        }
                       }
                     }
                   },
