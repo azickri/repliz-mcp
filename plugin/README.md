@@ -35,7 +35,7 @@ In Claude.ai and Claude Desktop, add **Repliz** from the plugin directory. In
 Claude Code (2.1.275 or later), run:
 
 ```
-/plugin install repliz --marketplace azickri/repliz-mcp
+/plugin install repliz-social --marketplace azickri/repliz-mcp
 ```
 
 ## Connecting

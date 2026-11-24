@@ -1,10 +1,10 @@
 {
-  "name": "repliz",
+  "name": "repliz-social",
   "displayName": "Repliz",
   "version": "1.0.0",
   "description": "Manage your Repliz social media workspace from Claude: reply to comments and DMs, schedule posts, read content and account statistics, and run automations across Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, X, Pinterest, WhatsApp and Telegram.",
   "author": {
-    "name": "Repliz",
+    "name": "PT Abdi Tawakal Dua",
     "email": "cs.repliz@gmail.com",
     "url": "https://repliz.com"
   },

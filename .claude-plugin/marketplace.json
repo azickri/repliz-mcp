@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "repliz",
+      "name": "repliz-social",
       "source": "./plugin",
       "description": "Reply to comments and DMs, schedule posts, read statistics and run automations in your Repliz workspace."
     }

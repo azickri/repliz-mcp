@@ -37,12 +37,13 @@ all 165 tools.
 | Authentication       | OAuth 2.0                                                                                     |
 | Name (≤ 100)         | `Repliz`                                                                                      |
 | URL slug (permanent) | `repliz`                                                                                      |
-| Icon                 | [`plugin/logo.png`](plugin/logo.png) (192 × 192 PNG)                                          |
+| Icon                 | Leave empty: the directory shows the favicon of the server URL, which is the Repliz logo     |
+| Author               | `Repliz`, `https://repliz.com`                                                                |
 | Documentation URL    | `https://docs.repliz.com/tutorial/mcp`                                                        |
 | Privacy policy URL   | `https://repliz.com/privacy-policy`                                                           |
 | Terms of service URL | `https://repliz.com/term-of-service`                                                          |
-| Support contact      | `cs.repliz@gmail.com`                                                                         |
-| Categories (1–5)     | Whichever of the portal's list fit best: marketing, social media, communication, productivity |
+| Support (URL or email) | `cs.repliz@gmail.com`                                                                       |
+| Categories (1–5)     | Productivity, Communication, Sales and marketing                                              |
 
 **One-liner (≤ 200 characters)**
 
@@ -95,7 +96,21 @@ change or delete).
 ### Compliance
 
 Read all seven acknowledgements before ticking them; they are commitments on
-Repliz's behalf.
+Repliz's behalf. Checked against the code on Nov 24, 2026:
+
+| Acknowledgement | Why it holds |
+| --- | --- |
+| Read the developer guidelines | Read <https://claude.com/docs/connectors/building/review-criteria> and the [Software Directory Policy](https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy). |
+| Own first-party APIs | Only `api.repliz.com`. |
+| No money or financial assets | No tool pays, buys, tops up or transfers anything. |
+| No AI image, video or audio generation | None. Repliz AI replies (automations, keyword watch) are text. |
+| No model-behavior instructions in tool descriptions | Descriptions name other Repliz tools only for where an id comes from or which step is next, ask for confirmation before irreversible actions, and explain a sandbox block on uploads. None of the rejected patterns in the review criteria; disclosed in Additional notes. If a reviewer objects, the sandbox paragraph is in `src/tools/storage.ts` (`repliz_init_file`). |
+| No conversation data beyond what's needed | The server receives only tool arguments and stores nothing. |
+| Public documentation live | <https://docs.repliz.com/tutorial/mcp> |
+
+**Additional notes**
+
+> The Repliz API authenticates with an Access Key and Secret Key, so this server is its own OAuth 2.1 authorization server: the sign-in page asks for the two keys once, checks them against the Repliz API and seals them into the tokens (AES-256-GCM, no token database). Tools follow the user's Repliz plan (Standard or higher, Gold for every tool); a tool outside the plan returns the Repliz API's HTTP 402 "upgrade plan to access this api" unchanged. Tool descriptions name other Repliz tools only to say where an id comes from or which step comes next, ask Claude to confirm with the user before irreversible actions, and, for file uploads, explain what a sandbox network block looks like and where the user can allow the Repliz storage host. They reference no other servers, external instruction sources or hidden text.
 
 ---
 
@@ -113,6 +128,13 @@ Submit after pushing `plugin/` to `main`.
 Listing details come from `plugin/.claude-plugin/plugin.json` and
 `plugin/README.md`; edit those files to change them. Raise `version` in
 `plugin.json` with every release.
+
+The plugin's `name` is `repliz-social` and its `author.name` is `PT Abdi Tawakal
+Dua`, while `displayName` stays `Repliz`. With `repliz` in both, the portal refused
+it as `NAME_CONFUSABLE`: one or two characters from the directory connectors
+`replit`, `replin` and `replyz`. Once a version has been live, changing `name`
+needs an email to directory@anthropic.com first (unless the organization is
+Verified), so leave it as it is.
 
 Check locally before submitting (the portal runs more checks, including a safety
 scan):
