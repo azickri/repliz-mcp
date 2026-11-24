@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "repliz": {
+      "type": "http",
+      "url": "https://mcp.repliz.com/mcp"
+    }
+  }
+}

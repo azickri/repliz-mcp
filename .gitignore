@@ -11,6 +11,8 @@ dist/
 
 # Local MCP client config (machine-specific paths). Share .mcp.json.example instead.
 .mcp.json
+# The plugin's .mcp.json holds only the public server URL, no keys.
+!plugin/.mcp.json
 
 # Logs
 *.log
