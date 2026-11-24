@@ -15,7 +15,10 @@ keep updated.
 https://mcp.repliz.com/mcp
 ```
 
-This repository is the server that serves that URL.
+This repository is the server that serves that URL. It also holds the Claude
+plugin in [`plugin/`](plugin/), which points at the same URL and adds a skill;
+[`directory-submission.md`](directory-submission.md) has what to send to the
+Claude directory.
 
 ---
 

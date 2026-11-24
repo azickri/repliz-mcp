@@ -1,0 +1,29 @@
+{
+  "name": "repliz",
+  "displayName": "Repliz",
+  "version": "1.0.0",
+  "description": "Manage your Repliz social media workspace from Claude: reply to comments and DMs, schedule posts, read content and account statistics, and run automations across Instagram, Facebook, Threads, TikTok, YouTube, LinkedIn, X, Pinterest, WhatsApp and Telegram.",
+  "author": {
+    "name": "Repliz",
+    "email": "cs.repliz@gmail.com",
+    "url": "https://repliz.com"
+  },
+  "homepage": "https://repliz.com",
+  "repository": "https://github.com/azickri/repliz-mcp",
+  "license": "MIT",
+  "keywords": [
+    "repliz",
+    "social-media",
+    "comments",
+    "scheduling",
+    "instagram",
+    "tiktok",
+    "threads",
+    "automation"
+  ],
+  "icon": "./logo.png",
+  "documentationUrl": "https://docs.repliz.com/tutorial/mcp",
+  "supportUrl": "https://wa.me/6281292713426",
+  "privacyPolicyUrl": "https://repliz.com/privacy-policy",
+  "termsOfServiceUrl": "https://repliz.com/term-of-service"
+}

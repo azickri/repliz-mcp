@@ -1,0 +1,17 @@
+{
+  "name": "repliz",
+  "owner": {
+    "name": "Repliz",
+    "email": "cs.repliz@gmail.com"
+  },
+  "metadata": {
+    "description": "The Repliz plugin for Claude: manage your Repliz social media workspace in plain language."
+  },
+  "plugins": [
+    {
+      "name": "repliz",
+      "source": "./plugin",
+      "description": "Reply to comments and DMs, schedule posts, read statistics and run automations in your Repliz workspace."
+    }
+  ]
+}
