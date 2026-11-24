@@ -52,7 +52,12 @@ to. Only continue if you started connecting yourself.
 
 - Claude sends each tool call to `https://mcp.repliz.com/mcp`, a server run by
   Repliz. It forwards the call to the Repliz API at `https://api.repliz.com` and
-  returns the answer. It sends your data nowhere else.
+  returns the answer.
+- To upload a file you attached in the chat, Claude sends it from its code
+  sandbox straight to Repliz storage on Cloudflare R2
+  (`repliz.2ca853e78c4cd1a89797e3d770c7ca9f.r2.cloudflarestorage.com`), using a
+  one-time upload URL that Repliz issues for that file. The `manage-workspace`
+  skill describes this step. Your data goes nowhere else.
 - Your keys are checked against the Repliz API when you sign in. The server keeps
   no database of users or tokens: your sign-in is an encrypted token that only the
   server can open, and it expires after 30 days without use.
@@ -61,6 +66,11 @@ to. Only continue if you started connecting yourself.
   to go ahead.
 - When you ask Claude to upload a file from a URL, the server fetches that URL and
   passes the bytes straight to your Repliz storage, without saving them.
+- What Claude creates or changes through these tools (replies, scheduled posts,
+  contacts, tags, templates, automations, knowledge and files) is saved in your
+  Repliz workspace like anything made in the dashboard, until you delete it.
+  Comments and messages Claude reads may include names, usernames, emails and
+  phone numbers of the people who wrote them.
 
 To disconnect, remove the connection in Claude, or refresh your Secret Key in the
 Repliz dashboard, which stops every existing connection within five minutes.

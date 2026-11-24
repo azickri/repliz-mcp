@@ -136,6 +136,11 @@ it as `NAME_CONFUSABLE`: one or two characters from the directory connectors
 needs an email to directory@anthropic.com first (unless the organization is
 Verified), so leave it as it is.
 
+`displayName` `Repliz` is still flagged against the same three connectors. It is
+the brand, so it was submitted as is, with this appeal:
+
+> Repliz (https://repliz.com) is our own social media management product, run by PT Abdi Tawakal Dua, and is unrelated to Replit, Replin or Replyz. The plugin's technical name is already repliz-social and its author is PT Abdi Tawakal Dua; the only flagged field is the display name, which is our brand name. The plugin connects to our own MCP server (https://mcp.repliz.com/mcp), submitted to the directory as the connector "Repliz" by the same organization, and its listing links only to repliz.com and docs.repliz.com. We ask that it be listed as "Repliz" so users can find it under the name they know from repliz.com.
+
 Check locally before submitting (the portal runs more checks, including a safety
 scan):
 
@@ -146,12 +151,12 @@ claude plugin validate --strict .
 
 ### Data handling answers
 
-| Question                                                          | Answer                                                                                                                                                                                                                                                          |
-| ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Does it read or store personal data?                              | It reads personal data: comments, DMs, contact names and handles, and post content from the social accounts the user connected to Repliz. The MCP server stores none of it. Repliz itself stores workspace data as its privacy policy describes.                |
-| Does it send data to services other than its declared connectors? | No. Everything goes to `mcp.repliz.com`, which calls `api.repliz.com`. Uploads from a URL fetch that URL and stream it to the user's Repliz storage.                                                                                                            |
-| How long is data kept?                                            | The MCP server keeps nothing after a request. In memory it keeps a SHA-256 fingerprint of verified keys for 5 minutes. Sign-in tokens are encrypted and held by the client, not the server; access tokens last 1 hour and an unused sign-in ends after 30 days. |
-| Intended for people under 18?                                     | No.                                                                                                                                                                                                                                                             |
+| Question | Answer |
+| --- | --- |
+| Personal data | **Reads and stores.** It reads comments, DMs and contacts (names, usernames, and the emails and phone numbers contacts gave), and tools such as `repliz_update_contact` save personal data in the user's Repliz workspace. The MCP server itself keeps none of it. |
+| Does any skill send data to a service other than the declared connectors? | **Yes, listed in README.** The `manage-workspace` skill has Claude PUT a file attached in the chat from its sandbox to Repliz storage on Cloudflare R2 (`repliz.2ca853e78c4cd1a89797e3d770c7ca9f.r2.cloudflarestorage.com`) with a presigned URL from Repliz. Everything else goes to `mcp.repliz.com`, which calls `api.repliz.com`. |
+| How long does the service retain data received from Claude? | **Longer.** The MCP server keeps nothing after a request (only a SHA-256 fingerprint of verified keys, in memory, for 5 minutes), but what Claude creates through the tools (replies, scheduled posts, contacts, templates, automations, knowledge, files) stays in the user's Repliz workspace until they delete it. |
+| Intended for users under 18? | **No.** |
 
 ---
 
